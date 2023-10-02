@@ -1,0 +1,109 @@
+import CountdownTimer from "../../countdown/CountDownTimer";
+import ScrollAnimation from "react-animate-on-scroll";
+import { useEffect, useState } from "react";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+
+function HomeEndDealsCard({ img1, className, id }) {
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    setTimeout(() => {
+      setLoading(false);
+    }, 5000);
+  }, []);
+  const THREE_DAYS_IN_MS = 3 * 24 * 60 * 60 * 1000;
+  const NOW_IN_MS = new Date().getTime();
+
+  const dateTimeAfterThreeDays = NOW_IN_MS + THREE_DAYS_IN_MS;
+
+  return (
+    <div className={`${className} position-relative`}>
+      {loading ? null : (
+        <div
+          style={{
+            position: "absolute",
+            top: "25%",
+            left: "50%",
+            zIndex: 999999,
+            transform: "translateX(-50%)",
+          }}
+          className="col-lg-11"
+        >
+          <CountdownTimer targetDate={dateTimeAfterThreeDays} />
+        </div>
+      )}
+      <ScrollAnimation
+        animateIn="animate__animated animate__fadeInUp"
+        className="product-cart-wrap style-2"
+        delay={Number(id)}
+        animateOnce={true}
+      >
+        <div className="product-img-action-wrap">
+          <div className="product-img">
+            {loading ? (
+              <Skeleton style={{ width: "100%", height: "270px" }} />
+            ) : (
+              <a href={void 0}>
+                <LazyLoadImage src={img1} alt="" />
+              </a>
+            )}
+          </div>
+        </div>
+        <div className="product-content-wrap">
+          <div className="deals-content">
+            <h2>
+              {loading ? (
+                <Skeleton count={2} style={{ width: "90%" }} />
+              ) : (
+                <a href={void 0}>
+                  Seeds of Change Organic Quinoa, Brown, & Red Rice
+                </a>
+              )}
+            </h2>
+            {loading ? (
+              <Skeleton style={{ width: "30%" }} />
+            ) : (
+              <div className="product-rate-cover">
+                <div className="product-rate d-inline-block">
+                  <div
+                    className="product-rating"
+                    style={{ width: "90%" }}
+                  ></div>
+                </div>
+
+                <span className="font-small ml-5 text-muted"> (4.0)</span>
+              </div>
+            )}
+            <div>
+              {loading ? (
+                <Skeleton style={{ width: "30%" }} />
+              ) : (
+                <span className="font-small text-muted">
+                  By <a href={void 0}>NestFood</a>
+                </span>
+              )}
+            </div>
+            {loading ? (
+              <Skeleton style={{ height: " 50px" }} />
+            ) : (
+              <div className="product-card-bottom">
+                <div className="product-price">
+                  <span>$32.85</span>
+                  <span className="old-price">$33.8</span>
+                </div>
+                <div className="add-cart">
+                  <a className="add">
+                    <i className="fi-rs-shopping-cart mr-5"></i>Add{" "}
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </ScrollAnimation>
+    </div>
+  );
+}
+
+export default HomeEndDealsCard;

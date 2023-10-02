@@ -1,0 +1,46 @@
+.sticky-bar.setfixed {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+  transition: all 0.3s ease 0s;
+  box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05);
+  animation: topdownheader 700ms ease-in-out 0s normal none 1;
+}
+@keyframes topdownheader {
+  from {
+    top: -60px;
+  }
+  to {
+    top: 0;
+  }
+}
+
+.custom-modal .modal-dialog {
+  /* margin-top: 50px; */
+  margin-top: 50px;
+}
+
+.about-count {
+  z-index: 2 !important;
+}
+
+.top-skeleton > span {
+  width: 30%;
+  height: max-content;
+}
+
+.path-breadcrumb > span {
+  width: 8%;
+}
+
+.product-action-1 {
+  white-space: nowrap;
+}
+
+.countdown {
+  background-color: white;
+  width: 65px;
+  padding: 10px 0 !important;
+  border-radius: 4px;
+}
