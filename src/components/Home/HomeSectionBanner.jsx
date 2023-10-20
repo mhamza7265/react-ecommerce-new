@@ -2,18 +2,14 @@ import banner1 from "../../assets/imgs/banner/banner-1.webp";
 import banner2 from "../../assets/imgs/banner/banner-2.webp";
 import banner3 from "../../assets/imgs/banner/banner-3.webp";
 import ScrollAnimation from "react-animate-on-scroll";
-import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 function HomeSectionBanner() {
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  }, []);
+  const products = useSelector((state) => state.products.products);
+
   return (
     <div>
       <section className="banners mb-25">
@@ -26,13 +22,13 @@ function HomeSectionBanner() {
                 delay={0}
                 animateOnce={true}
               >
-                {loading ? (
+                {!products ? (
                   <Skeleton style={{ height: "245px" }} />
                 ) : (
                   <LazyLoadImage src={banner1} alt="" />
                 )}
                 <div className="banner-text">
-                  {loading ? (
+                  {!products ? (
                     <Skeleton count={3} style={{ width: "200px" }} />
                   ) : (
                     <h4>
@@ -42,7 +38,7 @@ function HomeSectionBanner() {
                       Products
                     </h4>
                   )}
-                  {loading ? (
+                  {!products ? (
                     <Skeleton style={{ width: "30%", height: "32px" }} />
                   ) : (
                     <a className="btn btn-xs">
@@ -59,13 +55,13 @@ function HomeSectionBanner() {
                 delay={200}
                 animateOnce={true}
               >
-                {loading ? (
+                {!products ? (
                   <Skeleton style={{ height: "245px" }} />
                 ) : (
                   <LazyLoadImage src={banner2} alt="" />
                 )}
                 <div className="banner-text">
-                  {loading ? (
+                  {!products ? (
                     <Skeleton count={3} style={{ width: "200px" }} />
                   ) : (
                     <h4>
@@ -74,7 +70,7 @@ function HomeSectionBanner() {
                       Healthy and Easy
                     </h4>
                   )}
-                  {loading ? (
+                  {!products ? (
                     <Skeleton style={{ width: "30%", height: "32px" }} />
                   ) : (
                     <a className="btn btn-xs">
@@ -91,13 +87,13 @@ function HomeSectionBanner() {
                 delay={400}
                 animateOnce={true}
               >
-                {loading ? (
+                {!products ? (
                   <Skeleton style={{ height: "245px" }} />
                 ) : (
                   <LazyLoadImage src={banner3} alt="" />
                 )}
                 <div className="banner-text">
-                  {loading ? (
+                  {!products ? (
                     <Skeleton count={3} style={{ width: "200px" }} />
                   ) : (
                     <h4>
@@ -105,7 +101,7 @@ function HomeSectionBanner() {
                       Products Online
                     </h4>
                   )}
-                  {loading ? (
+                  {!products ? (
                     <Skeleton style={{ width: "30%", height: "32px" }} />
                   ) : (
                     <a className="btn btn-xs">

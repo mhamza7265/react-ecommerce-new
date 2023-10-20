@@ -1,8 +1,26 @@
 import productData from "../productdata/ProductData";
 import HomeProductCard from "./home components/HomeProductCard";
 import ScrollAnimation from "react-animate-on-scroll";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import sendRequest from "../../utility-functions/apiManager";
+import ProductsSection from "./skeleton-components/ProductsSection";
+import { addProduct } from "../../redux/reducers/productReducer";
 
 function HomeSectionProduct({ setmodal }) {
+  const dispatch = useDispatch();
+  const products = useSelector((state) => state.products.products);
+  const reqProducts = products ? products.slice(1, 11) : null;
+
+  useEffect(() => {
+    sendRequest("get", "product/")
+      .then((res) => {
+        dispatch(addProduct(res.products));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
   return (
     <div>
       <section className="product-tabs section-padding position-relative">
@@ -123,13 +141,21 @@ function HomeSectionProduct({ setmodal }) {
               aria-labelledby="tab-one"
             >
               <div className="row product-grid-4">
-                {productData.map((item, index) => (
-                  <HomeProductCard
-                    setmodal={setmodal}
-                    id={`${index}00`}
-                    key={index}
-                  />
-                ))}
+                {!products
+                  ? productData.map((_, index) => (
+                      <ProductsSection key={index} id={`${index}00`} />
+                    ))
+                  : reqProducts.map((item, i) => (
+                      <HomeProductCard
+                        setmodal={setmodal}
+                        id={`${i}00`}
+                        key={i}
+                        name={item.name}
+                        image={item.imageUrl}
+                        price={item.price}
+                        prodId={item._id}
+                      />
+                    ))}
               </div>
               {/* <!--End product-grid-4--> */}
             </div>

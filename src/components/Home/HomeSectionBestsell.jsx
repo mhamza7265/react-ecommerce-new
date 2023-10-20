@@ -1,11 +1,13 @@
 import bestCellData from "../../Data/homeBestSellData";
-import product11 from "../../assets/imgs/shop/product-1-1.webp";
-import product12 from "../../assets/imgs/shop/product-1-2.webp";
 import Slider from "react-slick";
 import HomeBestSellCard from "./home components/HomeBestSellCard";
 import ScrollAnimation from "react-animate-on-scroll";
+import BestSellSection from "./skeleton-components/BestsellSection";
+import { useSelector } from "react-redux";
 
-function HomeSectionBestsell() {
+function HomeSectionBestsell({ setmodal }) {
+  const products = useSelector((state) => state.products.products);
+
   var settings = {
     dots: true,
     infinite: true,
@@ -131,13 +133,20 @@ function HomeSectionBestsell() {
                       id="carausel-4-columns"
                     >
                       <Slider {...settings}>
-                        {bestCellData.map((_, i) => (
-                          <HomeBestSellCard
-                            key={i}
-                            img1={product11}
-                            img2={product12}
-                          />
-                        ))}
+                        {!products
+                          ? bestCellData.map((_, i) => (
+                              <BestSellSection key={i} />
+                            ))
+                          : products.map((item, i) => (
+                              <HomeBestSellCard
+                                key={i}
+                                name={item.name}
+                                image={item.imageUrl}
+                                price={item.price}
+                                prodId={item._id}
+                                setmodal={setmodal}
+                              />
+                            ))}
                       </Slider>
                     </div>
                   </div>

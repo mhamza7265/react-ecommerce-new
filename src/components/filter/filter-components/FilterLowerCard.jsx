@@ -1,29 +1,81 @@
-import ban5 from "../../../assets/imgs/banner/banner-5.webp";
-import Skeleton from "react-loading-skeleton";
-import { useState, useEffect } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useSelector, useDispatch } from "react-redux";
+import { updateCartNavbar } from "../../../redux/reducers/navbarUpdateReducers/cartUpdateReducer";
+import sendRequest, {
+  errorToast,
+  successToast,
+} from "../../../utility-functions/apiManager";
 
-function FilterLowerCard({ className }) {
-  const [loading, setLoading] = useState(true);
+function FilterLowerCard({ name, price, image, prodId }) {
+  const products = useSelector((state) => state.products.products);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  }, []);
-
+  var productArray;
+  const handleCartClick = (e) => {
+    console.log("triggered");
+    const id = e.target.closest(".lower-card-parent").getAttribute("data");
+    const filtered = products.filter((item) => item._id == id)[0];
+    const item = localStorage.getItem("cartItem");
+    const cartItem = JSON.parse(item);
+    const cartId = localStorage.getItem("cartId");
+    const check = cartItem?.find((item) => item._id == id);
+    if (!check) {
+      if (!cartId) {
+        productArray = [filtered];
+        sendRequest("post", "cart/add", {
+          products: [
+            {
+              product: filtered._id,
+              quantity: 1,
+              price: 10000,
+              taxable: false,
+            },
+          ],
+        })
+          .then((res) => {
+            successToast("Product added into the cart!");
+            localStorage.setItem("cartId", res.cartId);
+            localStorage.setItem("cartItem", JSON.stringify(productArray));
+            dispatch(updateCartNavbar());
+          })
+          .catch((err) => {
+            errorToast(err.message);
+          });
+      } else {
+        productArray = [...cartItem, filtered];
+        const cartId = localStorage.getItem("cartId");
+        sendRequest("post", `cart/add/${cartId}`, {
+          product: {
+            product: filtered._id,
+            quantity: 1,
+            price: 10000,
+            taxable: false,
+          },
+        })
+          .then(() => {
+            successToast("Product added into the cart!");
+            localStorage.setItem("cartItem", JSON.stringify(productArray));
+            dispatch(updateCartNavbar());
+          })
+          .catch((err) => {
+            errorToast(err.message);
+          });
+      }
+    } else {
+      errorToast("Item is already in the cart!");
+    }
+  };
   return (
-    <div className={`${className}`}>
+    <div
+      className={"col-xl-3 col-lg-4 col-md-6 lower-card-parent"}
+      data={prodId}
+    >
       <div className="product-cart-wrap style-2">
         <div className="product-img-action-wrap">
           <div className="product-img">
-            {loading ? (
-              <Skeleton style={{ height: "280px", borderRadius: "15px" }} />
-            ) : (
-              <a href={void 0}>
-                <LazyLoadImage src={ban5} alt="" />
-              </a>
-            )}
+            <a href={void 0}>
+              <LazyLoadImage src={image} alt="" />
+            </a>
           </div>
         </div>
         <div className="product-content-wrap">
@@ -34,40 +86,36 @@ function FilterLowerCard({ className }) {
             ></div>
           </div>
           <div className="deals-content">
-            {loading ? (
-              <Skeleton count={6} />
-            ) : (
-              <>
-                <h2>
-                  <a href={void 0}>Seeds of Change Organic Quinoa, Brown</a>
-                </h2>
-                <div className="product-rate-cover">
-                  <div className="product-rate d-inline-block">
-                    <div
-                      className="product-rating"
-                      style={{ width: "90%" }}
-                    ></div>
-                  </div>
-                  <span className="font-small ml-5 text-muted"> (4.0)</span>
+            <>
+              <h2>
+                <a href={void 0}>{name}</a>
+              </h2>
+              <div className="product-rate-cover">
+                <div className="product-rate d-inline-block">
+                  <div
+                    className="product-rating"
+                    style={{ width: "90%" }}
+                  ></div>
                 </div>
-                <div>
-                  <span className="font-small text-muted">
-                    By <a href={void 0}>NestFood</a>
-                  </span>
+                <span className="font-small ml-5 text-muted"> (4.0)</span>
+              </div>
+              <div>
+                <span className="font-small text-muted">
+                  By <a href={void 0}>NestFood</a>
+                </span>
+              </div>
+              <div className="product-card-bottom">
+                <div className="product-price">
+                  <span>${price}</span>
+                  <span className="old-price">$33.8</span>
                 </div>
-                <div className="product-card-bottom">
-                  <div className="product-price">
-                    <span>$32.85</span>
-                    <span className="old-price">$33.8</span>
-                  </div>
-                  <div className="add-cart">
-                    <a className="add">
-                      <i className="fi-rs-shopping-cart mr-5"></i>Add{" "}
-                    </a>
-                  </div>
+                <div className="add-cart">
+                  <a href={void 0} className="add" onClick={handleCartClick}>
+                    <i className="fi-rs-shopping-cart mr-5"></i>Add{" "}
+                  </a>
                 </div>
-              </>
-            )}
+              </div>
+            </>
           </div>
         </div>
       </div>

@@ -16,7 +16,6 @@ import thumb5 from "../../assets/imgs/shop/thumbnail-5.webp";
 import thumb6 from "../../assets/imgs/shop/thumbnail-6.webp";
 import thumb7 from "../../assets/imgs/shop/thumbnail-7.webp";
 import thumb8 from "../../assets/imgs/shop/thumbnail-8.webp";
-import prod1 from "../../assets/imgs/shop/product-16-1.webp";
 import prod2 from "../../assets/imgs/shop/product-16-2.webp";
 import prod3 from "../../assets/imgs/shop/product-16-3.webp";
 import prod4 from "../../assets/imgs/shop/product-16-4.webp";
@@ -26,6 +25,13 @@ import prod7 from "../../assets/imgs/shop/product-16-7.webp";
 import { Modal } from "react-bootstrap";
 import Slider from "react-slick";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useSelector, useDispatch } from "react-redux";
+import sendRequest, {
+  errorToast,
+  successToast,
+} from "../../utility-functions/apiManager";
+import { useToast } from "@chakra-ui/react";
+import { updateCartNavbar } from "../../redux/reducers/navbarUpdateReducers/cartUpdateReducer";
 
 function Home() {
   const [nav1, setNav1] = useState(null);
@@ -34,11 +40,71 @@ function Home() {
   const [slider2, setSlider2] = useState(null);
   const [count, setCount] = useState(0);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const products = useSelector((state) => state.products.products);
+  const singleProduct = useSelector((state) => state.singleProduct.product);
+  const toast = useToast();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     setNav1(slider1);
     setNav2(slider2);
   });
+
+  var productArray;
+  const handleCartClick = (e) => {
+    console.log("triggered");
+    const id = e.target.closest(".single-product-parent").getAttribute("data");
+    const filtered = products.filter((item) => item._id == id)[0];
+    const item = localStorage.getItem("cartItem");
+    const cartItem = JSON.parse(item);
+    const cartId = localStorage.getItem("cartId");
+    const check = cartItem?.find((item) => item._id == id);
+    if (!check) {
+      if (!cartId) {
+        productArray = [filtered];
+        sendRequest("post", "cart/add", {
+          products: [
+            {
+              product: filtered._id,
+              quantity: 1,
+              price: 10000,
+              taxable: false,
+            },
+          ],
+        })
+          .then((res) => {
+            successToast("Product added into the cart!");
+            localStorage.setItem("cartId", res.cartId);
+            localStorage.setItem("cartItem", JSON.stringify(productArray));
+            dispatch(updateCartNavbar());
+          })
+          .catch((err) => {
+            errorToast(err.message);
+          });
+      } else {
+        productArray = [...cartItem, filtered];
+        const cartId = localStorage.getItem("cartId");
+        sendRequest("post", `cart/add/${cartId}`, {
+          product: {
+            product: filtered._id,
+            quantity: 1,
+            price: 10000,
+            taxable: false,
+          },
+        })
+          .then(() => {
+            successToast("Product added into the cart!");
+            localStorage.setItem("cartItem", JSON.stringify(productArray));
+            dispatch(updateCartNavbar());
+          })
+          .catch((err) => {
+            errorToast(err.message);
+          });
+      }
+    } else {
+      errorToast("Item is already in the cart!");
+    }
+  };
 
   const settingsMain = {
     dots: false,
@@ -74,7 +140,7 @@ function Home() {
           {/* <!--End banners--> */}
           <HomeSectionProduct setmodal={setModalIsOpen} />
           {/* <!--Products Tabs--> */}
-          <HomeSectionBestsell />
+          <HomeSectionBestsell setmodal={setModalIsOpen} />
           {/* <!--End Best Sales--> */}
           <HomeSectionEndDeal />
           {/* <!--End Deals--> */}
@@ -91,7 +157,10 @@ function Home() {
           >
             <Modal.Header style={{ border: "none" }} closeButton></Modal.Header>
             <Modal.Body>
-              <div className="row">
+              <div
+                className="row single-product-parent"
+                data={singleProduct?._id}
+              >
                 <div className="col-md-6 col-sm-12 col-xs-12 mb-md-0 mb-sm-5">
                   <div className="detail-gallery">
                     <span className="zoom-icon">
@@ -105,7 +174,10 @@ function Home() {
                         ref={(slider) => setSlider1(slider)}
                       >
                         <div className="single-prod">
-                          <LazyLoadImage src={prod1} alt="product image" />
+                          <LazyLoadImage
+                            src={singleProduct?.imageUrl}
+                            alt="product image"
+                          />
                         </div>
                         <div className="single-prod">
                           <LazyLoadImage src={prod2} alt="product image" />
@@ -167,7 +239,7 @@ function Home() {
                         href="shop-product-right.html"
                         className="text-heading"
                       >
-                        Seeds of Change Organic Quinoa, Brown
+                        {singleProduct?.name}
                       </a>
                     </h3>
                     <div className="product-detail-rating">
@@ -186,7 +258,9 @@ function Home() {
                     </div>
                     <div className="clearfix product-price-cover">
                       <div className="product-price primary-color float-left">
-                        <span className="current-price text-brand">$38</span>
+                        <span className="current-price text-brand">
+                          ${singleProduct?.price}
+                        </span>
                         <span>
                           <span className="save-price font-md color3 ml-15">
                             26% Off
@@ -217,8 +291,8 @@ function Home() {
                       </div>
                       <div className="product-extra-link2">
                         <button
-                          type="submit"
                           className="button button-add-to-cart"
+                          onClick={handleCartClick}
                         >
                           <i className="fi-rs-shopping-cart"></i>Add to cart
                         </button>

@@ -16,6 +16,20 @@
   }
 }
 
+span[aria-label="Loading Spinner"] > span {
+  width: 30px !important;
+  height: 30px !important;
+}
+
+.pw-toggle-eye,
+.pw-toggle-eye:hover {
+  position: absolute;
+  top: 50%;
+  left: 92%;
+  transform: translateY(-50%);
+  color: gray;
+}
+
 .custom-modal .modal-dialog {
   /* margin-top: 50px; */
   margin-top: 50px;

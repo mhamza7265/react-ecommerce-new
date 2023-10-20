@@ -10,10 +10,10 @@ import Wishlist from "./components/wishlist/Wishlist";
 import Compare from "./components/compare/Compare";
 import Account from "./components/account/Account";
 import Checkout from "./components/checkout/Checkout";
-import Login from "./components/login/Login";
-import Register from "./components/register/Register";
-import ForgotPassword from "./components/forgot-password/ForgotPassword";
-import ResetPassword from "./components/reset-password/ResetPassword";
+import Login from "./components/Auth/login/Login";
+import Register from "./components/Auth/register/Register";
+import ForgotPassword from "./components/Auth/forgot-password/ForgotPassword";
+import ResetPassword from "./components/Auth/reset-password/ResetPassword";
 import Contact from "./components/contact/Contact";
 import NotFound404 from "./components/404 not found/NotFound404";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -22,8 +22,25 @@ import Filter from "./components/filter/Filter";
 import About from "./components/about page/About";
 import Preloader from "./common/preloader/Preloader";
 import ScrollToTop from "./common/ScrollToTop";
+import HaveAuth from "./components/Auth/check-auth/HaveAuth";
+import { useDispatch } from "react-redux";
+import { useEffect } from "react";
+import sendRequest from "./utility-functions/apiManager";
+import { addProduct } from "./redux/reducers/productReducer";
 
 function App() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    sendRequest("get", "product/")
+      .then((res) => {
+        dispatch(addProduct(res.products));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   return (
     <BrowserRouter>
       <Routes>
@@ -31,7 +48,7 @@ function App() {
           path="/"
           element={
             <Preloader state={true}>
-              <Home />{" "}
+              <Home />
             </Preloader>
           }
         />
@@ -55,7 +72,9 @@ function App() {
           path="/account"
           element={
             <Preloader>
-              <Account />
+              <HaveAuth>
+                <Account />
+              </HaveAuth>
             </Preloader>
           }
         />

@@ -1,6 +1,6 @@
-import resetpwicon from "../../assets/imgs/page/reset_password.svg";
-import Footer from "../footer/footer";
-import Navbar from "../navbar/Navbar";
+import resetpwicon from "../../../assets/imgs/page/reset_password.svg";
+import Footer from "../../footer/footer";
+import Navbar from "../../navbar/Navbar";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 function ResetPassword() {

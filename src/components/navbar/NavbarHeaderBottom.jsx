@@ -6,15 +6,11 @@ import NavbarMainMenu from "./NavbarMainMenu";
 import { useState, useEffect, useRef } from "react";
 import Skeleton from "react-loading-skeleton";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useSelector } from "react-redux";
 
 function NavbarHeaderBottom({ setactive, isactive }) {
+  const products = useSelector((state) => state.products.products);
   const [sticky, setSticky] = useState(false);
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  }, []);
 
   const navbarOffset = useRef();
 
@@ -39,7 +35,7 @@ function NavbarHeaderBottom({ setactive, isactive }) {
       >
         <div className="container">
           <div className="header-wrap header-space-between position-relative">
-            {loading ? (
+            {!products ? (
               <div className="row justify-content-between top-skeleton w-100 h-auto my-2">
                 <Skeleton style={{ width: "100%", height: "40px" }} />
                 <Skeleton

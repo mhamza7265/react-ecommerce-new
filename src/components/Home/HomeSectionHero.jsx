@@ -1,17 +1,11 @@
 import slider1 from "../../assets/imgs/slider/slider-1.webp";
 import slider2 from "../../assets/imgs/slider/slider-2.webp";
 import Slider from "react-slick";
-import { useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
+import { useSelector } from "react-redux";
 
 function HomeSectionHero() {
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  }, []);
+  const products = useSelector((state) => state.products.products);
 
   var settings = {
     dots: true,
@@ -30,7 +24,7 @@ function HomeSectionHero() {
         <div className="container">
           <div className="home-slide-cover mt-30">
             <div className="hero-slider-1 style-4 dot-style-1 dot-style-1-position-1">
-              {loading ? (
+              {!products ? (
                 <div
                   style={{
                     height: "467px",

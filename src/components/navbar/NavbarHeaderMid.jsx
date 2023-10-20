@@ -3,27 +3,82 @@ import compicon from "../../assets/imgs/theme/icons/icon-compare.svg";
 import wishicon from "../../assets/imgs/theme/icons/icon-heart.svg";
 import carticon from "../../assets/imgs/theme/icons/icon-cart.svg";
 import accnticon from "../../assets/imgs/theme/icons/icon-user.svg";
-import thumb3 from "../../assets/imgs/shop/thumbnail-3.webp";
-import thumb2 from "../../assets/imgs/shop/thumbnail-2.webp";
 import { Link } from "react-router-dom";
-import Wishlist from "../wishlist/Wishlist";
 import { useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import sendRequest from "../../utility-functions/apiManager";
+import { useSelector } from "react-redux";
+import NavbarMidCartDropdown from "./navbar-components/NavbarMidCartDropdown";
+import { useToast } from "@chakra-ui/react";
 
 function NavbarHeaderMid() {
+  const products = useSelector((state) => state.products.products);
   const [loading, setLoading] = useState(true);
+  const [wishlist, setWishlist] = useState(null);
+  const [cart, setCart] = useState(null);
+  const toast = useToast();
+  const updateWishlist = useSelector(
+    (state) => state.updateWishlistNavbar.number
+  );
+  const productsToCompare = useSelector(
+    (state) => state.compare.productsToCompare
+  );
+
+  const updateCart = useSelector((state) => state.updateCartNavbar.number);
+
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
     }, 5000);
   }, []);
+
+  useEffect(() => {
+    sendRequest("get", "wishlist")
+      .then((res) => {
+        console.log(res);
+        setWishlist(res.wishlist);
+      })
+      .catch((err) => console.log(err));
+  }, [updateWishlist]);
+
+  useEffect(() => {
+    const item = localStorage.getItem("cartItem");
+    const cartItem = JSON.parse(item);
+    setCart(cartItem);
+  }, [updateCart]);
+
+  const handleRemoveClick = (e) => {
+    const id = e.target
+      .closest(".cart-dropdown-single-parent")
+      .getAttribute("data");
+    const cartId = localStorage.getItem("cartId");
+    sendRequest("delete", `cart/delete/${cartId}/${id}`)
+      .then(() => {
+        toast({
+          title: "Product removed from cart!",
+          position: "top-right",
+          isClosable: true,
+          duration: 3000,
+          status: "success",
+        });
+        const item = localStorage.getItem("cartItem");
+        const cartItem = JSON.parse(item);
+        const filtered = cartItem.filter((item) => item._id !== id);
+        localStorage.setItem("cartItem", JSON.stringify(filtered));
+        setCart(filtered);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <div>
       <div className="header-middle header-middle-ptb-1 d-none d-lg-block">
         <div className="container">
           <div className="header-wrap">
-            {loading ? (
+            {!products ? (
               <div
                 style={{
                   border: "2px solid #bce3c9",
@@ -93,7 +148,9 @@ function NavbarHeaderMid() {
                             alt="Nest"
                             src={compicon}
                           />
-                          <span className="pro-count blue">3</span>
+                          <span className="pro-count blue">
+                            {productsToCompare ? productsToCompare.length : 0}
+                          </span>
                         </Link>
                         <Link to="/compare">
                           <span className="lable ml-0">Compare</span>
@@ -106,7 +163,9 @@ function NavbarHeaderMid() {
                             alt="Nest"
                             src={wishicon}
                           />
-                          <span className="pro-count blue">6</span>
+                          <span className="pro-count blue">
+                            {wishlist ? wishlist.length : 0}
+                          </span>
                         </Link>
                         <Link to="/Wishlist">
                           <span className="lable">Wishlist</span>
@@ -115,68 +174,53 @@ function NavbarHeaderMid() {
                       <div className="header-action-icon-2">
                         <Link to="/cart" className="mini-cart-icon">
                           <LazyLoadImage alt="Nest" src={carticon} />
-                          <span className="pro-count blue">2</span>
+                          <span className="pro-count blue">
+                            {cart ? cart.length : 0}
+                          </span>
                         </Link>
                         <Link to="/cart">
                           <span className="lable">Cart</span>
                         </Link>
-                        {loading ? (
+                        {!products ? (
                           <Skeleton
                             style={{ borderRadius: "15px", height: "250px" }}
                           />
                         ) : (
-                          <div className="cart-dropdown-wrap cart-dropdown-hm2">
+                          <div
+                            className="cart-dropdown-wrap cart-dropdown-hm2"
+                            style={{
+                              zIndex: 1,
+                              height: "400px",
+                              overflowY: "auto",
+                            }}
+                          >
                             <ul>
-                              <li>
-                                <div className="shopping-cart-img">
-                                  <a href={void 0}>
-                                    <LazyLoadImage alt="Nest" src={thumb3} />
-                                  </a>
-                                </div>
-                                <div className="shopping-cart-title">
-                                  <h4>
-                                    <a href={void 0}>Daisy Casual Bag</a>
-                                  </h4>
-                                  <h4>
-                                    <span>1 × </span>$800.00
-                                  </h4>
-                                </div>
-                                <div className="shopping-cart-delete">
-                                  <a href={void 0}>
-                                    <i className="fi-rs-cross-small"></i>
-                                  </a>
-                                </div>
-                              </li>
-                              <li>
-                                <div className="shopping-cart-img">
-                                  <a href={void 0}>
-                                    <LazyLoadImage alt="Nest" src={thumb2} />
-                                  </a>
-                                </div>
-                                <div className="shopping-cart-title">
-                                  <h4>
-                                    <a href={void 0}>Corduroy Shirts</a>
-                                  </h4>
-                                  <h4>
-                                    <span>1 × </span>$3200.00
-                                  </h4>
-                                </div>
-                                <div className="shopping-cart-delete">
-                                  <a href={void 0}>
-                                    <i className="fi-rs-cross-small"></i>
-                                  </a>
-                                </div>
-                              </li>
+                              {cart
+                                ? cart.map((item, i) => (
+                                    <NavbarMidCartDropdown
+                                      key={i}
+                                      image={item.imageUrl}
+                                      name={item.name}
+                                      price={item.price}
+                                      prodId={item._id}
+                                      delItem={handleRemoveClick}
+                                    />
+                                  ))
+                                : null}
                             </ul>
                             <div className="shopping-cart-footer">
-                              <div className="shopping-cart-total">
+                              {/* <div className="shopping-cart-total">
                                 <h4>
                                   Total <span>$4000.00</span>
                                 </h4>
-                              </div>
+                              </div> */}
                               <div className="shopping-cart-button">
-                                <a className="outline">View cart</a>
-                                <a href={void 0}>Checkout</a>
+                                <Link to={"/cart"} className="outline">
+                                  View cart
+                                </Link>
+                                <Link to={"/checkout"} href={void 0}>
+                                  Checkout
+                                </Link>
                               </div>
                             </div>
                           </div>
@@ -193,7 +237,7 @@ function NavbarHeaderMid() {
                         <Link to="/account">
                           <span className="lable ml-0">Account</span>
                         </Link>
-                        <div className="cart-dropdown-wrap cart-dropdown-hm2 account-dropdown">
+                        {/* <div className="cart-dropdown-wrap cart-dropdown-hm2 account-dropdown">
                           <ul>
                             <li>
                               <a href={void 0}>
@@ -232,7 +276,7 @@ function NavbarHeaderMid() {
                               </a>
                             </li>
                           </ul>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>

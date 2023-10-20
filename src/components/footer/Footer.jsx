@@ -20,17 +20,13 @@ import twittericon from "../../assets/imgs/theme/icons/icon-twitter-white.svg";
 import fbicon from "../../assets/imgs/theme/icons/icon-facebook-white.svg";
 import phonecallicon from "../../assets/imgs/theme/icons/phone-call.svg";
 import ScrollAnimation from "react-animate-on-scroll";
-import { useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useSelector } from "react-redux";
 
 function Footer() {
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  }, []);
+  const products = useSelector((state) => state.products.products);
+
   return (
     <footer className="main">
       <ScrollAnimation
@@ -42,7 +38,7 @@ function Footer() {
           <div className="row">
             <div className="col-lg-12">
               <div className="row">
-                {loading ? (
+                {!products ? (
                   <div
                     style={{
                       height: "467px",

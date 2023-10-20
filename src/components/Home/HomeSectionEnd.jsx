@@ -1,14 +1,15 @@
-import thumb1 from "../../assets/imgs/shop/thumbnail-1.webp";
-import {
-  recentlyAdded,
-  topRated,
-  topSelling,
-  trendingProducts,
-} from "../../Data/homeEndSectionData";
 import HomeEndSection from "./home components/HomeEndSection";
 import ScrollAnimation from "react-animate-on-scroll";
+import { useSelector } from "react-redux";
+import End from "./skeleton-components/End";
 
 function HomeSectionEnd() {
+  const products = useSelector((state) => state.products.products);
+  const fourProductsOne = products ? products.slice(1, 4) : null;
+  const fourProductsTwo = products ? products.slice(3, 6) : null;
+  const fourProductsThree = products ? products.slice(4, 7) : null;
+  const fourProductsFour = products ? products.slice(5, 8) : null;
+
   return (
     <div>
       <section className="section-padding mb-30">
@@ -24,9 +25,18 @@ function HomeSectionEnd() {
                 Top Selling
               </h4>
               <div className="product-list-small animated animated">
-                {topSelling.map((_, i) => (
-                  <HomeEndSection key={i} img1={thumb1} />
-                ))}
+                {products ? (
+                  fourProductsOne.map((item, i) => (
+                    <HomeEndSection
+                      key={i}
+                      image={item.imageUrl}
+                      name={item.name}
+                      price={item.price}
+                    />
+                  ))
+                ) : (
+                  <End />
+                )}
               </div>
             </ScrollAnimation>
             <ScrollAnimation
@@ -39,9 +49,18 @@ function HomeSectionEnd() {
                 Trending Products
               </h4>
               <div className="product-list-small animated animated">
-                {trendingProducts.map((_, i) => (
-                  <HomeEndSection key={i} img1={thumb1} />
-                ))}
+                {products ? (
+                  fourProductsTwo.map((item, i) => (
+                    <HomeEndSection
+                      key={i}
+                      image={item.imageUrl}
+                      name={item.name}
+                      price={item.price}
+                    />
+                  ))
+                ) : (
+                  <End />
+                )}
               </div>
             </ScrollAnimation>
             <ScrollAnimation
@@ -54,9 +73,18 @@ function HomeSectionEnd() {
                 Recently added
               </h4>
               <div className="product-list-small animated animated">
-                {recentlyAdded.map((_, i) => (
-                  <HomeEndSection key={i} img1={thumb1} />
-                ))}
+                {products ? (
+                  fourProductsThree.map((item, i) => (
+                    <HomeEndSection
+                      key={i}
+                      image={item.imageUrl}
+                      name={item.name}
+                      price={item.price}
+                    />
+                  ))
+                ) : (
+                  <End />
+                )}
               </div>
             </ScrollAnimation>
             <ScrollAnimation
@@ -69,9 +97,18 @@ function HomeSectionEnd() {
                 Top Rated
               </h4>
               <div className="product-list-small animated animated">
-                {topRated.map((_, i) => (
-                  <HomeEndSection key={i} img1={thumb1} />
-                ))}
+                {products ? (
+                  fourProductsFour.map((item, i) => (
+                    <HomeEndSection
+                      key={i}
+                      image={item.imageUrl}
+                      name={item.name}
+                      price={item.price}
+                    />
+                  ))
+                ) : (
+                  <End />
+                )}
               </div>
             </ScrollAnimation>
           </div>

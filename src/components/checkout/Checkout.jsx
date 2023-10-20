@@ -2,14 +2,46 @@ import zappericon from "../../assets/imgs/theme/icons/payment-zapper.svg";
 import paymaster from "../../assets/imgs/theme/icons/payment-master.svg";
 import visaicon from "../../assets/imgs/theme/icons/payment-visa.svg";
 import paypalicon from "../../assets/imgs/theme/icons/payment-paypal.svg";
-import product11 from "../../assets/imgs/shop/product-1-1.webp";
-import product21 from "../../assets/imgs/shop/product-2-1.webp";
-import product31 from "../../assets/imgs/shop/product-3-1.webp";
 import Navbar from "../navbar/Navbar";
 import Footer from "../footer/footer";
-import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import CartItem from "./checkout-components/CartItem";
+import sendRequest, {
+  errorToast,
+  successToast,
+} from "../../utility-functions/apiManager";
 
 function Checkout() {
+  const [cart, setCart] = useState(null);
+  const [sum, setSum] = useState(0);
+  const updateCart = useSelector((state) => state.updateCartNavbar.number);
+
+  useEffect(() => {
+    const item = localStorage.getItem("cartItem");
+    const cartItem = JSON.parse(item);
+    setCart(cartItem);
+  }, [updateCart]);
+
+  useEffect(() => {
+    let sum = cart?.reduce((accomulator, item) => {
+      return accomulator + item.price;
+    }, 0);
+    setSum(sum);
+  }, [updateCart][cart]);
+
+  const handleOrderClick = () => {
+    const cartId = localStorage.getItem("cartId");
+    sendRequest("post", "order/add", { cartId: cartId, total: sum })
+      .then((res) => {
+        successToast(res.message);
+        console.log(res);
+      })
+      .catch((err) => {
+        errorToast(err);
+      });
+  };
+
   return (
     <div>
       <Navbar />
@@ -30,8 +62,9 @@ function Checkout() {
             <h1 className="heading-2 mb-10">Checkout</h1>
             <div className="d-flex justify-content-between">
               <h6 className="text-body">
-                There are <span className="text-brand">3</span> products in your
-                cart
+                There are
+                <span className="text-brand">{cart ? cart.length : 0}</span>
+                products in your cart
               </h6>
             </div>
           </div>
@@ -40,7 +73,7 @@ function Checkout() {
           <div className="col-lg-7">
             <div className="row mb-50">
               <div className="col-lg-6 mb-sm-15 mb-lg-0 mb-md-3">
-                <div className="toggle_info">
+                {/* <div className="toggle_info">
                   <span>
                     <i className="fi-rs-user mr-10"></i>
                     <span className="text-muted font-lg">
@@ -50,7 +83,7 @@ function Checkout() {
                       Click here to login
                     </a>
                   </span>
-                </div>
+                </div> */}
                 <div
                   className="panel-collapse collapse login_form"
                   id="loginform"
@@ -874,108 +907,28 @@ function Checkout() {
             <div className="border p-40 cart-totals ml-30 mb-50">
               <div className="d-flex align-items-end justify-content-between mb-30">
                 <h4>Your Order</h4>
-                <h6 className="text-muted">Subtotal</h6>
+                <h6 className="text-muted">Subtotal : {sum}</h6>
               </div>
               <div className="divider-2 mb-30"></div>
               <div className="table-responsive order_table checkout">
                 <table className="table no-border">
                   <tbody>
-                    <tr>
-                      <td className="image product-thumbnail">
-                        <LazyLoadImage src={product11} alt="#" />
-                      </td>
-                      <td>
-                        <h6 className="w-160 mb-5">
-                          <a className="text-heading">
-                            Yidarton Women Summer Blue
-                          </a>
-                        </h6>
-                        <div className="product-rate-cover">
-                          <div className="product-rate d-inline-block">
-                            <div
-                              className="product-rating"
-                              style={{ width: "90%" }}
-                            ></div>
-                          </div>
-                          <span className="font-small ml-5 text-muted">
-                            {" "}
-                            (4.0)
-                          </span>
-                        </div>
-                      </td>
-                      <td>
-                        <h6 className="text-muted pl-20 pr-20">x 1</h6>
-                      </td>
-                      <td>
-                        <h4 className="text-brand">$13.3</h4>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="image product-thumbnail">
-                        <LazyLoadImage src={product21} alt="#" />
-                      </td>
-                      <td>
-                        <h6 className="w-160 mb-5">
-                          <a className="text-heading">
-                            Seeds of Change Organic Quinoa
-                          </a>
-                        </h6>
-                        <div className="product-rate-cover">
-                          <div className="product-rate d-inline-block">
-                            <div
-                              className="product-rating"
-                              style={{ width: "90%" }}
-                            ></div>
-                          </div>
-                          <span className="font-small ml-5 text-muted">
-                            {" "}
-                            (4.0)
-                          </span>
-                        </div>
-                      </td>
-                      <td>
-                        <h6 className="text-muted pl-20 pr-20">x 1</h6>
-                      </td>
-                      <td>
-                        <h4 className="text-brand">$15.0</h4>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="image product-thumbnail">
-                        <LazyLoadImage src={product31} alt="#" />
-                      </td>
-                      <td>
-                        <h6 className="w-160 mb-5">
-                          <a className="text-heading">
-                            Angie’s Boomchickapop Sweet{" "}
-                          </a>
-                        </h6>
-                        <div className="product-rate-cover">
-                          <div className="product-rate d-inline-block">
-                            <div
-                              className="product-rating"
-                              style={{ width: "90%" }}
-                            ></div>
-                          </div>
-                          <span className="font-small ml-5 text-muted">
-                            {" "}
-                            (4.0)
-                          </span>
-                        </div>
-                      </td>
-                      <td>
-                        <h6 className="text-muted pl-20 pr-20">x 1</h6>
-                      </td>
-                      <td>
-                        <h4 className="text-brand">$17.2</h4>
-                      </td>
-                    </tr>
+                    {cart
+                      ? cart.map((item, i) => (
+                          <CartItem
+                            key={i}
+                            name={item.name}
+                            image={item.imageUrl}
+                            price={item.price}
+                          />
+                        ))
+                      : null}
                   </tbody>
                 </table>
               </div>
             </div>
             <div className="payment ml-30">
-              <h4 className="mb-30">Payment</h4>
+              {/* <h4 className="mb-30">Payment</h4>
               <div className="payment_option">
                 <div className="custome-radio">
                   <input
@@ -1038,8 +991,12 @@ function Checkout() {
                 <LazyLoadImage className="mr-15" src={visaicon} alt="" />
                 <LazyLoadImage className="mr-15" src={paymaster} alt="" />
                 <LazyLoadImage src={zappericon} alt="" />
-              </div>
-              <a className="btn btn-fill-out btn-block mt-30">
+              </div> */}
+              <a
+                href={void 0}
+                className="btn btn-fill-out btn-block mt-30"
+                onClick={handleOrderClick}
+              >
                 Place an Order<i className="fi-rs-sign-out ml-15"></i>
               </a>
             </div>

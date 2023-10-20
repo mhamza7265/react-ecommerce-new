@@ -2,21 +2,17 @@ import frflag from "../../assets/imgs/theme/flag-fr.png";
 import dtflag from "../../assets/imgs/theme/flag-dt.png";
 import ruflag from "../../assets/imgs/theme/flag-ru.png";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useSelector } from "react-redux";
 
 function NavbarHeaderTop() {
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  }, []);
+  const products = useSelector((state) => state.products.products);
+
   return (
     <div>
       <div className="header-top header-top-ptb-1 d-none d-lg-block">
-        {loading ? (
+        {!products ? (
           <div className="row justify-content-between top-skeleton">
             <Skeleton style={{ width: "100%" }} />
             <Skeleton style={{ width: "100%" }} />

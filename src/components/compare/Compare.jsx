@@ -1,60 +1,90 @@
-import product11 from "../../assets/imgs/shop/product-1-1.webp";
-import product21 from "../../assets/imgs/shop/product-2-1.webp";
-import product31 from "../../assets/imgs/shop/product-3-1.webp";
 import Footer from "../footer/footer";
 import Navbar from "../navbar/Navbar";
-import Skeleton from "react-loading-skeleton";
 import { useState, useEffect } from "react";
-import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useSelector } from "react-redux";
+import CompareRow from "./compare-component/CompareRow";
+import CompareSkeleton from "./skeleton-components/CompareSkeleton";
 
 function Compare() {
-  const [loading, setLoading] = useState(true);
+  const productsToCompare = useSelector(
+    (state) => state.compare.productsToCompare
+  );
 
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  }, []);
+  console.log(productsToCompare);
 
   return (
     <div>
       <Navbar />
-      <div className="page-header breadcrumb-wrap">
-        <div className="container">
-          {loading ? (
-            <div className="row path-breadcrumb">
-              <Skeleton />
-              <Skeleton />
-              <Skeleton />
-            </div>
-          ) : (
-            <div className="breadcrumb">
-              <a rel="nofollow">
-                <i className="fi-rs-home mr-5"></i>Home
-              </a>
-              <span></span> Shop <span></span> Compare
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="container mb-80 mt-50">
-        <div className="row">
-          <div className="col-xl-10 col-lg-12 m-auto">
-            {loading ? (
-              <div>
-                <Skeleton style={{ height: "40px", marginBottom: "20px" }} />
-                <Skeleton style={{ marginBottom: "30px" }} />
+      {productsToCompare ? (
+        <>
+          <div className="page-header breadcrumb-wrap">
+            <div className="container">
+              <div className="breadcrumb">
+                <a rel="nofollow">
+                  <i className="fi-rs-home mr-5"></i>Home
+                </a>
+                <span></span> Shop <span></span> Compare
               </div>
-            ) : (
-              <>
-                <h1 className="heading-2 mb-10">Products Compare</h1>
-                <h6 className="text-body mb-40">
-                  There are <span className="text-brand">3</span> products to
-                  compare
-                </h6>
-              </>
-            )}
-            <div className="table-responsive">
+            </div>
+          </div>
+          <div className="container mb-80 mt-50">
+            <div className="row">
+              <div className="col-xl-10 col-lg-12 m-auto">
+                <>
+                  <h1 className="heading-2 mb-10">Products Compare</h1>
+                  <h6 className="text-body mb-40">
+                    There are{" "}
+                    <span className="text-brand">
+                      {productsToCompare ? productsToCompare.length : 0}
+                    </span>{" "}
+                    products to compare
+                  </h6>
+                </>
+                <div className="table-responsive">
+                  <table className="table text-center table-compare">
+                    <tbody>
+                      <tr className="pr_image">
+                        <td className="text-muted font-sm fw-600 font-heading mw-200">
+                          "Preview"
+                        </td>
+                        <td className="text-muted font-sm fw-600 font-heading">
+                          "Name"
+                        </td>
+                        <td className="text-muted font-sm fw-600 font-heading">
+                          "Price"
+                        </td>
+                        <td className="text-muted font-sm fw-600 font-heading">
+                          "Rating"
+                        </td>
+                        <td className="text-muted font-sm fw-600 font-heading">
+                          Description
+                        </td>
+                        <td className="text-muted font-sm fw-600 font-heading">
+                          "Stock status"
+                        </td>
+                        <td className="text-muted font-sm fw-600 font-heading">
+                          "Weight"
+                        </td>
+                        <td className="text-muted font-sm fw-600 font-heading">
+                          "Buy now"
+                        </td>
+                      </tr>
+                      {productsToCompare
+                        ? productsToCompare.map((item, i) => (
+                            <CompareRow
+                              key={i}
+                              image={item.imageUrl}
+                              name={item.name}
+                              price={item.price}
+                              prodId={item._id}
+                              description={item.description}
+                            />
+                          ))
+                        : null}
+                    </tbody>
+                  </table>
+                </div>
+                {/* <div className="table-responsive">
               <table className="table text-center table-compare">
                 <tbody>
                   <tr className="pr_image">
@@ -431,10 +461,15 @@ function Compare() {
                   </tr>
                 </tbody>
               </table>
+            </div> */}
+                <div className="d-flex"></div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      ) : (
+        <CompareSkeleton />
+      )}
       <Footer />
     </div>
   );

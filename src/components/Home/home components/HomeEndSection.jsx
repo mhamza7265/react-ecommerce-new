@@ -3,7 +3,7 @@ import { LazyLoadImage } from "react-lazy-load-image-component";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-function HomeEndSection({ img1 }) {
+function HomeEndSection({ image, name }) {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setTimeout(() => {
@@ -19,7 +19,7 @@ function HomeEndSection({ img1 }) {
           />
         ) : (
           <a href={void 0}>
-            <LazyLoadImage src={img1} alt="" />
+            <LazyLoadImage src={image} alt="" />
           </a>
         )}
       </figure>
@@ -28,7 +28,7 @@ function HomeEndSection({ img1 }) {
           {loading ? (
             <Skeleton count={2} style={{ width: "50%" }} />
           ) : (
-            <a href={void 0}>Nestle Original Coffee-Mate Coffee Creamer</a>
+            <a href={void 0}>{name}</a>
           )}
         </h6>
         {loading ? (

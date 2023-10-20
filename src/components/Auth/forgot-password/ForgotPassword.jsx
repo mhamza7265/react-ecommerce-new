@@ -1,6 +1,6 @@
-import forgotpwicon from "../../assets/imgs/page/forgot_password.svg";
-import Footer from "../footer/footer";
-import Navbar from "../navbar/Navbar";
+import forgotpwicon from "../../../assets/imgs/page/forgot_password.svg";
+import Footer from "../../footer/footer";
+import Navbar from "../../navbar/Navbar";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 function ForgotPassword() {

@@ -3,8 +3,23 @@ import Slider from "react-slick";
 import homeCategoryData from "../../Data/homeCategorySectionData";
 import HomeCategorySectionCard from "./home components/HomeCategorySectionCard";
 import ScrollAnimation from "react-animate-on-scroll";
+import { useEffect } from "react";
+import sendRequest from "../../utility-functions/apiManager";
+import { useSelector, useDispatch } from "react-redux";
+import { addCategory } from "../../redux/reducers/categoryReducer";
+import CategorySection from "./skeleton-components/CategorySection";
 
 function HomeSectionCategory() {
+  const dispatch = useDispatch();
+  const categorylist = useSelector((state) => state.categories.categories);
+  useEffect(() => {
+    sendRequest("get", "category/list")
+      .then((res) => {
+        dispatch(addCategory(res.categories));
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   var settings = {
     dots: false,
     infinite: true,
@@ -73,9 +88,19 @@ function HomeSectionCategory() {
           <div className="carausel-10-columns-cover position-relative">
             <div className="carausel-10-columns" id="carausel-10-columns">
               <Slider {...settings}>
-                {homeCategoryData.map((_, i) => (
-                  <HomeCategorySectionCard key={i} id={`${i}00`} img1={cat2} />
-                ))}
+                {categorylist == null || categorylist == null
+                  ? homeCategoryData.map((_, i) => (
+                      <CategorySection key={i} id={`${i}00`} />
+                    ))
+                  : categorylist.map((item, i) => (
+                      <HomeCategorySectionCard
+                        key={i}
+                        id={`${i}00`}
+                        img1={cat2}
+                        name={item.name}
+                        quantity={item.products}
+                      />
+                    ))}
               </Slider>
             </div>
           </div>

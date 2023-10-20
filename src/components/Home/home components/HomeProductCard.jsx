@@ -1,22 +1,123 @@
-import product21 from "../../../assets/imgs/shop/product-2-1.webp";
-import product22 from "../../../assets/imgs/shop/product-2-2.webp";
 import ScrollAnimation from "react-animate-on-scroll";
-import { useEffect, useState } from "react";
-import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import sendRequest, {
+  errorToast,
+  successToast,
+} from "../../../utility-functions/apiManager";
+import { useToast } from "@chakra-ui/react";
+import { useDispatch, useSelector } from "react-redux";
+import { addCompareProduct } from "../../../redux/reducers/compareProductsReducer";
+import { updateWishlistNavbar } from "../../../redux/reducers/navbarUpdateReducers/wishlistUpdateReducer";
+import { updateCartNavbar } from "../../../redux/reducers/navbarUpdateReducers/cartUpdateReducer";
+import { addSingleProduct } from "../../../redux/reducers/singleProductReducer";
 
-function HomeProductCard({ setmodal, id }) {
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  }, []);
+function HomeProductCard({ setmodal, id, image, name, price, prodId }) {
+  const dispatch = useDispatch();
+  const compared = useSelector((state) => state.compare.productsToCompare);
+  const products = useSelector((state) => state.products.products);
+  const updateWishlist = useSelector(
+    (state) => state.updateWishlistNavbar.number
+  );
+
+  const handleWishlistClick = (e) => {
+    const id = e.target.closest(".product-parent").getAttribute("data");
+    console.log(id);
+    sendRequest("post", "wishlist", { product: id, isLiked: true })
+      .then((res) => {
+        console.log(res);
+        successToast(res.message);
+        dispatch(updateWishlistNavbar());
+      })
+      .catch((err) => {
+        console.log(err);
+        errorToast(err.message);
+      });
+  };
+
+  const handleCompareClick = (e) => {
+    const id = e.target.closest(".product-parent").getAttribute("data");
+    const filteredProduct = products.find((item) => item._id == id);
+    const filtered = compared.find((item) => item == id);
+    console.log(filteredProduct);
+    if (!filtered && compared.length < 3) {
+      dispatch(addCompareProduct(filteredProduct));
+      successToast("Product added to compare!");
+    } else if (compared.length >= 3) {
+      errorToast("Only 3 products can be compared!");
+    } else {
+      errorToast("Product already added!");
+    }
+  };
+
+  const handleModelClick = (e) => {
+    const id = e.target.closest(".product-parent").getAttribute("data");
+    const filtered = products.filter((item) => item._id == id)[0];
+    dispatch(addSingleProduct(filtered));
+    setmodal(true);
+  };
+
+  var productArray;
+  const handleCartClick = (e) => {
+    const id = e.target.closest(".product-parent").getAttribute("data");
+    const filtered = products.filter((item) => item._id == id)[0];
+    const item = localStorage.getItem("cartItem");
+    const cartItem = JSON.parse(item);
+    const cartId = localStorage.getItem("cartId");
+    const check = cartItem?.find((item) => item._id == id);
+    if (!check) {
+      if (!cartId) {
+        productArray = [filtered];
+        sendRequest("post", "cart/add", {
+          products: [
+            {
+              product: filtered._id,
+              quantity: 1,
+              price: 10000,
+              taxable: false,
+            },
+          ],
+        })
+          .then((res) => {
+            successToast("Product added into the cart!");
+            localStorage.setItem("cartItem", JSON.stringify(productArray));
+            localStorage.setItem("cartId", res.cartId);
+            dispatch(updateCartNavbar());
+          })
+          .catch((err) => {
+            errorToast(err);
+          });
+      } else {
+        productArray = [...cartItem, filtered];
+        const cartId = localStorage.getItem("cartId");
+        sendRequest("post", `cart/add/${cartId}`, {
+          product: {
+            product: filtered._id,
+            quantity: 1,
+            price: 10000,
+            taxable: false,
+          },
+        })
+          .then(() => {
+            successToast("Product added into the cart!");
+            localStorage.setItem("cartItem", JSON.stringify(productArray));
+            dispatch(updateCartNavbar());
+          })
+          .catch((err) => {
+            errorToast(err);
+          });
+      }
+    } else {
+      errorToast("Item is already in the cart!");
+    }
+  };
 
   return (
     <>
-      <div className="col-lg-1-5 col-md-4 col-12 col-sm-6">
+      <div
+        className="col-lg-1-5 col-md-4 col-12 col-sm-6 product-parent"
+        data={prodId}
+      >
         <ScrollAnimation
           animateIn="animate__animated animate__fadeIn"
           className="product-cart-wrap mb-30"
@@ -24,109 +125,80 @@ function HomeProductCard({ setmodal, id }) {
           animateOnce={true}
         >
           <div className="product-img-action-wrap">
-            {loading ? (
-              <Skeleton
-                style={{
-                  borderRadius: "50%",
-                  width: "100%",
-                  height: "200px",
-                }}
-              />
-            ) : (
-              <>
-                <div className="product-img product-img-zoom">
-                  <a href={void 0}>
-                    <LazyLoadImage
-                      className="default-img"
-                      src={product21}
-                      alt=""
-                    />
-                    <LazyLoadImage
+            <>
+              <div className="product-img product-img-zoom">
+                <a href={void 0}>
+                  <LazyLoadImage className="default-img" src={image} alt="" />
+                  {/* <LazyLoadImage
                       className="hover-img"
                       src={product22}
                       alt=""
-                    />
-                  </a>
-                </div>
-                <div className="product-action-1">
-                  <a aria-label="Add To Wishlist" className="action-btn">
-                    <i className="fi-rs-heart"></i>
-                  </a>
-                  <a aria-label="Compare" className="action-btn">
-                    <i className="fi-rs-shuffle"></i>
-                  </a>
-                  <a
-                    aria-label="Quick view"
-                    className="action-btn"
-                    onClick={() => setmodal(true)}
-                  >
-                    <i className="fi-rs-eye"></i>
-                  </a>
-                </div>
-              </>
-            )}
+                    /> */}
+                </a>
+              </div>
+              <div className="product-action-1">
+                <a
+                  href={void 0}
+                  aria-label="Add To Wishlist"
+                  className="action-btn"
+                  onClick={handleWishlistClick}
+                >
+                  <i className="fi-rs-heart"></i>
+                </a>
+                <a
+                  href={void 0}
+                  aria-label="Compare"
+                  className="action-btn"
+                  onClick={handleCompareClick}
+                >
+                  <i className="fi-rs-shuffle"></i>
+                </a>
+                <a
+                  href={void 0}
+                  aria-label="Quick view"
+                  className="action-btn"
+                  onClick={handleModelClick}
+                  // onClick={() => setmodal(true)}
+                >
+                  <i className="fi-rs-eye"></i>
+                </a>
+              </div>
+            </>
             <div className="product-badges product-badges-position product-badges-mrg">
-              {loading ? (
-                <Skeleton style={{ width: "40%" }} />
-              ) : (
-                <span className="sale">Sale</span>
-              )}
+              <span className="sale">Sale</span>
             </div>
           </div>
           <div className="product-content-wrap">
             <div className="product-category">
-              {loading ? (
-                <Skeleton style={{ width: "40%" }} />
-              ) : (
-                <a href={void 0}>Hodo Foods</a>
-              )}
+              <a href={void 0}>Hodo Foods</a>
             </div>
             <h2>
-              {loading ? (
-                <Skeleton style={{ width: "80%" }} />
-              ) : (
-                <a href={void 0}>All Natural Italian-Style Chicken Meatballs</a>
-              )}
+              <a href={void 0}>{name}</a>
             </h2>
-            {loading ? (
-              <Skeleton style={{ width: "40%" }} />
-            ) : (
-              <div className="product-rate-cover">
-                <div className="product-rate d-inline-block">
-                  <div
-                    className="product-rating"
-                    style={{ width: "80%" }}
-                  ></div>
-                </div>
-
-                <span className="font-small ml-5 text-muted"> (3.5)</span>
+            <div className="product-rate-cover">
+              <div className="product-rate d-inline-block">
+                <div className="product-rating" style={{ width: "80%" }}></div>
               </div>
-            )}
-            <div>
-              {loading ? (
-                <Skeleton style={{ width: "30%" }} />
-              ) : (
-                <span className="font-small text-muted">
-                  By <a href={void 0}>Stouffer</a>
-                </span>
-              )}
+
+              <span className="font-small ml-5 text-muted"> (3.5)</span>
             </div>
-            {loading ? (
-              <Skeleton style={{ width: "100%", height: "50px" }} />
-            ) : (
-              <div className="product-card-bottom">
-                <div className="product-price">
-                  <span>$52.85</span>
-                  <span className="old-price">$55.8</span>
-                </div>
-
-                <div className="add-cart">
-                  <a className="add">
-                    <i className="fi-rs-shopping-cart mr-5"></i>Add{" "}
-                  </a>
-                </div>
+            <div>
+              <span className="font-small text-muted">
+                By <a href={void 0}>Stouffer</a>
+              </span>
+            </div>
+            <div className="product-card-bottom">
+              <div className="product-price">
+                <span>${price}</span>
+                <span className="old-price">$55.8</span>
               </div>
-            )}
+
+              <div className="add-cart">
+                <a href={void 0} className="add" onClick={handleCartClick}>
+                  <i className="fi-rs-shopping-cart mr-5"></i>Add
+                </a>
+              </div>
+            </div>
           </div>
         </ScrollAnimation>
       </div>
