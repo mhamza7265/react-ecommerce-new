@@ -85,9 +85,9 @@ function Login() {
       <div className="page-header breadcrumb-wrap">
         <div className="container">
           <div className="breadcrumb">
-            <a rel="nofollow">
+            <Link to={"/"} rel="nofollow">
               <i className="fi-rs-home mr-5"></i>Home
-            </a>
+            </Link>
             <span></span> Pages <span></span> My Account
           </div>
         </div>

@@ -1,26 +1,39 @@
 import productData from "../productdata/ProductData";
 import HomeProductCard from "./home components/HomeProductCard";
 import ScrollAnimation from "react-animate-on-scroll";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import sendRequest from "../../utility-functions/apiManager";
 import ProductsSection from "./skeleton-components/ProductsSection";
-import { addProduct } from "../../redux/reducers/productReducer";
+import sendRequest from "../../utility-functions/apiManager";
+import { useDispatch } from "react-redux";
 
 function HomeSectionProduct({ setmodal }) {
-  const dispatch = useDispatch();
   const products = useSelector((state) => state.products.products);
+  const search = useSelector((state) => state.search.search);
   const reqProducts = products ? products.slice(1, 11) : null;
+  const [searchedProd, setSearchedProd] = useState([]);
+  const [wishlist, setWishlist] = useState(null);
+  const dispatch = useDispatch();
+
+  const user = localStorage.getItem("current_user");
+  const currentUser = JSON.parse(user);
 
   useEffect(() => {
-    sendRequest("get", "product/")
+    const searchedProducts = products?.filter((item) =>
+      item.name.toUpperCase().match(search.toUpperCase())
+    );
+    setSearchedProd(searchedProducts);
+  }, [search]);
+
+  useEffect(() => {
+    sendRequest("get", "wishlist")
       .then((res) => {
-        dispatch(addProduct(res.products));
+        // dispatch(addWishlist(res.wishlist));
+        setWishlist(res.wishlist);
       })
-      .catch((err) => {
-        console.log(err);
-      });
+      .catch((err) => console.log(err));
   }, []);
+
   return (
     <div>
       <section className="product-tabs section-padding position-relative">
@@ -141,11 +154,12 @@ function HomeSectionProduct({ setmodal }) {
               aria-labelledby="tab-one"
             >
               <div className="row product-grid-4">
-                {!products
+                {!products && !searchedProd
                   ? productData.map((_, index) => (
                       <ProductsSection key={index} id={`${index}00`} />
                     ))
-                  : reqProducts.map((item, i) => (
+                  : searchedProd?.length > 0
+                  ? searchedProd?.map((item, i) => (
                       <HomeProductCard
                         setmodal={setmodal}
                         id={`${i}00`}
@@ -154,6 +168,19 @@ function HomeSectionProduct({ setmodal }) {
                         image={item.imageUrl}
                         price={item.price}
                         prodId={item._id}
+                        wishlist={wishlist}
+                      />
+                    ))
+                  : products?.map((item, i) => (
+                      <HomeProductCard
+                        setmodal={setmodal}
+                        id={`${i}00`}
+                        key={i}
+                        name={item.name}
+                        image={item.imageUrl}
+                        price={item.price}
+                        prodId={item._id}
+                        wishlist={wishlist}
                       />
                     ))}
               </div>

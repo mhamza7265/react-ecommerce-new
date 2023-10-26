@@ -3,11 +3,11 @@ import BASE_URL from "./config";
 import { createStandaloneToast } from "@chakra-ui/react";
 const apiKey = import.meta.env.BASE_URL;
 const openApis = ["auth/login", "auth/register"];
-const storedItem = localStorage.getItem("current_user");
-const storedData = JSON.parse(storedItem);
 const { toast } = createStandaloneToast();
 
 const setRequestOptions = (method, url, payload) => {
+  const storedItem = localStorage.getItem("current_user");
+  const storedData = JSON.parse(storedItem);
   const filtered = openApis.find((item) => item == url);
   let header = {};
   if (!filtered == undefined) {
@@ -22,7 +22,7 @@ const setRequestOptions = (method, url, payload) => {
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: storedData.token,
+        Authorization: storedData?.token,
       },
     };
   }

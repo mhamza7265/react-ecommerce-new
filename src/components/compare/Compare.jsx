@@ -1,16 +1,14 @@
 import Footer from "../footer/footer";
 import Navbar from "../navbar/Navbar";
-import { useState, useEffect } from "react";
 import { useSelector } from "react-redux";
 import CompareRow from "./compare-component/CompareRow";
 import CompareSkeleton from "./skeleton-components/CompareSkeleton";
+import { Link } from "react-router-dom";
 
 function Compare() {
   const productsToCompare = useSelector(
     (state) => state.compare.productsToCompare
   );
-
-  console.log(productsToCompare);
 
   return (
     <div>
@@ -20,9 +18,9 @@ function Compare() {
           <div className="page-header breadcrumb-wrap">
             <div className="container">
               <div className="breadcrumb">
-                <a rel="nofollow">
+                <Link to={"/"} rel="nofollow">
                   <i className="fi-rs-home mr-5"></i>Home
-                </a>
+                </Link>
                 <span></span> Shop <span></span> Compare
               </div>
             </div>
@@ -35,8 +33,8 @@ function Compare() {
                   <h6 className="text-body mb-40">
                     There are{" "}
                     <span className="text-brand">
-                      {productsToCompare ? productsToCompare.length : 0}
-                    </span>{" "}
+                      {productsToCompare ? productsToCompare.length : 0}{" "}
+                    </span>
                     products to compare
                   </h6>
                 </>
@@ -69,18 +67,20 @@ function Compare() {
                           "Buy now"
                         </td>
                       </tr>
-                      {productsToCompare
-                        ? productsToCompare.map((item, i) => (
-                            <CompareRow
-                              key={i}
-                              image={item.imageUrl}
-                              name={item.name}
-                              price={item.price}
-                              prodId={item._id}
-                              description={item.description}
-                            />
-                          ))
-                        : null}
+                      {productsToCompare ? (
+                        productsToCompare.map((item, i) => (
+                          <CompareRow
+                            key={i}
+                            image={item.imageUrl}
+                            name={item.name}
+                            price={item.price}
+                            prodId={item._id}
+                            description={item.description}
+                          />
+                        ))
+                      ) : (
+                        <tr>No item to compare.</tr>
+                      )}
                     </tbody>
                   </table>
                 </div>

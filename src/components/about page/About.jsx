@@ -20,6 +20,7 @@ import AboutCard from "./about-components/AboutCard";
 import CountUp from "react-countup";
 import ReactVisibilitySensor from "react-visibility-sensor";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { Link } from "react-router-dom";
 
 function About() {
   const [loading, setLoading] = useState(true);
@@ -77,9 +78,9 @@ function About() {
             </div>
           ) : (
             <div className="breadcrumb">
-              <a rel="nofollow">
+              <Link rel="nofollow" to={"/"}>
                 <i className="fi-rs-home mr-5"></i>Home
-              </a>
+              </Link>
               <span></span> Pages <span></span> About us
             </div>
           )}

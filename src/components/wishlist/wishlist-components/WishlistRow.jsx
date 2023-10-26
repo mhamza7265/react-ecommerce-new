@@ -4,59 +4,85 @@ import sendRequest, {
   successToast,
 } from "../../../utility-functions/apiManager";
 import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { updateCartNavbar } from "../../../redux/reducers/navbarUpdateReducers/cartUpdateReducer";
+import { useNavigate } from "react-router";
+import {
+  startSpinner,
+  stopSpinner,
+} from "../../../redux/reducers/spinnerReducer";
 
 function WishlistRow({ id, name, image, price, prodId }) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const products = useSelector((state) => state.products.products);
 
   var productArray;
   const handleCartClick = (e) => {
     const id = e.target.closest(".wishlist-item").getAttribute("data");
     const filtered = products.filter((item) => item._id == id)[0];
+    const currentUser = localStorage.getItem("current_user");
     const item = localStorage.getItem("cartItem");
     const cartItem = JSON.parse(item);
+    const cartId = localStorage.getItem("cartId");
     const check = cartItem?.find((item) => item._id == id);
-    if (!check) {
-      if (!cartItem) {
-        productArray = [filtered];
-        sendRequest("post", "cart/add", {
-          products: [
-            {
+    if (currentUser) {
+      if (!check) {
+        if (!cartId) {
+          productArray = [filtered];
+          dispatch(startSpinner());
+          sendRequest("post", "cart/add", {
+            products: [
+              {
+                product: filtered._id,
+                quantity: 1,
+                price: 10000,
+                taxable: false,
+              },
+            ],
+          })
+            .then((res) => {
+              dispatch(stopSpinner());
+              successToast("Product added into the cart!");
+              localStorage.setItem("cartItem", JSON.stringify(productArray));
+              localStorage.setItem("cartId", res.cartId);
+              dispatch(updateCartNavbar());
+            })
+            .catch((err) => {
+              dispatch(stopSpinner());
+              errorToast(err);
+            });
+        } else {
+          productArray = [...cartItem, filtered];
+          const cartId = localStorage.getItem("cartId");
+          dispatch(startSpinner());
+          sendRequest("post", `cart/add/${cartId}`, {
+            product: {
               product: filtered._id,
               quantity: 1,
               price: 10000,
               taxable: false,
             },
-          ],
-        })
-          .then((res) => {
-            successToast("Product added into the cart!");
-            localStorage.setItem("cartId", res.cartId);
           })
-          .catch((err) => {
-            errorToast(err.message);
-          });
+            .then(() => {
+              dispatch(stopSpinner());
+              successToast("Product added into the cart!");
+              localStorage.setItem("cartItem", JSON.stringify(productArray));
+              dispatch(updateCartNavbar());
+            })
+            .catch((err) => {
+              dispatch(stopSpinner());
+              errorToast(err);
+            });
+        }
       } else {
-        productArray = [...cartItem, filtered];
-        const cartId = localStorage.getItem("cartId");
-        sendRequest("post", `cart/add/${cartId}`, {
-          products: {
-            product: filtered._id,
-            quantity: 1,
-            price: 10000,
-            taxable: false,
-          },
-        })
-          .then(() => {
-            successToast("Product added into the cart!");
-          })
-          .catch((err) => {
-            errorToast(err.message);
-          });
+        errorToast("Item is already in the cart!");
       }
-
-      localStorage.setItem("cartItem", JSON.stringify(productArray));
     } else {
-      errorToast("Item is already in the cart!");
+      errorToast("Please login first!");
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
     }
   };
 

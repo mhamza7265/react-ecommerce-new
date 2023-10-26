@@ -30,6 +30,7 @@ import sendRequest, {
   successToast,
 } from "../../utility-functions/apiManager";
 import { updateCartNavbar } from "../../redux/reducers/navbarUpdateReducers/cartUpdateReducer";
+import { Link } from "react-router-dom";
 
 function Filter() {
   const dispatch = useDispatch();
@@ -134,9 +135,9 @@ function Filter() {
           <div className="page-header breadcrumb-wrap">
             <div className="container">
               <div className="breadcrumb">
-                <a rel="nofollow">
+                <Link to={"/"} rel="nofollow">
                   <i className="fi-rs-home mr-5"></i>Home
-                </a>
+                </Link>
                 <span></span> Shop <span></span> Fillter
               </div>
             </div>

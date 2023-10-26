@@ -7,14 +7,20 @@ import compareProductsReducer from "../reducers/compareProductsReducer";
 import updateWishlistNavbarReducer from "../reducers/navbarUpdateReducers/wishlistUpdateReducer";
 import updateCartNavbarReducer from "../reducers/navbarUpdateReducers/cartUpdateReducer";
 import singleProductReducer from "../reducers/singleProductReducer";
+import wishlistReducer from "../reducers/wishlistReducer";
+import searchReducer from "../reducers/searchReducer";
+import spinnerReducer from "../reducers/spinnerReducer";
 
 const rootReducer = combineReducers({
   categories: categoryReducer,
   products: productReducer,
+  wishlist: wishlistReducer,
   compare: compareProductsReducer,
+  search: searchReducer,
+  singleProduct: singleProductReducer,
+  spinner: spinnerReducer,
   updateWishlistNavbar: updateWishlistNavbarReducer,
   updateCartNavbar: updateCartNavbarReducer,
-  singleProduct: singleProductReducer,
 });
 const store = createStore(rootReducer, composeWithDevTools());
 

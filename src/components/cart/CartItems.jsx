@@ -14,15 +14,8 @@ function CartItems({
   cartItems,
   setTotal,
 }) {
-  const [count, setCount] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [count, setCount] = useState(1);
   const [value, setValue] = useState(0);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  }, []);
 
   useEffect(() => {
     var val = (parseInt(price) * count).toFixed(1);

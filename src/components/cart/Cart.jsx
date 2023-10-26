@@ -7,24 +7,34 @@ import sendRequest, {
   errorToast,
   successToast,
 } from "../../utility-functions/apiManager";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CartSkeleton from "./skeleton-components/CartSkeleton";
+import { useDispatch } from "react-redux";
+import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
 
 function Cart() {
   const [cartItems, setCartItems] = useState(null);
+  const [skeletontime, setSkeletontime] = useState(false);
   const [total, setTotal] = useState(0);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const item = localStorage.getItem("cartItem");
     const cartItem = JSON.parse(item);
     setCartItems(cartItem);
+    setTimeout(() => {
+      setSkeletontime(true);
+    }, 10000);
   }, []);
 
   const handleDeleteClick = (e, value, setCount) => {
     const id = e.target.closest(".cart-item").getAttribute("data");
     const cartId = localStorage.getItem("cartId");
+    dispatch(startSpinner());
     sendRequest("delete", `cart/delete/${cartId}/${id}`)
       .then(() => {
+        dispatch(stopSpinner());
         successToast("Product removed from cart!");
         total > value
           ? setTotal(parseInt(total) - parseInt(value))
@@ -39,21 +49,28 @@ function Cart() {
         setCartItems(filtered);
       })
       .catch((err) => {
+        dispatch(stopSpinner());
         console.log(err);
       });
   };
 
   const handleClearClick = () => {
     const cartId = localStorage.getItem("cartId");
+    dispatch(startSpinner());
     sendRequest("delete", `cart/delete/${cartId}`)
       .then(() => {
+        dispatch(stopSpinner());
         successToast("Cart has been cleared!");
         localStorage.removeItem("cartId");
         localStorage.removeItem("cartItem");
         setCartItems(null);
         setTotal(0);
+        setTimeout(() => {
+          navigate("/");
+        }, 3000);
       })
       .catch((err) => {
+        dispatch(stopSpinner());
         errorToast(err);
       });
   };
@@ -69,14 +86,14 @@ function Cart() {
   return (
     <div>
       <Navbar />
-      {cartItems ? (
+      {cartItems || skeletontime ? (
         <>
           <div className="page-header breadcrumb-wrap">
             <div className="container">
               <div className="breadcrumb">
-                <a rel="nofollow">
+                <Link to={"/"} rel="nofollow">
                   <i className="fi-rs-home mr-5"></i>Home
-                </a>
+                </Link>
                 <span></span> Shop
                 <span></span> Cart
               </div>
@@ -130,35 +147,37 @@ function Cart() {
                           </>
                         </th>
                         <th scope="col" colSpan="2">
-                          "Product"
+                          Product
                         </th>
-                        <th scope="col">"Unit Price"</th>
-                        <th scope="col">"Quantity"</th>
-                        <th scope="col">"Subtotal"</th>
+                        <th scope="col">Unit Price</th>
+                        <th scope="col">Quantity</th>
+                        <th scope="col">Subtotal</th>
                         <th scope="col" className="end">
-                          "Remove"
+                          Remove
                         </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {cartItems
-                        ? cartItems.map((item, i) => (
-                            <CartItems
-                              key={i}
-                              img1={product21}
-                              id={item.id}
-                              prodId={item._id}
-                              name={item.name}
-                              image={item.imageUrl}
-                              price={item.price}
-                              del={handleDeleteClick}
-                              setIncrementTotal={handleTotalSum}
-                              setDecrementTotal={handleTotalDiff}
-                              cartItems={cartItems}
-                              setTotal={setTotal}
-                            />
-                          ))
-                        : null}
+                      {cartItems ? (
+                        cartItems.map((item, i) => (
+                          <CartItems
+                            key={i}
+                            img1={product21}
+                            id={item.id}
+                            prodId={item._id}
+                            name={item.name}
+                            image={item.imageUrl}
+                            price={item.price}
+                            del={handleDeleteClick}
+                            setIncrementTotal={handleTotalSum}
+                            setDecrementTotal={handleTotalDiff}
+                            cartItems={cartItems}
+                            setTotal={setTotal}
+                          />
+                        ))
+                      ) : (
+                        <tr>No item in the cart.</tr>
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -175,7 +194,7 @@ function Cart() {
                 </a>
               )} */}
                 </div>
-                <div className="row mt-50">
+                {/* <div className="row mt-50">
                   <div className="col-lg-7">
                     <div className="calculate-shiping p-40 border-radius-15 border">
                       <>
@@ -534,7 +553,7 @@ function Cart() {
                       </form>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
               <div className="col-lg-4">
                 <div className="border p-md-4 cart-totals ml-30">

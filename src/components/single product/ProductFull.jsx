@@ -7,39 +7,41 @@ import thumb5 from "../../assets/imgs/shop/thumbnail-5.webp";
 import thumb6 from "../../assets/imgs/shop/thumbnail-6.webp";
 import thumb7 from "../../assets/imgs/shop/thumbnail-7.webp";
 import thumb8 from "../../assets/imgs/shop/thumbnail-8.webp";
-import prod1 from "../../assets/imgs/shop/product-16-1.webp";
-import prod2 from "../../assets/imgs/shop/product-16-2.webp";
-import prod3 from "../../assets/imgs/shop/product-16-3.webp";
-import prod4 from "../../assets/imgs/shop/product-16-4.webp";
-import prod5 from "../../assets/imgs/shop/product-16-5.webp";
-import prod6 from "../../assets/imgs/shop/product-16-6.webp";
-import prod7 from "../../assets/imgs/shop/product-16-7.webp";
 import vend18 from "../../assets/imgs/vendor/vendor-18.svg";
-
 import auth4 from "../../assets/imgs/blog/author-4.webp";
 import auth3 from "../../assets/imgs/blog/author-3.webp";
 import auth2 from "../../assets/imgs/blog/author-2.webp";
 import iconcontact from "../../assets/imgs/theme/icons/icon-contact.svg";
 import iconlocation from "../../assets/imgs/theme/icons/icon-location.svg";
-import prod21 from "../../assets/imgs/shop/product-2-1.webp";
-import prod22 from "../../assets/imgs/shop/product-2-2.webp";
-import prod31 from "../../assets/imgs/shop/product-3-1.webp";
-import prod32 from "../../assets/imgs/shop/product-3-2.webp";
-import prod41 from "../../assets/imgs/shop/product-4-1.webp";
-import prod42 from "../../assets/imgs/shop/product-4-2.webp";
-import prod52 from "../../assets/imgs/shop/product-5-2.webp";
 import { Tabs, Tab, TabList, TabPanel } from "react-tabs";
 import Navbar from "../navbar/Navbar";
 import Footer from "../footer/footer";
 import { useState, useEffect } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import sendRequest, {
+  successToast,
+  errorToast,
+} from "../../utility-functions/apiManager";
+import { addWishlist } from "../../redux/reducers/wishlistReducer";
+import { updateCartNavbar } from "../../redux/reducers/navbarUpdateReducers/cartUpdateReducer";
+import { useNavigate } from "react-router-dom";
+import { addCompareProduct } from "../../redux/reducers/compareProductsReducer";
+import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
+import { updateWishlistNavbar } from "../../redux/reducers/navbarUpdateReducers/wishlistUpdateReducer";
 
 function ProductFull() {
   const [nav1, setNav1] = useState(null);
   const [nav2, setNav2] = useState(null);
   const [slider1, setSlider1] = useState(null);
   const [slider2, setSlider2] = useState(null);
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(1);
+  const products = useSelector((state) => state.products.products);
+  const singleProduct = useSelector((state) => state.singleProduct.product);
+  const compared = useSelector((state) => state.compare.productsToCompare);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     setNav1(slider1);
@@ -66,17 +68,125 @@ function ProductFull() {
     focusOnSelect: true,
     centerPadding: "10px",
   };
+
+  var productArray;
+  const handleCartClick = (e) => {
+    const id = e.target.closest(".single-product-parent").getAttribute("data");
+    const filtered = products.filter((item) => item._id == id)[0];
+    const currentUser = localStorage.getItem("current_user");
+    const item = localStorage.getItem("cartItem");
+    const cartItem = JSON.parse(item);
+    const cartId = localStorage.getItem("cartId");
+    const check = cartItem?.find((item) => item._id == id);
+    if (currentUser) {
+      if (!check) {
+        if (!cartId) {
+          productArray = [filtered];
+          sendRequest("post", "cart/add", {
+            products: [
+              {
+                product: filtered._id,
+                quantity: 1,
+                price: 10000,
+                taxable: false,
+              },
+            ],
+          })
+            .then((res) => {
+              successToast("Product added into the cart!");
+              localStorage.setItem("cartItem", JSON.stringify(productArray));
+              localStorage.setItem("cartId", res.cartId);
+              dispatch(updateCartNavbar());
+            })
+            .catch((err) => {
+              errorToast(err);
+            });
+        } else {
+          productArray = [...cartItem, filtered];
+          const cartId = localStorage.getItem("cartId");
+          sendRequest("post", `cart/add/${cartId}`, {
+            product: {
+              product: filtered._id,
+              quantity: 1,
+              price: 10000,
+              taxable: false,
+            },
+          })
+            .then(() => {
+              successToast("Product added into the cart!");
+              localStorage.setItem("cartItem", JSON.stringify(productArray));
+              dispatch(updateCartNavbar());
+            })
+            .catch((err) => {
+              errorToast(err);
+            });
+        }
+      } else {
+        errorToast("Item is already in the cart!");
+      }
+    } else {
+      errorToast("Please login first!");
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+    }
+  };
+
+  const handleCompareClick = (e) => {
+    console.log("gvb");
+    const id = e.target.closest(".single-product-parent").getAttribute("data");
+    const filteredProduct = products.find((item) => item._id == id);
+    const filtered = compared.find((item) => item._id == id);
+    console.log(filtered);
+    if (!filtered && compared.length < 3) {
+      dispatch(addCompareProduct(filteredProduct));
+      successToast("Product added to compare!");
+    } else if (compared.length >= 3) {
+      errorToast("Only 3 products can be compared!");
+    } else {
+      errorToast("Product already added!");
+    }
+  };
+
+  const handleWishlistClick = (e) => {
+    const id = e.target.closest(".single-product-parent").getAttribute("data");
+    const currentUser = localStorage.getItem("current_user");
+    if (currentUser) {
+      dispatch(startSpinner());
+      sendRequest("post", "wishlist", { product: id, isLiked: true })
+        .then((res) => {
+          dispatch(stopSpinner());
+          successToast(res.message);
+
+          sendRequest("get", "wishlist")
+            .then((res) => {
+              dispatch(addWishlist(res.wishlist));
+            })
+            .catch((err) => console.log(err));
+        })
+        .catch((err) => {
+          dispatch(stopSpinner());
+          errorToast(err);
+        });
+    } else {
+      errorToast("Please login first!");
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+    }
+  };
+
   return (
-    <div>
+    <div className="single-product-parent" data={singleProduct?._id}>
       <Navbar />
       <div className="page-header breadcrumb-wrap">
         <div className="container">
           <div className="breadcrumb">
-            <a rel="nofollow">
+            <Link to={"/"} rel="nofollow">
               <i className="fi-rs-home mr-5"></i>Home
-            </a>
-            <span></span> <a href={void 0}>Vegetables & tubers</a> <span></span>{" "}
-            Seeds of Change Organic
+            </Link>
+            <span></span>
+            {singleProduct?.name}
           </div>
         </div>
       </div>
@@ -98,25 +208,46 @@ function ProductFull() {
                         ref={(slider) => setSlider1(slider)}
                       >
                         <div className="single-prod">
-                          <LazyLoadImage src={prod1} alt="product image" />
+                          <LazyLoadImage
+                            src={singleProduct?.imageUrl}
+                            alt="product image"
+                          />
                         </div>
                         <div className="single-prod">
-                          <LazyLoadImage src={prod2} alt="product image" />
+                          <LazyLoadImage
+                            src={singleProduct?.imageUrl}
+                            alt="product image"
+                          />
                         </div>
                         <div className="single-prod">
-                          <LazyLoadImage src={prod3} alt="product image" />
+                          <LazyLoadImage
+                            src={singleProduct?.imageUrl}
+                            alt="product image"
+                          />
                         </div>
                         <div className="single-prod">
-                          <LazyLoadImage src={prod4} alt="product image" />
+                          <LazyLoadImage
+                            src={singleProduct?.imageUrl}
+                            alt="product image"
+                          />
                         </div>
                         <div className="single-prod">
-                          <LazyLoadImage src={prod5} alt="product image" />
+                          <LazyLoadImage
+                            src={singleProduct?.imageUrl}
+                            alt="product image"
+                          />
                         </div>
                         <div className="single-prod">
-                          <LazyLoadImage src={prod6} alt="product image" />
+                          <LazyLoadImage
+                            src={singleProduct?.imageUrl}
+                            alt="product image"
+                          />
                         </div>
                         <div className="single-prod">
-                          <LazyLoadImage src={prod7} alt="product image" />
+                          <LazyLoadImage
+                            src={singleProduct?.imageUrl}
+                            alt="product image"
+                          />
                         </div>
                       </Slider>
                     </div>
@@ -155,9 +286,7 @@ function ProductFull() {
                 <div className="col-md-6 col-sm-12 col-xs-12">
                   <div className="detail-info pr-30 pl-30">
                     <span className="stock-status out-stock"> Sale Off </span>
-                    <h2 className="title-detail">
-                      Seeds of Change Organic Quinoa, Brown
-                    </h2>
+                    <h2 className="title-detail">{singleProduct?.name}</h2>
                     <div className="product-detail-rating">
                       <div className="product-rate-cover text-end">
                         <div className="product-rate d-inline-block">
@@ -173,12 +302,16 @@ function ProductFull() {
                     </div>
                     <div className="clearfix product-price-cover">
                       <div className="product-price primary-color float-left">
-                        <span className="current-price text-brand">$38</span>
+                        <span className="current-price text-brand">
+                          ${singleProduct?.price}
+                        </span>
                         <span>
                           <span className="save-price font-md color3 ml-15">
                             26% Off
                           </span>
-                          <span className="old-price font-md ml-15">$52</span>
+                          <span className="old-price font-md ml-15">
+                            ${singleProduct?.price}
+                          </span>
                         </span>
                       </div>
                     </div>
@@ -238,18 +371,23 @@ function ProductFull() {
                       </div>
                       <div className="product-extra-link2">
                         <button
-                          type="submit"
                           className="button button-add-to-cart"
+                          onClick={handleCartClick}
                         >
                           <i className="fi-rs-shopping-cart"></i>Add to cart
                         </button>
                         <a
                           aria-label="Add To Wishlist"
                           className="action-btn hover-up"
+                          onClick={handleWishlistClick}
                         >
                           <i className="fi-rs-heart"></i>
                         </a>
-                        <a aria-label="Compare" className="action-btn hover-up">
+                        <a
+                          aria-label="Compare"
+                          className="action-btn hover-up"
+                          onClick={handleCompareClick}
+                        >
                           <i className="fi-rs-shuffle"></i>
                         </a>
                       </div>
@@ -826,7 +964,7 @@ function ProductFull() {
                   </div>
                 </Tabs>
               </div>
-              <div className="row mt-60">
+              {/* <div className="row mt-60">
                 <div className="col-12">
                   <h2 className="section-title style-1 mb-30">
                     Related products
@@ -1065,7 +1203,7 @@ function ProductFull() {
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

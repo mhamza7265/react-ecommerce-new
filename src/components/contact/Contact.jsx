@@ -2,6 +2,7 @@ import contact2img from "../../assets/imgs/page/contact-2.webp";
 import Footer from "../footer/footer";
 import Navbar from "../navbar/Navbar";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { Link } from "react-router-dom";
 
 function Contact() {
   return (
@@ -10,9 +11,9 @@ function Contact() {
       <div className="page-header breadcrumb-wrap">
         <div className="container">
           <div className="breadcrumb">
-            <a rel="nofollow">
+            <Link to={"/"} rel="nofollow">
               <i className="fi-rs-home mr-5"></i>Home
-            </a>
+            </Link>
             <span></span> Pages <span></span> Contact
           </div>
         </div>

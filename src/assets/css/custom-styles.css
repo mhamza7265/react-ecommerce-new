@@ -58,3 +58,19 @@ span[aria-label="Loading Spinner"] > span {
   padding: 10px 0 !important;
   border-radius: 4px;
 }
+
+.prod-img {
+  height: 200px;
+}
+
+.prod-name {
+  height: 56px;
+}
+
+.prod-img-2 {
+  height: 180px;
+}
+
+.prod-img-3 {
+  height: 300px;
+}

@@ -4,9 +4,21 @@ import HomeBestSellCard from "./home components/HomeBestSellCard";
 import ScrollAnimation from "react-animate-on-scroll";
 import BestSellSection from "./skeleton-components/BestsellSection";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import sendRequest from "../../utility-functions/apiManager";
 
 function HomeSectionBestsell({ setmodal }) {
   const products = useSelector((state) => state.products.products);
+  const [wishlist, setWishlist] = useState(null);
+
+  useEffect(() => {
+    sendRequest("get", "wishlist")
+      .then((res) => {
+        // dispatch(addWishlist(res.wishlist));
+        setWishlist(res.wishlist);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   var settings = {
     dots: true,
@@ -145,6 +157,7 @@ function HomeSectionBestsell({ setmodal }) {
                                 price={item.price}
                                 prodId={item._id}
                                 setmodal={setmodal}
+                                wishlist={wishlist}
                               />
                             ))}
                       </Slider>

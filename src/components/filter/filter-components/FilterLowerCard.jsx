@@ -74,7 +74,11 @@ function FilterLowerCard({ name, price, image, prodId }) {
         <div className="product-img-action-wrap">
           <div className="product-img">
             <a href={void 0}>
-              <LazyLoadImage src={image} alt="" />
+              <LazyLoadImage
+                className="default-img prod-img-3"
+                src={image}
+                alt=""
+              />
             </a>
           </div>
         </div>
@@ -87,7 +91,7 @@ function FilterLowerCard({ name, price, image, prodId }) {
           </div>
           <div className="deals-content">
             <>
-              <h2>
+              <h2 className="prod-name">
                 <a href={void 0}>{name}</a>
               </h2>
               <div className="product-rate-cover">

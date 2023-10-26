@@ -1,44 +1,42 @@
 import Footer from "../footer/footer";
 import Navbar from "../navbar/Navbar";
-import Skeleton from "react-loading-skeleton";
 import { useState, useEffect } from "react";
-import wishlistData from "../../Data/wishlistData";
 import WishlistRow from "./wishlist-components/WishlistRow";
 import sendRequest from "../../utility-functions/apiManager";
 import WishlistSkeleton from "./skeleton-components/WishlistSkeleton";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function Wishlist() {
-  const [loading, setLoading] = useState(true);
   const [wishlist, setWishlist] = useState(null);
+  const [skeletontime, setSkeletontime] = useState(false);
+  // const wishlist = useSelector((state) => state.wishlist.wishlist.wishlist);
 
   // console.log(wishlist?.map((item) => item))[0];
-
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  }, []);
 
   useEffect(() => {
     sendRequest("get", "wishlist")
       .then((res) => {
         setWishlist(res.wishlist);
-        console.log(res.wishlist[0].product);
       })
       .catch((err) => console.log(err));
+
+    setTimeout(() => {
+      setSkeletontime(true);
+    }, 10000);
   }, []);
 
   return (
     <div>
       <Navbar />
-      {wishlist ? (
+      {wishlist || skeletontime ? (
         <>
           <div className="page-header breadcrumb-wrap">
             <div className="container">
               <div className="breadcrumb">
-                <a rel="nofollow">
+                <Link to={"/"} rel="nofollow">
                   <i className="fi-rs-home mr-5"></i>Home
-                </a>
+                </Link>
                 <span></span> Shop <span></span> Wishlist
               </div>
             </div>
@@ -50,8 +48,11 @@ function Wishlist() {
                   <>
                     <h1 className="heading-2 mb-10">Your Wishlist</h1>
                     <h6 className="text-body">
-                      There are <span className="text-brand">5</span> products
-                      in this list
+                      There are{" "}
+                      <span className="text-brand">
+                        {wishlist ? wishlist.length : 0}
+                      </span>
+                      products in this list
                     </h6>
                   </>
                 </div>
@@ -75,29 +76,31 @@ function Wishlist() {
                           </>
                         </th>
                         <th scope="col" colSpan="2">
-                          "Product"
+                          Product
                         </th>
-                        <th scope="col">"Price"</th>
-                        <th scope="col">"Stock Status"</th>
-                        <th scope="col">"Action"</th>
+                        <th scope="col">Price</th>
+                        <th scope="col">Stock Status</th>
+                        <th scope="col">Action</th>
                         <th scope="col" className="end">
-                          "Remove"
+                          Remove
                         </th>
                       </tr>
                     </thead>
                     <tbody style={{ marginBottom: "30px" }}>
-                      {wishlist
-                        ? wishlist.map((item, i) => (
-                            <WishlistRow
-                              key={i}
-                              id={i}
-                              name={item.product?.name}
-                              image={item.product?.imageUrl}
-                              price={item.product?.price}
-                              prodId={item.product?._id}
-                            />
-                          ))
-                        : null}
+                      {wishlist.length > 0 ? (
+                        wishlist.map((item, i) => (
+                          <WishlistRow
+                            key={i}
+                            id={i}
+                            name={item.product?.name}
+                            image={item.product?.imageUrl}
+                            price={item.product?.price}
+                            prodId={item.product?._id}
+                          />
+                        ))
+                      ) : (
+                        <tr>No item in the wishlist.</tr>
+                      )}
                     </tbody>
                   </table>
                 </div>

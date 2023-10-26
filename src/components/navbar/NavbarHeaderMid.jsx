@@ -7,40 +7,40 @@ import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import sendRequest from "../../utility-functions/apiManager";
-import { useSelector } from "react-redux";
+import sendRequest, {
+  errorToast,
+  successToast,
+} from "../../utility-functions/apiManager";
+import { useSelector, useDispatch } from "react-redux";
 import NavbarMidCartDropdown from "./navbar-components/NavbarMidCartDropdown";
-import { useToast } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import { setSearch } from "../../redux/reducers/searchReducer";
+import { stopSpinner, startSpinner } from "../../redux/reducers/spinnerReducer";
+import { addWishlist } from "../../redux/reducers/wishlistReducer";
+import { updateWishlistNavbar } from "../../redux/reducers/navbarUpdateReducers/wishlistUpdateReducer";
 
 function NavbarHeaderMid() {
+  const updateCart = useSelector((state) => state.updateCartNavbar.number);
   const products = useSelector((state) => state.products.products);
-  const [loading, setLoading] = useState(true);
-  const [wishlist, setWishlist] = useState(null);
-  const [cart, setCart] = useState(null);
-  const toast = useToast();
-  const updateWishlist = useSelector(
-    (state) => state.updateWishlistNavbar.number
-  );
+  const search = useSelector((state) => state.search.search);
+  const wishlist = useSelector((state) => state.wishlist.wishlist);
   const productsToCompare = useSelector(
     (state) => state.compare.productsToCompare
   );
+  // const [wishlist, setWishlist] = useState(null);
+  const currentUser = localStorage.getItem("current_user");
+  const [cart, setCart] = useState([]);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const updateCart = useSelector((state) => state.updateCartNavbar.number);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setLoading(false);
-    }, 5000);
-  }, []);
-
-  useEffect(() => {
-    sendRequest("get", "wishlist")
-      .then((res) => {
-        console.log(res);
-        setWishlist(res.wishlist);
-      })
-      .catch((err) => console.log(err));
-  }, [updateWishlist]);
+  // useEffect(() => {
+  //   sendRequest("get", "wishlist")
+  //     .then((res) => {
+  //       // dispatch(addWishlist(res.wishlist));
+  //       setWishlist(res.wishlist);
+  //     })
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   useEffect(() => {
     const item = localStorage.getItem("cartItem");
@@ -48,20 +48,42 @@ function NavbarHeaderMid() {
     setCart(cartItem);
   }, [updateCart]);
 
+  const handleWishlistNavClick = () => {
+    const currentUser = localStorage.getItem("current_user");
+
+    if (currentUser) {
+      navigate("/wishlist");
+    } else {
+      errorToast("Please login first!");
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+    }
+  };
+
+  const handleCartNavClick = () => {
+    const currentUser = localStorage.getItem("current_user");
+
+    if (currentUser) {
+      navigate("/cart");
+    } else {
+      errorToast("Please login first!");
+      setTimeout(() => {
+        navigate("/login");
+      }, 3000);
+    }
+  };
+
   const handleRemoveClick = (e) => {
     const id = e.target
       .closest(".cart-dropdown-single-parent")
       .getAttribute("data");
     const cartId = localStorage.getItem("cartId");
+    dispatch(startSpinner());
     sendRequest("delete", `cart/delete/${cartId}/${id}`)
       .then(() => {
-        toast({
-          title: "Product removed from cart!",
-          position: "top-right",
-          isClosable: true,
-          duration: 3000,
-          status: "success",
-        });
+        dispatch(stopSpinner());
+        successToast("Product removed from cart!");
         const item = localStorage.getItem("cartItem");
         const cartItem = JSON.parse(item);
         const filtered = cartItem.filter((item) => item._id !== id);
@@ -69,8 +91,14 @@ function NavbarHeaderMid() {
         setCart(filtered);
       })
       .catch((err) => {
+        dispatch(stopSpinner());
         console.log(err);
       });
+  };
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    dispatch(setSearch(value));
   };
 
   return (
@@ -116,7 +144,12 @@ function NavbarHeaderMid() {
                         <option>Noodles & Rice</option>
                         <option>Ice cream</option>
                       </select>
-                      <input type="text" placeholder="Search for items..." />
+                      <input
+                        type="text"
+                        onChange={handleSearch}
+                        placeholder="Search for items..."
+                        value={search}
+                      />
                     </form>
                   </div>
                   <div className="header-action-right">
@@ -164,12 +197,12 @@ function NavbarHeaderMid() {
                             src={wishicon}
                           />
                           <span className="pro-count blue">
-                            {wishlist ? wishlist.length : 0}
+                            {wishlist ? wishlist?.length : 0}
                           </span>
                         </Link>
-                        <Link to="/Wishlist">
+                        <a href={void 0} onClick={handleWishlistNavClick}>
                           <span className="lable">Wishlist</span>
-                        </Link>
+                        </a>
                       </div>
                       <div className="header-action-icon-2">
                         <Link to="/cart" className="mini-cart-icon">
@@ -178,9 +211,11 @@ function NavbarHeaderMid() {
                             {cart ? cart.length : 0}
                           </span>
                         </Link>
-                        <Link to="/cart">
-                          <span className="lable">Cart</span>
-                        </Link>
+                        {
+                          <a href={void 0} onClick={handleCartNavClick}>
+                            <span className="lable">Cart</span>
+                          </a>
+                        }
                         {!products ? (
                           <Skeleton
                             style={{ borderRadius: "15px", height: "250px" }}
@@ -190,23 +225,28 @@ function NavbarHeaderMid() {
                             className="cart-dropdown-wrap cart-dropdown-hm2"
                             style={{
                               zIndex: 1,
-                              height: "400px",
+                              maxHeight: "400px",
+                              height: "auto",
                               overflowY: "auto",
                             }}
                           >
                             <ul>
-                              {cart
-                                ? cart.map((item, i) => (
-                                    <NavbarMidCartDropdown
-                                      key={i}
-                                      image={item.imageUrl}
-                                      name={item.name}
-                                      price={item.price}
-                                      prodId={item._id}
-                                      delItem={handleRemoveClick}
-                                    />
-                                  ))
-                                : null}
+                              {cart?.length > 0 ? (
+                                cart.map((item, i) => (
+                                  <NavbarMidCartDropdown
+                                    key={i}
+                                    image={item.imageUrl}
+                                    name={item.name}
+                                    price={item.price}
+                                    prodId={item._id}
+                                    delItem={handleRemoveClick}
+                                  />
+                                ))
+                              ) : (
+                                <p className="text-center">
+                                  No item in the cart.
+                                </p>
+                              )}
                             </ul>
                             <div className="shopping-cart-footer">
                               {/* <div className="shopping-cart-total">
@@ -227,16 +267,25 @@ function NavbarHeaderMid() {
                         )}
                       </div>
                       <div className="header-action-icon-2">
-                        <Link to="/account">
-                          <LazyLoadImage
-                            className="svgInject"
-                            alt="Nest"
-                            src={accnticon}
-                          />
-                        </Link>
-                        <Link to="/account">
-                          <span className="lable ml-0">Account</span>
-                        </Link>
+                        {currentUser ? (
+                          <>
+                            <Link to="/account">
+                              <LazyLoadImage
+                                className="svgInject"
+                                alt="Nest"
+                                src={accnticon}
+                              />
+                            </Link>
+
+                            <Link to="/account">
+                              <span className="lable ml-0">Account</span>
+                            </Link>
+                          </>
+                        ) : (
+                          <Link to={"/login"}>
+                            <span className="lable ml-0">Login</span>
+                          </Link>
+                        )}
                         {/* <div className="cart-dropdown-wrap cart-dropdown-hm2 account-dropdown">
                           <ul>
                             <li>

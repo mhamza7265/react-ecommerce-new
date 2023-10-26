@@ -3,22 +3,19 @@ import Slider from "react-slick";
 import homeCategoryData from "../../Data/homeCategorySectionData";
 import HomeCategorySectionCard from "./home components/HomeCategorySectionCard";
 import ScrollAnimation from "react-animate-on-scroll";
-import { useEffect } from "react";
-import sendRequest from "../../utility-functions/apiManager";
-import { useSelector, useDispatch } from "react-redux";
-import { addCategory } from "../../redux/reducers/categoryReducer";
+import { useSelector } from "react-redux";
 import CategorySection from "./skeleton-components/CategorySection";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import sendRequest from "../../utility-functions/apiManager";
+import { addCategory } from "../../redux/reducers/categoryReducer";
 
 function HomeSectionCategory() {
-  const dispatch = useDispatch();
   const categorylist = useSelector((state) => state.categories.categories);
-  useEffect(() => {
-    sendRequest("get", "category/list")
-      .then((res) => {
-        dispatch(addCategory(res.categories));
-      })
-      .catch((err) => console.log(err));
-  }, []);
+  const dispatch = useDispatch();
+
+  const user = localStorage.getItem("current_user");
+  const currentUser = JSON.parse(user);
 
   var settings = {
     dots: false,

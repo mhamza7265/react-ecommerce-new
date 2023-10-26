@@ -23,13 +23,21 @@ import About from "./components/about page/About";
 import Preloader from "./common/preloader/Preloader";
 import ScrollToTop from "./common/ScrollToTop";
 import HaveAuth from "./components/Auth/check-auth/HaveAuth";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import sendRequest from "./utility-functions/apiManager";
 import { addProduct } from "./redux/reducers/productReducer";
+import { addCategory } from "./redux/reducers/categoryReducer";
+import { addWishlist } from "./redux/reducers/wishlistReducer";
 
 function App() {
   const dispatch = useDispatch();
+  const updateWishlist = useSelector(
+    (state) => state.updateWishlistNavbar.number
+  );
+
+  const user = localStorage.getItem("current_user");
+  const currentUser = JSON.parse(user);
 
   useEffect(() => {
     sendRequest("get", "product/")
@@ -39,6 +47,22 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
+  }, [currentUser]);
+
+  useEffect(() => {
+    sendRequest("get", "category/list")
+      .then((res) => {
+        dispatch(addCategory(res.categories));
+      })
+      .catch((err) => console.log(err));
+  }, [currentUser]);
+
+  useEffect(() => {
+    sendRequest("get", "wishlist")
+      .then((res) => {
+        dispatch(addWishlist(res.wishlist));
+      })
+      .catch((err) => console.log(err));
   }, []);
 
   return (
@@ -47,7 +71,7 @@ function App() {
         <Route
           path="/"
           element={
-            <Preloader state={true}>
+            <Preloader>
               <Home />
             </Preloader>
           }
@@ -64,7 +88,9 @@ function App() {
           path="/wishlist"
           element={
             <Preloader>
-              <Wishlist />
+              <HaveAuth>
+                <Wishlist />
+              </HaveAuth>
             </Preloader>
           }
         />
@@ -82,7 +108,9 @@ function App() {
           path="/cart"
           element={
             <Preloader>
-              <Cart />
+              <HaveAuth>
+                <Cart />
+              </HaveAuth>
             </Preloader>
           }
         />
@@ -90,7 +118,9 @@ function App() {
           path="/checkout"
           element={
             <Preloader>
-              <Checkout />
+              <HaveAuth>
+                <Checkout />
+              </HaveAuth>
             </Preloader>
           }
         />

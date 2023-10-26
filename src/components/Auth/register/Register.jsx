@@ -10,12 +10,14 @@ import { useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { BounceLoader } from "react-spinners";
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
   const [loading, setLoading] = useState(false);
   const [pwVisible, setPwVisible] = useState(false);
   const [rptPwVisible, setRptPwVisible] = useState(false);
   const toast = useToast();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -59,7 +61,6 @@ function Register() {
     })
       .then((res) => {
         setLoading(false);
-        console.log(res);
         if (res.success) {
           toast({
             title: "Success!",
@@ -68,6 +69,9 @@ function Register() {
             duration: 3000,
             status: "success",
           });
+          setTimeout(() => {
+            navigate("/login");
+          }, 3000);
         }
       })
       .catch((err) => {
@@ -88,9 +92,9 @@ function Register() {
       <div className="page-header breadcrumb-wrap">
         <div className="container">
           <div className="breadcrumb">
-            <a rel="nofollow">
+            <Link to={"/"} rel="nofollow">
               <i className="fi-rs-home mr-5"></i>Home
-            </a>
+            </Link>
             <span></span> Pages <span></span> My Account
           </div>
         </div>

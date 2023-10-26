@@ -1,21 +1,36 @@
-import zappericon from "../../assets/imgs/theme/icons/payment-zapper.svg";
-import paymaster from "../../assets/imgs/theme/icons/payment-master.svg";
-import visaicon from "../../assets/imgs/theme/icons/payment-visa.svg";
-import paypalicon from "../../assets/imgs/theme/icons/payment-paypal.svg";
+// import zappericon from "../../assets/imgs/theme/icons/payment-zapper.svg";
+// import paymaster from "../../assets/imgs/theme/icons/payment-master.svg";
+// import visaicon from "../../assets/imgs/theme/icons/payment-visa.svg";
+// import paypalicon from "../../assets/imgs/theme/icons/payment-paypal.svg";
 import Navbar from "../navbar/Navbar";
 import Footer from "../footer/footer";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import CartItem from "./checkout-components/CartItem";
 import sendRequest, {
   errorToast,
   successToast,
 } from "../../utility-functions/apiManager";
+import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
 
 function Checkout() {
-  const [cart, setCart] = useState(null);
+  const [cart, setCart] = useState([]);
   const [sum, setSum] = useState(0);
+  const [currentAddress, setCurrentAddress] = useState("");
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const updateCart = useSelector((state) => state.updateCartNavbar.number);
+  const shippingAddress = localStorage.getItem("shippingAddress");
+  // const currentUser = localStorage.getItem("current_user");
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
     const item = localStorage.getItem("cartItem");
@@ -30,16 +45,61 @@ function Checkout() {
     setSum(sum);
   }, [updateCart][cart]);
 
-  const handleOrderClick = () => {
-    const cartId = localStorage.getItem("cartId");
-    sendRequest("post", "order/add", { cartId: cartId, total: sum })
+  useEffect(() => {
+    if (shippingAddress !== "") {
+      sendRequest("get", `address/${shippingAddress}`)
+        .then((res) => {
+          setCurrentAddress(res.address);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else return;
+  }, []);
+
+  const onSubmit = (d) => {
+    dispatch(startSpinner());
+    sendRequest("post", "address/add", {
+      address: d.billing_address + " " + d.billing_address2,
+      city: d.city,
+      state: d.state,
+      country: d.country,
+      zipCode: d.zipcode,
+      isDefault: false,
+    })
       .then((res) => {
-        successToast(res.message);
-        console.log(res);
+        localStorage.setItem("shippingAddress", res.address._id);
+
+        //Order Api
+        const item = localStorage.getItem("cartItem");
+        const cartItem = JSON.parse(item);
+        const cartId = localStorage.getItem("cartId");
+        if (cartItem) {
+          if (cartItem.length > 0) {
+            sendRequest("post", "order/add", { cartId: cartId, total: sum })
+              .then((res) => {
+                dispatch(stopSpinner());
+                successToast(res.message);
+                localStorage.removeItem("cartItem");
+                localStorage.removeItem("cartId");
+                setTimeout(() => {
+                  navigate("/account");
+                }, 3000);
+              })
+              .catch((err) => {
+                dispatch(stopSpinner());
+                errorToast(err);
+              });
+          } else {
+            errorToast("No item to order!");
+            dispatch(stopSpinner());
+          }
+        } else {
+          errorToast("No item to order!");
+          dispatch(stopSpinner());
+        }
       })
-      .catch((err) => {
-        errorToast(err);
-      });
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -48,9 +108,9 @@ function Checkout() {
       <div className="page-header breadcrumb-wrap">
         <div className="container">
           <div className="breadcrumb">
-            <a rel="nofollow">
+            <Link to={"/"} rel="nofollow">
               <i className="fi-rs-home mr-5"></i>Home
-            </a>
+            </Link>
             <span></span> Shop
             <span></span> Checkout
           </div>
@@ -62,8 +122,8 @@ function Checkout() {
             <h1 className="heading-2 mb-10">Checkout</h1>
             <div className="d-flex justify-content-between">
               <h6 className="text-body">
-                There are
-                <span className="text-brand">{cart ? cart.length : 0}</span>
+                There are{" "}
+                <span className="text-brand">{cart ? cart.length : 0}</span>{" "}
                 products in your cart
               </h6>
             </div>
@@ -71,9 +131,9 @@ function Checkout() {
         </div>
         <div className="row">
           <div className="col-lg-7">
-            <div className="row mb-50">
+            {/* <div className="row mb-50">
               <div className="col-lg-6 mb-sm-15 mb-lg-0 mb-md-3">
-                {/* <div className="toggle_info">
+                <div className="toggle_info">
                   <span>
                     <i className="fi-rs-user mr-10"></i>
                     <span className="text-muted font-lg">
@@ -83,7 +143,7 @@ function Checkout() {
                       Click here to login
                     </a>
                   </span>
-                </div> */}
+                </div>
                 <div
                   className="panel-collapse collapse login_form"
                   id="loginform"
@@ -146,12 +206,12 @@ function Checkout() {
                   </button>
                 </form>
               </div>
-            </div>
+            </div> */}
             <div className="row">
               <h4 className="mb-30">Billing Details</h4>
-              <form method="post">
+              <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="row">
-                  <div className="form-group col-lg-6">
+                  <div className="form-group col-lg-6 d-none">
                     <input
                       type="text"
                       required=""
@@ -159,7 +219,7 @@ function Checkout() {
                       placeholder="First name *"
                     />
                   </div>
-                  <div className="form-group col-lg-6">
+                  <div className="form-group col-lg-6 d-none">
                     <input
                       type="text"
                       required=""
@@ -171,30 +231,72 @@ function Checkout() {
                 <div className="row">
                   <div className="form-group col-lg-6">
                     <input
+                      {...register("billing_address", {
+                        required: "This field is required",
+                      })}
                       type="text"
                       name="billing_address"
-                      required=""
                       placeholder="Address *"
+                      defaultValue={currentAddress?.address}
                     />
+                    <p className="text-danger">
+                      {errors.billing_address?.message}
+                    </p>
                   </div>
                   <div className="form-group col-lg-6">
                     <input
+                      {...register("billing_address2")}
                       type="text"
                       name="billing_address2"
-                      required=""
                       placeholder="Address line2"
                     />
+                    <p className="text-danger">
+                      {errors.billing_address2?.message}
+                    </p>
                   </div>
                 </div>
                 <div className="row shipping_calculator">
                   <div className="form-group col-lg-6">
+                    <input
+                      {...register("city", {
+                        required: "This field is required",
+                      })}
+                      type="text"
+                      name="city"
+                      placeholder="City / Town *"
+                      defaultValue={currentAddress?.city}
+                    />
+                    <p className="text-danger">{errors.city?.message}</p>
+                  </div>
+                  <div className="form-group col-lg-6">
+                    <input
+                      {...register("state", {
+                        required: "This field is required",
+                      })}
+                      type="text"
+                      name="state"
+                      placeholder="State *"
+                      defaultValue={currentAddress?.state}
+                    />
+                    <p className="text-danger">{errors.state?.message}</p>
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="form-group col-lg-6">
                     <div className="custom_select">
-                      <select className="form-control select-active">
-                        <option value="">Select an option...</option>
-                        <option value="AX">Aland Islands</option>
-                        <option value="AF">Afghanistan</option>
-                        <option value="AL">Albania</option>
-                        <option value="DZ">Algeria</option>
+                      <select
+                        className="form-control select-active"
+                        {...register("country", {
+                          required: "This field is required",
+                        })}
+                        name="country"
+                        defaultValue={currentAddress?.country}
+                      >
+                        <option value="">Select a country *</option>
+                        <option value="Aland Islands">Aland Islands</option>
+                        <option value="Afghanistan">Afghanistan</option>
+                        <option value="Albania">Albania</option>
+                        <option value="Algeria">Algeria</option>
                         <option value="AD">Andorra</option>
                         <option value="AO">Angola</option>
                         <option value="AI">Anguilla</option>
@@ -297,7 +399,7 @@ function Checkout() {
                         <option value="HK">Hong Kong</option>
                         <option value="HU">Hungary</option>
                         <option value="IS">Iceland</option>
-                        <option value="IN">India</option>
+                        <option value="India">India</option>
                         <option value="ID">Indonesia</option>
                         <option value="IR">Iran</option>
                         <option value="IQ">Iraq</option>
@@ -361,7 +463,7 @@ function Checkout() {
                         <option value="KP">North Korea</option>
                         <option value="NO">Norway</option>
                         <option value="OM">Oman</option>
-                        <option value="PK">Pakistan</option>
+                        <option value="Pakistan">Pakistan</option>
                         <option value="PS">Palestinian Territory</option>
                         <option value="PA">Panama</option>
                         <option value="PG">Papua New Guinea</option>
@@ -389,7 +491,7 @@ function Checkout() {
                           Saint Vincent and the Grenadines
                         </option>
                         <option value="SM">San Marino</option>
-                        <option value="SA">Saudi Arabia</option>
+                        <option value="Saudi Arabia">Saudi Arabia</option>
                         <option value="SN">Senegal</option>
                         <option value="RS">Serbia</option>
                         <option value="SC">Seychelles</option>
@@ -430,8 +532,12 @@ function Checkout() {
                         <option value="TV">Tuvalu</option>
                         <option value="UG">Uganda</option>
                         <option value="UA">Ukraine</option>
-                        <option value="AE">United Arab Emirates</option>
-                        <option value="GB">United Kingdom (UK)</option>
+                        <option value="United Arab Emirates">
+                          United Arab Emirates
+                        </option>
+                        <option value="United Kingdom">
+                          United Kingdom (UK)
+                        </option>
                         <option value="US">USA (US)</option>
                         <option value="UY">Uruguay</option>
                         <option value="UZ">Uzbekistan</option>
@@ -447,35 +553,23 @@ function Checkout() {
                         <option value="ZW">Zimbabwe</option>
                       </select>
                     </div>
+                    <p className="text-danger">{errors.country?.message}</p>
                   </div>
                   <div className="form-group col-lg-6">
                     <input
-                      required=""
-                      type="text"
-                      name="city"
-                      placeholder="City / Town *"
-                    />
-                  </div>
-                </div>
-                <div className="row">
-                  <div className="form-group col-lg-6">
-                    <input
-                      required=""
+                      {...register("zipcode", {
+                        required: "This field is required",
+                      })}
                       type="text"
                       name="zipcode"
                       placeholder="Postcode / ZIP *"
+                      defaultValue={currentAddress?.zipCode}
                     />
-                  </div>
-                  <div className="form-group col-lg-6">
-                    <input
-                      required=""
-                      type="text"
-                      name="phone"
-                      placeholder="Phone *"
-                    />
+                    <p className="text-danger">{errors.zipcode?.message}</p>
                   </div>
                 </div>
-                <div className="row">
+
+                <div className="row d-none">
                   <div className="form-group col-lg-6">
                     <input
                       required=""
@@ -493,13 +587,13 @@ function Checkout() {
                     />
                   </div>
                 </div>
-                <div className="form-group mb-30">
+                <div className="form-group mb-30 d-none">
                   <textarea
                     rows="5"
                     placeholder="Additional information"
                   ></textarea>
                 </div>
-                <div className="form-group">
+                <div className="form-group d-none">
                   <div className="checkbox">
                     <div className="custome-checkbox">
                       <input
@@ -532,7 +626,7 @@ function Checkout() {
                     </div>
                   </div>
                 </div>
-                <div className="ship_detail">
+                <div className="ship_detail d-none">
                   <div className="form-group">
                     <div className="chek-form">
                       <div className="custome-checkbox">
@@ -900,6 +994,11 @@ function Checkout() {
                     </div>
                   </div>
                 </div>
+                <div style={{ width: "max-content" }} className="ms-auto">
+                  <button className="btn btn-fill-out btn-block mt-30 ml-auto">
+                    Place an Order<i className="fi-rs-sign-out ml-15"></i>
+                  </button>
+                </div>
               </form>
             </div>
           </div>
@@ -907,22 +1006,24 @@ function Checkout() {
             <div className="border p-40 cart-totals ml-30 mb-50">
               <div className="d-flex align-items-end justify-content-between mb-30">
                 <h4>Your Order</h4>
-                <h6 className="text-muted">Subtotal : {sum}</h6>
+                <h6 className="text-muted">Subtotal : {sum ? sum : 0}</h6>
               </div>
               <div className="divider-2 mb-30"></div>
               <div className="table-responsive order_table checkout">
                 <table className="table no-border">
                   <tbody>
-                    {cart
-                      ? cart.map((item, i) => (
-                          <CartItem
-                            key={i}
-                            name={item.name}
-                            image={item.imageUrl}
-                            price={item.price}
-                          />
-                        ))
-                      : null}
+                    {cart?.length > 0 ? (
+                      cart.map((item, i) => (
+                        <CartItem
+                          key={i}
+                          name={item.name}
+                          image={item.imageUrl}
+                          price={item.price}
+                        />
+                      ))
+                    ) : (
+                      <p className="text-center">No item to order.</p>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -992,13 +1093,6 @@ function Checkout() {
                 <LazyLoadImage className="mr-15" src={paymaster} alt="" />
                 <LazyLoadImage src={zappericon} alt="" />
               </div> */}
-              <a
-                href={void 0}
-                className="btn btn-fill-out btn-block mt-30"
-                onClick={handleOrderClick}
-              >
-                Place an Order<i className="fi-rs-sign-out ml-15"></i>
-              </a>
             </div>
           </div>
         </div>

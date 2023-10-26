@@ -35,7 +35,11 @@ function HomeEndDealsCard({ image, id, name, price, prodId, addToCart }) {
         <div className="product-img-action-wrap">
           <div className="product-img">
             <a href={void 0}>
-              <LazyLoadImage src={image} alt="" />
+              <LazyLoadImage
+                className="default-img prod-img-3"
+                src={image}
+                alt=""
+              />
             </a>
           </div>
         </div>

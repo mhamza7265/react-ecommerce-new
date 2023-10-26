@@ -8,6 +8,7 @@ import sendRequest, {
   errorToast,
   successToast,
 } from "../../../utility-functions/apiManager";
+import { addWishlist } from "../../../redux/reducers/wishlistReducer";
 
 function FilterProductCard({ setmodal, image, name, prodId, price }) {
   const dispatch = useDispatch();
@@ -20,7 +21,12 @@ function FilterProductCard({ setmodal, image, name, prodId, price }) {
     sendRequest("post", "wishlist", { product: id, isLiked: true })
       .then((res) => {
         successToast(res.message);
-        dispatch(updateWishlistNavbar());
+
+        sendRequest("get", "wishlist")
+          .then((res) => {
+            dispatch(addWishlist(res.wishlist));
+          })
+          .catch((err) => console.log(err));
       })
       .catch((err) => {
         errorToast(err.message);
@@ -30,7 +36,7 @@ function FilterProductCard({ setmodal, image, name, prodId, price }) {
   const handleCompareClick = (e) => {
     const id = e.target.closest(".filter-card-parent").getAttribute("data");
     const filteredProduct = products.find((item) => item._id == id);
-    const filtered = compared.find((item) => item == id);
+    const filtered = compared.find((item) => item._id == id);
     console.log(filteredProduct);
     if (!filtered && compared.length < 3) {
       dispatch(addCompareProduct(filteredProduct));
@@ -113,7 +119,11 @@ function FilterProductCard({ setmodal, image, name, prodId, price }) {
         <div className="product-img-action-wrap">
           <div className="product-img product-img-zoom">
             <a href={void 0}>
-              <LazyLoadImage className="default-img" src={image} alt="" />
+              <LazyLoadImage
+                className="default-img prod-img"
+                src={image}
+                alt=""
+              />
             </a>
           </div>
           <>
@@ -152,7 +162,7 @@ function FilterProductCard({ setmodal, image, name, prodId, price }) {
           <div className="product-category">
             <a href={void 0}>Snack</a>
           </div>
-          <h2>
+          <h2 className="prod-name">
             <a href={void 0}>{name}</a>
           </h2>
           <div className="product-rate-cover">
