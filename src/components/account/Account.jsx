@@ -92,7 +92,6 @@ function Account() {
   };
 
   const onSubmit = (data) => {
-    console.log(data);
     if (shippingAddress !== "") {
       setLoading(true);
       sendRequest("put", `address/${shippingAddress}`, {
@@ -356,15 +355,17 @@ function Account() {
                                   </div>
                                   <div className="card-body">
                                     <address>
-                                      {currentAddress?.address +
-                                        "," +
-                                        " " +
-                                        currentAddress?.city +
-                                        "," +
-                                        " " +
-                                        currentAddress?.state +
-                                        " " +
-                                        currentAddress?.zipCode}
+                                      {currentAddress
+                                        ? currentAddress?.address +
+                                          "," +
+                                          " " +
+                                          currentAddress?.city +
+                                          "," +
+                                          " " +
+                                          currentAddress?.state +
+                                          " " +
+                                          currentAddress?.zipCode
+                                        : null}
                                     </address>
                                     <p>{currentAddress?.country}</p>
                                     <a
@@ -656,9 +657,7 @@ function Account() {
                     </div>
                     <div className="form-group col-lg-6">
                       <input
-                        {...register("state", {
-                          required: "This field is required",
-                        })}
+                        {...register("state")}
                         type="text"
                         name="state"
                         placeholder="State *"
@@ -673,9 +672,7 @@ function Account() {
                       <div className="custom_select">
                         <select
                           className="form-control select-active"
-                          {...register("country", {
-                            required: "This field is required",
-                          })}
+                          {...register("country")}
                           name="country"
                           defaultValue={currentAddress?.country}
                           disabled
@@ -947,9 +944,7 @@ function Account() {
                     </div>
                     <div className="form-group col-lg-6">
                       <input
-                        {...register("zipcode", {
-                          required: "This field is required",
-                        })}
+                        {...register("zipcode")}
                         type="text"
                         name="zipcode"
                         placeholder="Postcode / ZIP *"

@@ -12,7 +12,6 @@ function FilterLowerCard({ name, price, image, prodId }) {
 
   var productArray;
   const handleCartClick = (e) => {
-    console.log("triggered");
     const id = e.target.closest(".lower-card-parent").getAttribute("data");
     const filtered = products.filter((item) => item._id == id)[0];
     const item = localStorage.getItem("cartItem");

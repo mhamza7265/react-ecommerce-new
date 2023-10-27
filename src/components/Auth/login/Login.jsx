@@ -76,8 +76,6 @@ function Login() {
           status: "error",
         });
       });
-    const storedData = localStorage.getItem("current_user");
-    console.log(JSON.parse(storedData));
   };
   return (
     <div>

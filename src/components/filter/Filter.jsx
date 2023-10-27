@@ -51,7 +51,6 @@ function Filter() {
 
   var productArray;
   const handleCartClick = (e) => {
-    console.log("triggered");
     const id = e.target.closest(".single-product-parent").getAttribute("data");
     const filtered = products.filter((item) => item._id == id)[0];
     const item = localStorage.getItem("cartItem");

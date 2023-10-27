@@ -17,7 +17,6 @@ function FilterProductCard({ setmodal, image, name, prodId, price }) {
 
   const handleWishlistClick = (e) => {
     const id = e.target.closest(".filter-card-parent").getAttribute("data");
-    console.log(id);
     sendRequest("post", "wishlist", { product: id, isLiked: true })
       .then((res) => {
         successToast(res.message);
@@ -37,7 +36,6 @@ function FilterProductCard({ setmodal, image, name, prodId, price }) {
     const id = e.target.closest(".filter-card-parent").getAttribute("data");
     const filteredProduct = products.find((item) => item._id == id);
     const filtered = compared.find((item) => item._id == id);
-    console.log(filteredProduct);
     if (!filtered && compared.length < 3) {
       dispatch(addCompareProduct(filteredProduct));
       successToast("Product added to compare!");

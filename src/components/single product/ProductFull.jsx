@@ -37,11 +37,16 @@ function ProductFull() {
   const [slider1, setSlider1] = useState(null);
   const [slider2, setSlider2] = useState(null);
   const [count, setCount] = useState(1);
+  const [wishlist, setWishlist] = useState(null);
   const products = useSelector((state) => state.products.products);
   const singleProduct = useSelector((state) => state.singleProduct.product);
   const compared = useSelector((state) => state.compare.productsToCompare);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  const filtered = wishlist?.find(
+    (item) => item.product?._id == singleProduct?._id
+  );
 
   useEffect(() => {
     setNav1(slider1);
@@ -69,6 +74,15 @@ function ProductFull() {
     centerPadding: "10px",
   };
 
+  useEffect(() => {
+    sendRequest("get", "wishlist")
+      .then((res) => {
+        // dispatch(addWishlist(res.wishlist));
+        setWishlist(res.wishlist);
+      })
+      .catch((err) => console.log(err));
+  }, []);
+
   var productArray;
   const handleCartClick = (e) => {
     const id = e.target.closest(".single-product-parent").getAttribute("data");
@@ -82,6 +96,7 @@ function ProductFull() {
       if (!check) {
         if (!cartId) {
           productArray = [filtered];
+          dispatch(startSpinner());
           sendRequest("post", "cart/add", {
             products: [
               {
@@ -93,17 +108,20 @@ function ProductFull() {
             ],
           })
             .then((res) => {
+              dispatch(stopSpinner());
               successToast("Product added into the cart!");
               localStorage.setItem("cartItem", JSON.stringify(productArray));
               localStorage.setItem("cartId", res.cartId);
               dispatch(updateCartNavbar());
             })
             .catch((err) => {
+              dispatch(stopSpinner());
               errorToast(err);
             });
         } else {
           productArray = [...cartItem, filtered];
           const cartId = localStorage.getItem("cartId");
+          dispatch(startSpinner());
           sendRequest("post", `cart/add/${cartId}`, {
             product: {
               product: filtered._id,
@@ -113,11 +131,13 @@ function ProductFull() {
             },
           })
             .then(() => {
+              dispatch(stopSpinner());
               successToast("Product added into the cart!");
               localStorage.setItem("cartItem", JSON.stringify(productArray));
               dispatch(updateCartNavbar());
             })
             .catch((err) => {
+              dispatch(stopSpinner());
               errorToast(err);
             });
         }
@@ -133,11 +153,9 @@ function ProductFull() {
   };
 
   const handleCompareClick = (e) => {
-    console.log("gvb");
     const id = e.target.closest(".single-product-parent").getAttribute("data");
     const filteredProduct = products.find((item) => item._id == id);
     const filtered = compared.find((item) => item._id == id);
-    console.log(filtered);
     if (!filtered && compared.length < 3) {
       dispatch(addCompareProduct(filteredProduct));
       successToast("Product added to compare!");
@@ -381,7 +399,11 @@ function ProductFull() {
                           className="action-btn hover-up"
                           onClick={handleWishlistClick}
                         >
-                          <i className="fi-rs-heart"></i>
+                          {filtered ? (
+                            <i className="fa-solid fa-heart"></i>
+                          ) : (
+                            <i className="fi-rs-heart"></i>
+                          )}
                         </a>
                         <a
                           aria-label="Compare"

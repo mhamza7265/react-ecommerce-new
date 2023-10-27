@@ -52,7 +52,6 @@ function Register() {
       lastname: data.last_name,
       password: data.password,
     };
-    console.log(reqData);
     sendRequest("post", "auth/register", {
       email: data.email,
       firstName: data.first_name,

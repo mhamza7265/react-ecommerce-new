@@ -10,9 +10,6 @@ import { useSelector } from "react-redux";
 function Wishlist() {
   const [wishlist, setWishlist] = useState(null);
   const [skeletontime, setSkeletontime] = useState(false);
-  // const wishlist = useSelector((state) => state.wishlist.wishlist.wishlist);
-
-  // console.log(wishlist?.map((item) => item))[0];
 
   useEffect(() => {
     sendRequest("get", "wishlist")

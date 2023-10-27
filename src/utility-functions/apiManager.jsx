@@ -27,17 +27,6 @@ const setRequestOptions = (method, url, payload) => {
     };
   }
 
-  // send Authorization
-
-  // if (filtered == undefined && storedItem !== undefined) {
-  //   header["auth"] = {
-  //     email: payload.email,
-  //     password: payload.password,
-  //   };
-  // } else if (!filtered && storedItem == undefined) {
-  //   return console.log("No token found");
-  // }
-
   header["method"] = method;
   header["url"] = `${BASE_URL}/${url}`;
 
@@ -51,12 +40,12 @@ const setRequestOptions = (method, url, payload) => {
 };
 
 const sendRequest = (method, url, payload) => {
-  console.log(url, payload);
+  // console.log(url, payload);
   return new Promise((resolve, reject) => {
     axios
       .request(setRequestOptions(method, url, payload))
       .then((response) => {
-        console.log(url, response);
+        // console.log(url, response);
         resolve(response.data);
       })
       .catch((error) => {
