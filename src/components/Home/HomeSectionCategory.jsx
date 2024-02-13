@@ -1,21 +1,12 @@
-import cat2 from "../../assets/imgs/shop/cat-2.webp";
 import Slider from "react-slick";
 import homeCategoryData from "../../Data/homeCategorySectionData";
 import HomeCategorySectionCard from "./home components/HomeCategorySectionCard";
 import ScrollAnimation from "react-animate-on-scroll";
 import { useSelector } from "react-redux";
 import CategorySection from "./skeleton-components/CategorySection";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import sendRequest from "../../utility-functions/apiManager";
-import { addCategory } from "../../redux/reducers/categoryReducer";
 
 function HomeSectionCategory() {
   const categorylist = useSelector((state) => state.categories.categories);
-  const dispatch = useDispatch();
-
-  const user = localStorage.getItem("current_user");
-  const currentUser = JSON.parse(user);
 
   var settings = {
     dots: false,
@@ -62,7 +53,7 @@ function HomeSectionCategory() {
           <div className="section-title">
             <div className="title">
               <h3>Featured Categories</h3>
-              <ul className="list-inline nav nav-tabs links">
+              {/* <ul className="list-inline nav nav-tabs links">
                 <li className="list-inline-item nav-item">
                   <a className="nav-link">Cake & Milk</a>
                 </li>
@@ -75,7 +66,7 @@ function HomeSectionCategory() {
                 <li className="list-inline-item nav-item">
                   <a className="nav-link">Vegetables</a>
                 </li>
-              </ul>
+              </ul> */}
             </div>
             <div
               className="slider-arrow slider-arrow-2 flex-right carausel-10-columns-arrow"
@@ -93,9 +84,10 @@ function HomeSectionCategory() {
                       <HomeCategorySectionCard
                         key={i}
                         id={`${i}00`}
-                        img1={cat2}
+                        img1={item.image}
                         name={item.name}
                         quantity={item.products}
+                        prodId={item._id}
                       />
                     ))}
               </Slider>

@@ -1,10 +1,11 @@
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import BASE_URL from "../../../utility-functions/config";
 
-function CartItem({ image, name, price }) {
+function CartItem({ image, name, price, quantity }) {
   return (
     <tr>
       <td className="image product-thumbnail">
-        <LazyLoadImage src={image} alt="#" />
+        <LazyLoadImage src={BASE_URL + "/" + image} alt="#" />
       </td>
       <td>
         <h6 className="w-160 mb-5">
@@ -18,10 +19,10 @@ function CartItem({ image, name, price }) {
         </div>
       </td>
       <td>
-        <h6 className="text-muted pl-20 pr-20">x 1</h6>
+        <h6 className="text-muted pl-20 pr-20">x {quantity}</h6>
       </td>
       <td>
-        <h4 className="text-brand">${price}</h4>
+        <h4 className="text-brand">${price.toFixed()}</h4>
       </td>
     </tr>
   );

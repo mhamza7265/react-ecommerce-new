@@ -38,13 +38,15 @@ function HomeSectionBanner() {
                       Products
                     </h4>
                   )}
-                  {!products ? (
-                    <Skeleton style={{ width: "30%", height: "32px" }} />
-                  ) : (
+                  {
+                    !products && (
+                      <Skeleton style={{ width: "30%", height: "32px" }} />
+                    ) /*: (
                     <a className="btn btn-xs">
                       Shop Now <i className="fi-rs-arrow-small-right"></i>
                     </a>
-                  )}
+                  )*/
+                  }
                 </div>
               </ScrollAnimation>
             </div>
@@ -70,13 +72,15 @@ function HomeSectionBanner() {
                       Healthy and Easy
                     </h4>
                   )}
-                  {!products ? (
-                    <Skeleton style={{ width: "30%", height: "32px" }} />
-                  ) : (
+                  {
+                    !products && (
+                      <Skeleton style={{ width: "30%", height: "32px" }} />
+                    ) /*: (
                     <a className="btn btn-xs">
                       Shop Now <i className="fi-rs-arrow-small-right"></i>
                     </a>
-                  )}
+                  )*/
+                  }
                 </div>
               </ScrollAnimation>
             </div>
@@ -101,13 +105,15 @@ function HomeSectionBanner() {
                       Products Online
                     </h4>
                   )}
-                  {!products ? (
-                    <Skeleton style={{ width: "30%", height: "32px" }} />
-                  ) : (
+                  {
+                    !products && (
+                      <Skeleton style={{ width: "30%", height: "32px" }} />
+                    ) /*: (
                     <a className="btn btn-xs">
                       Shop Now <i className="fi-rs-arrow-small-right"></i>
                     </a>
-                  )}
+                  )*/
+                  }
                 </div>
               </ScrollAnimation>
             </div>

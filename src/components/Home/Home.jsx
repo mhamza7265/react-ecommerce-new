@@ -16,12 +16,6 @@ import thumb5 from "../../assets/imgs/shop/thumbnail-5.webp";
 import thumb6 from "../../assets/imgs/shop/thumbnail-6.webp";
 import thumb7 from "../../assets/imgs/shop/thumbnail-7.webp";
 import thumb8 from "../../assets/imgs/shop/thumbnail-8.webp";
-import prod2 from "../../assets/imgs/shop/product-16-2.webp";
-import prod3 from "../../assets/imgs/shop/product-16-3.webp";
-import prod4 from "../../assets/imgs/shop/product-16-4.webp";
-import prod5 from "../../assets/imgs/shop/product-16-5.webp";
-import prod6 from "../../assets/imgs/shop/product-16-6.webp";
-import prod7 from "../../assets/imgs/shop/product-16-7.webp";
 import { Modal } from "react-bootstrap";
 import Slider from "react-slick";
 import { LazyLoadImage } from "react-lazy-load-image-component";
@@ -30,8 +24,11 @@ import sendRequest, {
   errorToast,
   successToast,
 } from "../../utility-functions/apiManager";
-import { updateCartNavbar } from "../../redux/reducers/navbarUpdateReducers/cartUpdateReducer";
 import { useNavigate } from "react-router";
+import BASE_URL from "../../utility-functions/config";
+import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
+import { updateCartQuantity } from "../../redux/reducers/cartQuantityReducer";
+import { updateCart } from "../../redux/reducers/cartReducer";
 
 function Home() {
   const [nav1, setNav1] = useState(null);
@@ -40,7 +37,6 @@ function Home() {
   const [slider2, setSlider2] = useState(null);
   const [count, setCount] = useState(1);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const products = useSelector((state) => state.products.products);
   const singleProduct = useSelector((state) => state.singleProduct.product);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -50,65 +46,33 @@ function Home() {
     setNav2(slider2);
   });
 
-  var productArray;
   const handleCartClick = (e) => {
     const id = e.target.closest(".single-product-parent").getAttribute("data");
-    const filtered = products.filter((item) => item._id == id)[0];
     const currentUser = localStorage.getItem("current_user");
-    const item = localStorage.getItem("cartItem");
-    const cartItem = JSON.parse(item);
-    const cartId = localStorage.getItem("cartId");
-    const check = cartItem?.find((item) => item._id == id);
     if (currentUser) {
-      if (!check) {
-        if (count !== 0) {
-          if (!cartId) {
-            productArray = [filtered];
-            sendRequest("post", "cart/add", {
-              products: [
-                {
-                  product: filtered._id,
-                  quantity: 1,
-                  price: 10000,
-                  taxable: false,
-                },
-              ],
-            })
+      dispatch(startSpinner());
+      sendRequest("post", "cart", { id, quantity: count })
+        .then((res) => {
+          dispatch(stopSpinner());
+          if (res.status) {
+            dispatch(updateCart(res.cart));
+            successToast(res.message);
+            sendRequest("get", "cart/qty")
               .then((res) => {
-                successToast("Product added into the cart!");
-                localStorage.setItem("cartItem", JSON.stringify(productArray));
-                localStorage.setItem("cartId", res.cartId);
-                dispatch(updateCartNavbar());
+                console.log(res);
+                dispatch(updateCartQuantity(res.quantity));
               })
               .catch((err) => {
-                errorToast(err);
+                console.log(err);
               });
           } else {
-            productArray = [...cartItem, filtered];
-            const cartId = localStorage.getItem("cartId");
-            sendRequest("post", `cart/add/${cartId}`, {
-              product: {
-                product: filtered._id,
-                quantity: 1,
-                price: 10000,
-                taxable: false,
-              },
-            })
-              .then(() => {
-                successToast("Product added into the cart!");
-                localStorage.setItem("cartItem", JSON.stringify(productArray));
-                dispatch(updateCartNavbar());
-              })
-              .catch((err) => {
-                errorToast(err);
-              });
+            errorToast(res.error);
           }
-        } else {
-          return errorToast("Quantity should be more than zero");
-        }
-      } else {
-        errorToast("Item is already in the cart!");
-      }
+        })
+        .catch((err) => {
+          dispatch(stopSpinner());
+          errorToast(err);
+        });
     } else {
       errorToast("Please login first!");
       setTimeout(() => {
@@ -163,7 +127,10 @@ function Home() {
             className="custom-modal"
             centered
             show={modalIsOpen}
-            onHide={() => setModalIsOpen(false)}
+            onHide={() => {
+              setModalIsOpen(false);
+              setCount(1);
+            }}
             style={{ zIndex: "9999", padding: 0 }}
           >
             <Modal.Header style={{ border: "none" }} closeButton></Modal.Header>
@@ -186,27 +153,45 @@ function Home() {
                       >
                         <div className="single-prod">
                           <LazyLoadImage
-                            src={singleProduct?.imageUrl}
+                            src={`${BASE_URL}/${singleProduct?.images[0]}`}
                             alt="product image"
                           />
                         </div>
                         <div className="single-prod">
-                          <LazyLoadImage src={prod2} alt="product image" />
+                          <LazyLoadImage
+                            src={`${BASE_URL}/${singleProduct?.images[1]}`}
+                            alt="product image"
+                          />
                         </div>
                         <div className="single-prod">
-                          <LazyLoadImage src={prod3} alt="product image" />
+                          <LazyLoadImage
+                            src={`${BASE_URL}/${singleProduct?.images[0]}`}
+                            alt="product image"
+                          />
                         </div>
                         <div className="single-prod">
-                          <LazyLoadImage src={prod4} alt="product image" />
+                          <LazyLoadImage
+                            src={`${BASE_URL}/${singleProduct?.images[1]}`}
+                            alt="product image"
+                          />
                         </div>
                         <div className="single-prod">
-                          <LazyLoadImage src={prod5} alt="product image" />
+                          <LazyLoadImage
+                            src={`${BASE_URL}/${singleProduct?.images[0]}`}
+                            alt="product image"
+                          />
                         </div>
                         <div className="single-prod">
-                          <LazyLoadImage src={prod6} alt="product image" />
+                          <LazyLoadImage
+                            src={`${BASE_URL}/${singleProduct?.images[1]}`}
+                            alt="product image"
+                          />
                         </div>
                         <div className="single-prod">
-                          <LazyLoadImage src={prod7} alt="product image" />
+                          <LazyLoadImage
+                            src={`${BASE_URL}/${singleProduct?.images[0]}`}
+                            alt="product image"
+                          />
                         </div>
                       </Slider>
                     </div>
@@ -270,13 +255,17 @@ function Home() {
                     <div className="clearfix product-price-cover">
                       <div className="product-price primary-color float-left">
                         <span className="current-price text-brand">
-                          ${singleProduct?.price}
+                          $
+                          {(singleProduct?.price / 100) *
+                            singleProduct?.discount.discountValue}
                         </span>
                         <span>
                           <span className="save-price font-md color3 ml-15">
-                            26% Off
+                            {singleProduct?.discount.discountValue}% Off
                           </span>
-                          <span className="old-price font-md ml-15">$52</span>
+                          <span className="old-price font-md ml-15">
+                            ${singleProduct?.price}
+                          </span>
                         </span>
                       </div>
                     </div>

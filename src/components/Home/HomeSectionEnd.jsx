@@ -10,6 +10,8 @@ function HomeSectionEnd() {
   const fourProductsThree = products ? products.slice(4, 7) : null;
   const fourProductsFour = products ? products.slice(5, 8) : null;
 
+  console.log("four products", fourProductsOne);
+
   return (
     <div>
       <section className="section-padding mb-30">
@@ -29,9 +31,10 @@ function HomeSectionEnd() {
                   fourProductsOne.map((item, i) => (
                     <HomeEndSection
                       key={i}
-                      image={item.imageUrl}
+                      image={item.images}
                       name={item.name}
                       price={item.price}
+                      discount={item.discount.discountValue}
                     />
                   ))
                 ) : (
@@ -53,9 +56,10 @@ function HomeSectionEnd() {
                   fourProductsTwo.map((item, i) => (
                     <HomeEndSection
                       key={i}
-                      image={item.imageUrl}
+                      image={item.images}
                       name={item.name}
                       price={item.price}
+                      discount={item.discount.discountValue}
                     />
                   ))
                 ) : (
@@ -77,9 +81,10 @@ function HomeSectionEnd() {
                   fourProductsThree.map((item, i) => (
                     <HomeEndSection
                       key={i}
-                      image={item.imageUrl}
+                      image={item.images}
                       name={item.name}
                       price={item.price}
+                      discount={item.discount.discountValue}
                     />
                   ))
                 ) : (
@@ -101,9 +106,10 @@ function HomeSectionEnd() {
                   fourProductsFour.map((item, i) => (
                     <HomeEndSection
                       key={i}
-                      image={item.imageUrl}
+                      image={item.images}
                       name={item.name}
                       price={item.price}
+                      discount={item.discount.discountValue}
                     />
                   ))
                 ) : (

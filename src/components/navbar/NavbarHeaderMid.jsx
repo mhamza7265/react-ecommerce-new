@@ -1,5 +1,4 @@
 import logo from "../../assets/imgs/theme/logo.svg";
-import compicon from "../../assets/imgs/theme/icons/icon-compare.svg";
 import wishicon from "../../assets/imgs/theme/icons/icon-heart.svg";
 import carticon from "../../assets/imgs/theme/icons/icon-cart.svg";
 import accnticon from "../../assets/imgs/theme/icons/icon-user.svg";
@@ -14,39 +13,26 @@ import sendRequest, {
 import { useSelector, useDispatch } from "react-redux";
 import NavbarMidCartDropdown from "./navbar-components/NavbarMidCartDropdown";
 import { useNavigate } from "react-router-dom";
-import { setSearch } from "../../redux/reducers/searchReducer";
 import { stopSpinner, startSpinner } from "../../redux/reducers/spinnerReducer";
-import { addWishlist } from "../../redux/reducers/wishlistReducer";
-import { updateWishlistNavbar } from "../../redux/reducers/navbarUpdateReducers/wishlistUpdateReducer";
+import { updateCart } from "../../redux/reducers/cartReducer";
+import { updateCartQuantity } from "../../redux/reducers/cartQuantityReducer";
+import { addSearchProduct } from "../../redux/reducers/searchedProductsReducer";
 
 function NavbarHeaderMid() {
-  const updateCart = useSelector((state) => state.updateCartNavbar.number);
+  const updatedCart = useSelector((state) => state.updateCartNavbar.number);
   const products = useSelector((state) => state.products.products);
-  const search = useSelector((state) => state.search.search);
-  const wishlist = useSelector((state) => state.wishlist.wishlist);
-  const productsToCompare = useSelector(
-    (state) => state.compare.productsToCompare
+  const cartQuantity = useSelector((state) => state.cartQuantity.quantity);
+  const wishlistQuantity = useSelector(
+    (state) => state.wishlistQuantity.quantity
   );
-  // const [wishlist, setWishlist] = useState(null);
   const currentUser = localStorage.getItem("current_user");
-  const [cart, setCart] = useState([]);
+  const [search, setSearch] = useState("");
+  const [searchError, setSearchError] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const currentCart = useSelector((state) => state.cart.cart);
 
-  // useEffect(() => {
-  //   sendRequest("get", "wishlist")
-  //     .then((res) => {
-  //       // dispatch(addWishlist(res.wishlist));
-  //       setWishlist(res.wishlist);
-  //     })
-  //     .catch((err) => console.log(err));
-  // }, []);
-
-  useEffect(() => {
-    const item = localStorage.getItem("cartItem");
-    const cartItem = JSON.parse(item);
-    setCart(cartItem);
-  }, [updateCart]);
+  console.log("searched", search);
 
   const handleWishlistNavClick = () => {
     const currentUser = localStorage.getItem("current_user");
@@ -74,21 +60,31 @@ function NavbarHeaderMid() {
     }
   };
 
-  const handleRemoveClick = (e) => {
-    const id = e.target
-      .closest(".cart-dropdown-single-parent")
-      .getAttribute("data");
-    const cartId = localStorage.getItem("cartId");
+  const handleRemoveClick = (id, quantity) => {
     dispatch(startSpinner());
-    sendRequest("delete", `cart/delete/${cartId}/${id}`)
-      .then(() => {
-        dispatch(stopSpinner());
-        successToast("Product removed from cart!");
-        const item = localStorage.getItem("cartItem");
-        const cartItem = JSON.parse(item);
-        const filtered = cartItem.filter((item) => item._id !== id);
-        localStorage.setItem("cartItem", JSON.stringify(filtered));
-        setCart(filtered);
+    sendRequest("delete", `cart`, { product: id, quantity })
+      .then((res) => {
+        if (res.status) {
+          dispatch(stopSpinner());
+          successToast("Product removed from cart!");
+          sendRequest("get", "cart")
+            .then((res) => {
+              if (res.status) {
+                sendRequest("get", "cart/qty")
+                  .then((res) => {
+                    console.log("quantity av", res);
+                    dispatch(updateCartQuantity(res.quantity));
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+                dispatch(updateCart(res.cart[0]));
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
       })
       .catch((err) => {
         dispatch(stopSpinner());
@@ -96,9 +92,28 @@ function NavbarHeaderMid() {
       });
   };
 
-  const handleSearch = (e) => {
+  const handleSearchChange = (e) => {
     const value = e.target.value;
-    dispatch(setSearch(value));
+    setSearchError(false);
+    setSearch(value);
+  };
+
+  const handleSearchClick = (e) => {
+    if (search !== "") {
+      setSearchError(false);
+      dispatch(startSpinner());
+      sendRequest("post", "products/filter", { products: search }).then(
+        (res) => {
+          dispatch(stopSpinner());
+          console.log("searcedProd", res.filtered);
+          dispatch(addSearchProduct(res.filtered));
+          setSearch("");
+          navigate("/searchedProducts");
+        }
+      );
+    } else {
+      setSearchError(true);
+    }
   };
 
   return (
@@ -124,14 +139,14 @@ function NavbarHeaderMid() {
             ) : (
               <>
                 <div className="logo logo-width-1">
-                  <a href={void 0}>
+                  <Link to="/" href={void 0}>
                     <LazyLoadImage src={logo} alt="logo" />
-                  </a>
+                  </Link>
                 </div>
                 <div className="header-right">
                   <div className="search-style-2">
-                    <form action="#">
-                      <select className="select-active">
+                    <form onSubmit={(e) => e.preventDefault()}>
+                      {/* <select className="select-active">
                         <option>All Categories</option>
                         <option>Milks and Dairies</option>
                         <option>Wines & Alcohol</option>
@@ -143,14 +158,26 @@ function NavbarHeaderMid() {
                         <option>Fresh Seafood</option>
                         <option>Noodles & Rice</option>
                         <option>Ice cream</option>
-                      </select>
+                      </select> */}
                       <input
                         type="text"
-                        onChange={handleSearch}
+                        onChange={handleSearchChange}
                         placeholder="Search for items..."
                         value={search}
                       />
+                      <button
+                        type="submit"
+                        className="search-btn"
+                        onClick={handleSearchClick}
+                      >
+                        <i className="fa fa-search"></i>
+                      </button>
                     </form>
+                    {searchError ? (
+                      <p style={{ color: "red", textAlign: "center" }}>
+                        Please type product name to search!
+                      </p>
+                    ) : null}
                   </div>
                   <div className="header-action-right">
                     <div className="header-action-2">
@@ -174,7 +201,7 @@ function NavbarHeaderMid() {
                           </select>
                         </form>
                       </div>
-                      <div className="header-action-icon-2">
+                      {/* <div className="header-action-icon-2">
                         <Link to="/compare">
                           <LazyLoadImage
                             className="svgInject"
@@ -188,7 +215,7 @@ function NavbarHeaderMid() {
                         <Link to="/compare">
                           <span className="lable ml-0">Compare</span>
                         </Link>
-                      </div>
+                      </div> */}
                       <div className="header-action-icon-2">
                         <Link to="/Wishlist">
                           <LazyLoadImage
@@ -197,7 +224,7 @@ function NavbarHeaderMid() {
                             src={wishicon}
                           />
                           <span className="pro-count blue">
-                            {wishlist ? wishlist?.length : 0}
+                            {wishlistQuantity ? wishlistQuantity : 0}
                           </span>
                         </Link>
                         <a href={void 0} onClick={handleWishlistNavClick}>
@@ -208,7 +235,7 @@ function NavbarHeaderMid() {
                         <Link to="/cart" className="mini-cart-icon">
                           <LazyLoadImage alt="Nest" src={carticon} />
                           <span className="pro-count blue">
-                            {cart ? cart.length : 0}
+                            {cartQuantity ? cartQuantity : 0}
                           </span>
                         </Link>
                         {
@@ -231,17 +258,21 @@ function NavbarHeaderMid() {
                             }}
                           >
                             <ul>
-                              {cart?.length > 0 ? (
-                                cart.map((item, i) => (
-                                  <NavbarMidCartDropdown
-                                    key={i}
-                                    image={item.imageUrl}
-                                    name={item.name}
-                                    price={item.price}
-                                    prodId={item._id}
-                                    delItem={handleRemoveClick}
-                                  />
-                                ))
+                              {currentCart ? (
+                                Object.values(currentCart.cartItems[0]).map(
+                                  (item, i) => (
+                                    <NavbarMidCartDropdown
+                                      key={i}
+                                      image={item.images[0][0]}
+                                      name={item.name}
+                                      price={item.price}
+                                      discount={item.discount.discountValue}
+                                      quantity={item.quantity}
+                                      prodId={item.productId}
+                                      delItem={handleRemoveClick}
+                                    />
+                                  )
+                                )
                               ) : (
                                 <p className="text-center">
                                   No item in the cart.
@@ -278,7 +309,7 @@ function NavbarHeaderMid() {
                             </Link>
 
                             <Link to="/account">
-                              <span className="lable ml-0">Account</span>
+                              <span className="lable ml-0">Dashboard</span>
                             </Link>
                           </>
                         ) : (
@@ -291,7 +322,7 @@ function NavbarHeaderMid() {
                             <li>
                               <a href={void 0}>
                                 <i className="fi fi-rs-user mr-10"></i>My
-                                Account
+                                Dashboard
                               </a>
                             </li>
                             <li>

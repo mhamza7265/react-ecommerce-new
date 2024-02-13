@@ -6,9 +6,6 @@ import sendRequest, {
   successToast,
 } from "../../../utility-functions/apiManager";
 import { useDispatch, useSelector } from "react-redux";
-import { addCompareProduct } from "../../../redux/reducers/compareProductsReducer";
-import { updateWishlistNavbar } from "../../../redux/reducers/navbarUpdateReducers/wishlistUpdateReducer";
-import { updateCartNavbar } from "../../../redux/reducers/navbarUpdateReducers/cartUpdateReducer";
 import { addSingleProduct } from "../../../redux/reducers/singleProductReducer";
 import { useNavigate } from "react-router";
 import {
@@ -16,39 +13,55 @@ import {
   stopSpinner,
 } from "../../../redux/reducers/spinnerReducer";
 import { addWishlist } from "../../../redux/reducers/wishlistReducer";
+import { updateCartQuantity } from "../../../redux/reducers/cartQuantityReducer";
+import { updateWishlistQuantity } from "../../../redux/reducers/wishlistQuantityReducer";
+import { useState } from "react";
+import { useEffect } from "react";
+import { updateCart } from "../../../redux/reducers/cartReducer";
 
 function HomeProductCard({
   setmodal,
   id,
-  image,
   name,
+  img1,
+  img2,
   price,
+  discountVal,
   prodId,
-  wishlist,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const compared = useSelector((state) => state.compare.productsToCompare);
-  const products = useSelector((state) => state.products.products);
-  // const wishlist = useSelector((state) => state.wishlist.wishlist);
+  const imgs1 = `http://localhost:3000/${img1}`;
+  const imgs2 = `http://localhost:3000/${img2}`;
+  const wishlistList = useSelector((state) => state.wishlist.wishlist);
 
-  const filtered = wishlist?.find((item) => item.product?._id == prodId);
+  const filtered = wishlistList?.find((item) => item.productId == prodId);
 
   const handleWishlistClick = (e) => {
     const id = e.target.closest(".product-parent").getAttribute("data");
     const currentUser = localStorage.getItem("current_user");
     if (currentUser) {
       dispatch(startSpinner());
-      sendRequest("post", "wishlist", { product: id, isLiked: true })
+      sendRequest("post", "wishlist", { prodId: id })
         .then((res) => {
           dispatch(stopSpinner());
           successToast(res.message);
+          console.log("res", res.message);
 
           sendRequest("get", "wishlist")
             .then((res) => {
               dispatch(addWishlist(res.wishlist));
             })
             .catch((err) => console.log(err));
+
+          sendRequest("get", "wishlist/qty")
+            .then((res) => {
+              console.log(res);
+              dispatch(updateWishlistQuantity(res.wishlistQuantity));
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         })
         .catch((err) => {
           dispatch(stopSpinner());
@@ -62,27 +75,27 @@ function HomeProductCard({
     }
   };
 
-  const handleCompareClick = (e) => {
-    const id = e.target.closest(".product-parent").getAttribute("data");
-    const filteredProduct = products.find((item) => item._id == id);
-    const filtered = compared.find((item) => item._id == id);
-    if (!filtered && compared.length < 3) {
-      dispatch(addCompareProduct(filteredProduct));
-      successToast("Product added to compare!");
-    } else if (compared.length >= 3) {
-      errorToast("Only 3 products can be compared!");
-    } else {
-      errorToast("Product already added!");
-    }
-  };
+  // const handleCompareClick = (e) => {
+  //   const id = e.target.closest(".product-parent").getAttribute("data");
+  //   const filteredProduct = products.find((item) => item._id == id);
+  //   const filtered = compared.find((item) => item._id == id);
+  //   if (!filtered && compared.length < 3) {
+  //     dispatch(addCompareProduct(filteredProduct));
+  //     successToast("Product added to compare!");
+  //   } else if (compared.length >= 3) {
+  //     errorToast("Only 3 products can be compared!");
+  //   } else {
+  //     errorToast("Product already added!");
+  //   }
+  // };
 
   const handleModelClick = (e) => {
     const id = e.target.closest(".product-parent").getAttribute("data");
     dispatch(startSpinner());
-    sendRequest("post", "product/detail", { id: id })
+    sendRequest("get", `product/single/${id}`)
       .then((res) => {
         dispatch(stopSpinner());
-        dispatch(addSingleProduct(res.product));
+        dispatch(addSingleProduct(res.data[0]));
         setmodal(true);
       })
       .catch((err) => {
@@ -94,10 +107,10 @@ function HomeProductCard({
   const handleSingleProductClick = (e) => {
     const id = e.target.closest(".product-parent").getAttribute("data");
     dispatch(startSpinner());
-    sendRequest("post", "product/detail", { id: id })
+    sendRequest("get", `product/single/${id}`)
       .then((res) => {
         dispatch(stopSpinner());
-        dispatch(addSingleProduct(res.product));
+        dispatch(addSingleProduct(res.data[0]));
         navigate("/singleproduct");
       })
       .catch((err) => {
@@ -106,67 +119,33 @@ function HomeProductCard({
       });
   };
 
-  var productArray;
   const handleCartClick = (e) => {
     const id = e.target.closest(".product-parent").getAttribute("data");
-    const filtered = products.filter((item) => item._id == id)[0];
     const currentUser = localStorage.getItem("current_user");
-    const item = localStorage.getItem("cartItem");
-    const cartItem = JSON.parse(item);
-    const cartId = localStorage.getItem("cartId");
-    const check = cartItem?.find((item) => item._id == id);
     if (currentUser) {
-      if (!check) {
-        if (!cartId) {
-          productArray = [filtered];
-          dispatch(startSpinner());
-          sendRequest("post", "cart/add", {
-            products: [
-              {
-                product: filtered._id,
-                quantity: 1,
-                price: 10000,
-                taxable: false,
-              },
-            ],
-          })
-            .then((res) => {
-              dispatch(stopSpinner());
-              successToast("Product added into the cart!");
-              localStorage.setItem("cartItem", JSON.stringify(productArray));
-              localStorage.setItem("cartId", res.cartId);
-              dispatch(updateCartNavbar());
-            })
-            .catch((err) => {
-              dispatch(stopSpinner());
-              errorToast(err);
-            });
-        } else {
-          productArray = [...cartItem, filtered];
-          const cartId = localStorage.getItem("cartId");
-          dispatch(startSpinner());
-          sendRequest("post", `cart/add/${cartId}`, {
-            product: {
-              product: filtered._id,
-              quantity: 1,
-              price: 10000,
-              taxable: false,
-            },
-          })
-            .then(() => {
-              dispatch(stopSpinner());
-              successToast("Product added into the cart!");
-              localStorage.setItem("cartItem", JSON.stringify(productArray));
-              dispatch(updateCartNavbar());
-            })
-            .catch((err) => {
-              dispatch(stopSpinner());
-              errorToast(err);
-            });
-        }
-      } else {
-        errorToast("Item is already in the cart!");
-      }
+      dispatch(startSpinner());
+      sendRequest("post", "cart", { id, quantity: 1 })
+        .then((res) => {
+          dispatch(stopSpinner());
+          if (res.status) {
+            dispatch(updateCart(res.cart));
+            successToast(res.message);
+            sendRequest("get", "cart/qty")
+              .then((res) => {
+                console.log(res);
+                dispatch(updateCartQuantity(res.quantity));
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            errorToast(res.error);
+          }
+        })
+        .catch((err) => {
+          dispatch(stopSpinner());
+          errorToast(err);
+        });
     } else {
       errorToast("Please login first!");
       setTimeout(() => {
@@ -193,14 +172,14 @@ function HomeProductCard({
                 <a href={void 0}>
                   <LazyLoadImage
                     className="default-img prod-img"
-                    src={image}
+                    src={imgs1}
                     alt=""
                   />
-                  {/* <LazyLoadImage
-                      className="hover-img"
-                      src={product22}
-                      alt=""
-                    /> */}
+                  <LazyLoadImage
+                    className="hover-img prod-img"
+                    src={imgs2}
+                    alt=""
+                  />
                 </a>
               </div>
               <div className="product-action-1">
@@ -215,14 +194,14 @@ function HomeProductCard({
                     <i className="fi-rs-heart"></i>
                   )}
                 </a>
-                <a
+                {/* <a
                   href={void 0}
                   aria-label="Compare"
                   className="action-btn"
                   onClick={handleCompareClick}
                 >
                   <i className="fi-rs-shuffle"></i>
-                </a>
+                </a> */}
                 <a
                   href={void 0}
                   aria-label="Quick view"
@@ -261,8 +240,8 @@ function HomeProductCard({
             </div>
             <div className="product-card-bottom">
               <div className="product-price">
-                <span>${price}</span>
-                <span className="old-price">$55.8</span>
+                <span>${(price / 100) * discountVal}</span>
+                <span className="old-price">${price}</span>
               </div>
 
               <div className="add-cart">

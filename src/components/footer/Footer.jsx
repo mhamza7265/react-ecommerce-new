@@ -271,6 +271,7 @@ function Footer() {
                 </ul>
               </ScrollAnimation>
             </div>
+            <div className="col"></div>
             <ScrollAnimation
               animateIn="animate__animated animate__fadeInUp"
               className="footer-link-widget col"
@@ -282,24 +283,24 @@ function Footer() {
                 <li>
                   <a href={void 0}>About Us</a>
                 </li>
-                <li>
+                {/* <li>
                   <a href={void 0}>Delivery Information</a>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <a href={void 0}>Privacy Policy</a>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <a href={void 0}>Terms &amp; Conditions</a>
-                </li>
+                </li> */}
                 <li>
                   <a href={void 0}>Contact Us</a>
                 </li>
-                <li>
+                {/* <li>
                   <a href={void 0}>Support Center</a>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <a href={void 0}>Careers</a>
-                </li>
+                </li> */}
               </ul>
             </ScrollAnimation>
             <ScrollAnimation
@@ -319,21 +320,21 @@ function Footer() {
                 <li>
                   <a href={void 0}>My Wishlist</a>
                 </li>
-                <li>
+                {/* <li>
                   <a href={void 0}>Track My Order</a>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <a href={void 0}>Help Ticket</a>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <a href={void 0}>Shipping Details</a>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <a href={void 0}>Compare products</a>
-                </li>
+                </li> */}
               </ul>
             </ScrollAnimation>
-            <ScrollAnimation
+            {/* <ScrollAnimation
               animateIn="animate__animated animate__fadeInUp"
               className="footer-link-widget col"
               delay={600}
@@ -363,8 +364,8 @@ function Footer() {
                   <a href={void 0}>Promotions</a>
                 </li>
               </ul>
-            </ScrollAnimation>
-            <ScrollAnimation
+            </ScrollAnimation> */}
+            {/* <ScrollAnimation
               animateIn="animate__animated animate__fadeInUp"
               className="footer-link-widget col"
               delay={800}
@@ -394,7 +395,7 @@ function Footer() {
                   <a href={void 0}>Cheese</a>
                 </li>
               </ul>
-            </ScrollAnimation>
+            </ScrollAnimation> */}
             <ScrollAnimation
               animateIn="animate__animated animate__fadeInUp"
               className="footer-link-widget widget-install-app col"

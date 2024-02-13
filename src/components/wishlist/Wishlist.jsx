@@ -5,11 +5,23 @@ import WishlistRow from "./wishlist-components/WishlistRow";
 import sendRequest from "../../utility-functions/apiManager";
 import WishlistSkeleton from "./skeleton-components/WishlistSkeleton";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { BounceLoader } from "react-spinners";
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState(null);
   const [skeletontime, setSkeletontime] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const override = {
+    display: "block",
+    position: "absolute",
+    top: 0,
+    left: "90%",
+    margin: "0 auto",
+    borderColor: "red",
+    width: "10px",
+    height: "55px",
+  };
 
   useEffect(() => {
     sendRequest("get", "wishlist")
@@ -35,6 +47,14 @@ function Wishlist() {
                   <i className="fi-rs-home mr-5"></i>Home
                 </Link>
                 <span></span> Shop <span></span> Wishlist
+                <BounceLoader
+                  color={"#3bb77e"}
+                  loading={loading}
+                  cssOverride={override}
+                  size={150}
+                  aria-label="Loading Spinner"
+                  data-testid="loader"
+                />
               </div>
             </div>
           </div>
@@ -48,7 +68,7 @@ function Wishlist() {
                       There are{" "}
                       <span className="text-brand">
                         {wishlist ? wishlist.length : 0}
-                      </span>
+                      </span>{" "}
                       products in this list
                     </h6>
                   </>
@@ -76,6 +96,8 @@ function Wishlist() {
                           Product
                         </th>
                         <th scope="col">Price</th>
+                        <th scope="col">Discount</th>
+                        <th scope="col">Discounted Price</th>
                         <th scope="col">Stock Status</th>
                         <th scope="col">Action</th>
                         <th scope="col" className="end">
@@ -89,10 +111,13 @@ function Wishlist() {
                           <WishlistRow
                             key={i}
                             id={i}
-                            name={item.product?.name}
-                            image={item.product?.imageUrl}
-                            price={item.product?.price}
-                            prodId={item.product?._id}
+                            name={item?.product[0].name}
+                            image={item.product[0].images[0]}
+                            price={item.product[0].price}
+                            discount={item.product[0].discount.discountValue}
+                            prodId={item.productId}
+                            setLoading={setLoading}
+                            setWishlist={setWishlist}
                           />
                         ))
                       ) : (

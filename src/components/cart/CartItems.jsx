@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import Skeleton from "react-loading-skeleton";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import sendRequest from "../../utility-functions/apiManager";
+import { BarLoader } from "react-spinners";
+import { useDispatch } from "react-redux";
+import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
+import BASE_URL from "../../utility-functions/config";
 
 function CartItems({
   id,
@@ -9,40 +14,110 @@ function CartItems({
   price,
   image,
   del,
-  setIncrementTotal,
-  setDecrementTotal,
-  cartItems,
+  total,
+  subTotal,
+  quantity,
+  setCartItems,
   setTotal,
+  discount,
 }) {
   const [count, setCount] = useState(1);
   const [value, setValue] = useState(0);
+  const [spinnerStatus, setSpinnerStatus] = useState(false);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    var val = (parseInt(price) * count).toFixed(1);
-    setValue(val);
-  }, [count]);
-
-  useEffect(() => {
-    setCount(0);
-    setTotal(0);
-  }, [cartItems]);
-
-  const handleDecrementClick = () => {
-    count > 0 ? setCount(() => count - 1) : null;
-    setDecrementTotal(price, value);
+  const override = {
+    display: "block",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    margin: "0 auto",
+    borderColor: "red",
+    height: "1px",
+    width: "100%",
+    backgroundColor: "#3bb77e",
+    padding: 0,
   };
 
-  const handleIncrementClick = () => {
-    setCount(() => count + 1);
-    setIncrementTotal(price);
+  useEffect(() => {
+    setCount(quantity);
+    setValue(quantity);
+  }, [value]);
+
+  const handleDecrementClick = (e) => {
+    count > 1 ? setCount(() => count - 1) : null;
+    const handleSendRequest = (countValue) => {
+      const id = e.target.closest(".cart-item").getAttribute("data");
+      console.log("count", count);
+      let calculate = quantity - countValue;
+      console.log("calculate", calculate);
+      console.log("quantity", quantity);
+      // setSpinnerStatus(true);
+      dispatch(startSpinner());
+      sendRequest("post", "cart", {
+        id,
+        quantity: calculate,
+        decreaseQuantity: true,
+      }).then((res) => {
+        // setSpinnerStatus(false);
+        dispatch(stopSpinner());
+        console.log(res);
+        setCartItems(res.cart.cartItems[0]);
+        sendRequest("get", "cart/total")
+          .then((res) => {
+            if (res.status) {
+              setTotal(res.calculation);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      });
+    };
+    handleSendRequest(count > 1 ? count - 1 : count);
+  };
+
+  const handleIncrementClick = (e) => {
+    setCount((prevCount) => prevCount + 1);
+
+    const handleSendRequest = (countValue) => {
+      const id = e.target.closest(".cart-item").getAttribute("data");
+      dispatch(startSpinner());
+      sendRequest("post", "cart", {
+        id,
+        quantity: Math.abs(parseInt(countValue) - parseInt(quantity)),
+      }).then((res) => {
+        dispatch(stopSpinner());
+        setCartItems(res.cart.cartItems[0]);
+        sendRequest("get", "cart/total")
+          .then((res) => {
+            if (res.status) {
+              setTotal(res.calculation);
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      });
+    };
+
+    handleSendRequest(count + 1);
   };
 
   const delItem = (e) => {
-    del(e, value, setCount);
+    del(e, quantity);
   };
 
   return (
-    <tr className="cart-item" data={prodId}>
+    <tr className="cart-item position-relative" data={prodId}>
+      <BarLoader
+        color={"#ffffff"}
+        loading={spinnerStatus}
+        cssOverride={override}
+        size={150}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+      />
       <td className="custome-checkbox pl-30">
         <>
           <input
@@ -58,7 +133,7 @@ function CartItems({
         </>
       </td>
       <td className="image product-thumbnail">
-        <LazyLoadImage src={image} alt="#" />
+        <LazyLoadImage src={BASE_URL + "/" + image} alt="#" />
       </td>
       <td className="product-des product-name">
         <>
@@ -91,7 +166,7 @@ function CartItems({
             >
               <i className="fi-rs-angle-small-down"></i>
             </a>
-            <input className="qty-val" value={count} />
+            <input className="qty-val" readOnly value={quantity} />
             <a
               style={{ cursor: "pointer" }}
               onClick={handleIncrementClick}
@@ -103,7 +178,13 @@ function CartItems({
         </div>
       </td>
       <td className="price" data-title="Price">
-        <h4 className="text-brand">${(parseInt(price) * count).toFixed(1)}</h4>
+        <h4 className="text-brand">${subTotal.toFixed()}</h4>
+      </td>
+      <td className="discount" data-title="discount">
+        <h4 className="text-body">{discount}%</h4>
+      </td>
+      <td className="price" data-title="Price">
+        <h4 className="text-brand">${total.toFixed()}</h4>
       </td>
       <td className="action text-center" data-title="Remove">
         <a href={void 0} className="text-body" onClick={delItem}>

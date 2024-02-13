@@ -1,11 +1,12 @@
 import axios from "axios";
 import BASE_URL from "./config";
 import { createStandaloneToast } from "@chakra-ui/react";
-const apiKey = import.meta.env.BASE_URL;
+// const apiKey = import.meta.env.BASE_URL;
 const openApis = ["auth/login", "auth/register"];
 const { toast } = createStandaloneToast();
 
 const setRequestOptions = (method, url, payload) => {
+  console.log("payload", payload);
   const storedItem = localStorage.getItem("current_user");
   const storedData = JSON.parse(storedItem);
   const filtered = openApis.find((item) => item == url);
@@ -35,7 +36,7 @@ const setRequestOptions = (method, url, payload) => {
   } else {
     header["params"] = payload;
   }
-
+  console.log("headers", header);
   return header;
 };
 
@@ -60,8 +61,9 @@ const sendRequest = (method, url, payload) => {
 export const successToast = (data) => {
   toast({
     title: data,
-    position: "top-right",
-    isClosable: true,
+    position: "top",
+    isClosable: false,
+    variant: "top-accent",
     duration: 3000,
     status: "success",
   });
@@ -70,8 +72,8 @@ export const successToast = (data) => {
 export const warningToast = (data) => {
   toast({
     title: data,
-    position: "top-right",
-    isClosable: true,
+    position: "top",
+    isClosable: false,
     duration: 3000,
     status: "warning",
   });
@@ -80,8 +82,8 @@ export const warningToast = (data) => {
 export const errorToast = (data) => {
   toast({
     title: data,
-    position: "top-right",
-    isClosable: true,
+    position: "top",
+    isClosable: false,
     duration: 3000,
     status: "error",
   });

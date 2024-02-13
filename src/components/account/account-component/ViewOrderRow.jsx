@@ -3,8 +3,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { addSingleProduct } from "../../../redux/reducers/singleProductReducer";
 import { useNavigate } from "react-router";
 import sendRequest from "../../../utility-functions/apiManager";
+import BASE_URL from "../../../utility-functions/config";
 
-function ViewOrderRow({ name, price, image, prodId }) {
+function ViewOrderRow({
+  name,
+  productPrice,
+  discount,
+  quantity,
+  price,
+  image,
+  prodId,
+}) {
   const products = useSelector((state) => state.products.products);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -13,7 +22,7 @@ function ViewOrderRow({ name, price, image, prodId }) {
     const id = e.target.closest(".view-order-parent").getAttribute("data");
     sendRequest("post", "product/detail", { id: id })
       .then((res) => {
-        dispatch(addSingleProduct(res.product));
+        // dispatch(addSingleProduct(res.product));
         navigate("/singleproduct");
       })
       .catch((err) => console.log(err));
@@ -22,7 +31,7 @@ function ViewOrderRow({ name, price, image, prodId }) {
   return (
     <tr className="cart-item view-order-parent" data={prodId}>
       <td className="image product-thumbnail">
-        <LazyLoadImage src={image} alt="#" />
+        <LazyLoadImage src={BASE_URL + "/" + image[0]} alt="#" />
       </td>
       <td className="product-des product-name">
         <h6 className="mb-5">
@@ -35,7 +44,16 @@ function ViewOrderRow({ name, price, image, prodId }) {
         </h6>
       </td>
       <td className="price" data-title="Price">
-        <h4 className="text-body">${price}</h4>
+        <h4 className="text-body">{productPrice}</h4>
+      </td>
+      <td className="price" data-title="Price">
+        <h4 className="text-body">{discount}%</h4>
+      </td>
+      <td className="price" data-title="Price">
+        <h4 className="text-body">{quantity}</h4>
+      </td>
+      <td className="price" data-title="Price">
+        <h4 className="text-body">${price.toFixed()}</h4>
       </td>
     </tr>
   );

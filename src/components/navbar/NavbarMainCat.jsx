@@ -14,6 +14,8 @@ import icon3 from "../../assets/imgs/theme/icons/icon-3.svg";
 import icon4 from "../../assets/imgs/theme/icons/icon-4.svg";
 import { useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useSelector } from "react-redux";
+import NavebarMidMainCatComponent from "./navbar-components/NavebarMidMainCatComponent";
 
 function NavbarMainCat() {
   const [classActive, setClassActive] = useState(false);
@@ -22,10 +24,11 @@ function NavbarMainCat() {
     setClassActive(!classActive);
     expandActive ? setExpandActive(false) : null;
   };
+  const categories = useSelector((state) => state.categories.categories);
 
-  const handleExpandClick = () => {
-    setExpandActive(true);
-  };
+  // const handleExpandClick = () => {
+  //   setExpandActive(true);
+  // };
   return (
     <div>
       <div className="main-categori-wrap d-none d-lg-block me-5">
@@ -41,9 +44,12 @@ function NavbarMainCat() {
             classActive ? "open" : null
           }`}
         >
-          <div className="d-flex categori-dropdown-inner">
-            <ul>
-              <li>
+          <div
+            className="categori-dropdown-inner"
+            style={{ height: "250px", overflowY: "auto" }}
+          >
+            <ul className="w-100">
+              {/* <li>
                 <a href={void 0}>
                   {" "}
                   <LazyLoadImage src={cat1} alt="" />
@@ -78,8 +84,6 @@ function NavbarMainCat() {
                   Fresh Fruit
                 </a>
               </li>
-            </ul>
-            <ul className="end">
               <li>
                 <a href={void 0}>
                   {" "}
@@ -114,10 +118,19 @@ function NavbarMainCat() {
                   <LazyLoadImage src={cat10} alt="" />
                   Bread and Juice
                 </a>
-              </li>
+              </li> */}
+              {categories &&
+                categories.map((item, i) => (
+                  <NavebarMidMainCatComponent
+                    key={i}
+                    id={item._id}
+                    name={item.name}
+                    image={item.image}
+                  />
+                ))}
             </ul>
           </div>
-          <div
+          {/* <div
             className="more_slide_open"
             style={{ display: `${expandActive ? "block" : "none"}` }}
           >
@@ -168,7 +181,7 @@ function NavbarMainCat() {
               <span className="icon"></span>{" "}
               <span className="heading-sm-1">Show more...</span>
             </a>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

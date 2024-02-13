@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import BASE_URL from "../../../utility-functions/config";
 
-function HomeEndSection({ image, name }) {
+function HomeEndSection({ image, name, price, discount }) {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     setTimeout(() => {
@@ -19,7 +20,7 @@ function HomeEndSection({ image, name }) {
           />
         ) : (
           <a href={void 0}>
-            <LazyLoadImage src={image} alt="" />
+            <LazyLoadImage src={BASE_URL + "/" + image[0]} alt="" />
           </a>
         )}
       </figure>
@@ -45,8 +46,8 @@ function HomeEndSection({ image, name }) {
           <Skeleton style={{ width: "40%" }} />
         ) : (
           <div className="product-price">
-            <span>$32.85</span>
-            <span className="old-price">$33.8</span>
+            <span>${(price / 100) * discount}</span>
+            <span className="old-price">${price}</span>
           </div>
         )}
       </div>

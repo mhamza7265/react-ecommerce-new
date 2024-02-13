@@ -15,6 +15,9 @@ import { Modal } from "react-bootstrap";
 import ViewOrderRow from "./account-component/viewOrderRow";
 import { useForm } from "react-hook-form";
 import { BounceLoader } from "react-spinners";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
 
 function Account() {
   const [currentUser, setCurrentUser] = useState("");
@@ -23,17 +26,34 @@ function Account() {
   const [addressModalIsOpen, setAddressModalIsOpen] = useState(false);
   const [viewOrder, setViewOrder] = useState(null);
   const [currentAddress, setCurrentAddress] = useState("");
+  const [orderStatus, setOrderStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [loadingUser, setLoadingUser] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const shippingAddress = localStorage.getItem("shippingAddress");
   const storedData = localStorage.getItem("current_user");
   const storedToken = JSON.parse(storedData)?.token;
+  const ordersList = useSelector((state) => state.order.orders);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+  } = useForm();
+
+  const {
+    register: registerOrder,
+    handleSubmit: handleOrderSubmit,
+    formState: { errors: errors2 },
+  } = useForm();
+
+  const {
+    register: registerUser,
+    handleSubmit: handleUserSubmit,
+    watch,
+    formState: { errors: errors3 },
   } = useForm();
 
   const override = {
@@ -47,34 +67,42 @@ function Account() {
     height: "55px",
   };
 
+  const override2 = {
+    display: "block",
+    position: "absolute",
+    top: "40%",
+    right: "70%",
+    margin: "0 auto",
+    borderColor: "red",
+    width: "10px",
+    height: "55px",
+  };
   useEffect(() => {
-    sendRequest("get", "user/me")
+    sendRequest("get", "user")
       .then((res) => {
         setCurrentUser(res.user);
       })
       .catch((err) => console.log(err));
-  }, [storedToken]);
+  }, []);
 
   useEffect(() => {
-    sendRequest("get", "order/me")
+    sendRequest("get", "orders")
       .then((res) => {
-        setOrders(res.orders);
+        if (res.status) setOrders(res.orders);
       })
       .catch((err) => {
-        errorToast(err);
+        // errorToast(err);
       });
-  }, [storedToken]);
+  }, []);
 
   useEffect(() => {
-    if (shippingAddress !== "") {
-      sendRequest("get", `address/${shippingAddress}`)
-        .then((res) => {
-          setCurrentAddress(res.address);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    } else return;
+    sendRequest("get", `address`)
+      .then((res) => {
+        setCurrentAddress(res.address);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   const handleLogoutClick = () => {
@@ -82,9 +110,7 @@ function Account() {
     localStorage.removeItem("cartId");
     localStorage.removeItem("cartItem");
     successToast("Logged out!");
-    setTimeout(() => {
-      navigate("/");
-    }, 3000);
+    navigate("/");
   };
 
   const handleAddressEditClick = () => {
@@ -92,33 +118,81 @@ function Account() {
   };
 
   const onSubmit = (data) => {
-    if (shippingAddress !== "") {
-      setLoading(true);
-      sendRequest("put", `address/${shippingAddress}`, {
-        isDefault: true,
-        address: data.billing_address,
-        city: data.city,
+    console.log("data", data);
+    setLoading(true);
+    dispatch(startSpinner());
+    sendRequest("put", "address", {
+      address: data.billing_address,
+      city: data.city,
+      state: data.state,
+      country: data.country,
+    })
+      .then((res) => {
+        dispatch(stopSpinner());
+        setLoading(false);
+        sendRequest("get", `address`)
+          .then((res) => {
+            setCurrentAddress(res.address);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+        setAddressModalIsOpen(false);
+        successToast(res.message);
       })
-        .then((res) => {
-          setLoading(false);
+      .catch((err) => {
+        dispatch(stopSpinner());
+        setLoading(false);
+        console.log("address-response", err);
+        successToast("Try agin later");
+      });
+  };
+
+  const onSubmitOrder = (data) => {
+    console.log("data", data);
+    dispatch(startSpinner());
+    sendRequest("get", `order/status/${data.order_id}`)
+      .then((res) => {
+        dispatch(stopSpinner());
+        if (res.status) {
+          console.log("status", res);
+          setOrderStatus(res.orderStatus);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        dispatch(stopSpinner());
+      });
+  };
+
+  const onSubmitUser = (data) => {
+    console.log("user data", data);
+    setLoadingUser(true);
+    dispatch(startSpinner());
+    sendRequest("put", "user", data)
+      .then((res) => {
+        dispatch(stopSpinner());
+        console.log("updatedUser", res);
+        if (res.status) {
+          setLoadingUser(false);
           successToast(res.message);
-          setAddressModalIsOpen(false);
-          //fetch current address
-          sendRequest("get", `address/${shippingAddress}`)
+          sendRequest("get", "user")
             .then((res) => {
-              setCurrentAddress(res.address);
+              console.log("user data");
+              setCurrentUser(res.user);
             })
-            .catch((err) => {
-              console.log(err);
-            });
-        })
-        .catch((err) => {
-          setLoading(false);
-          errorToast(err);
-        });
-    } else {
-      return;
-    }
+            .catch((err) => console.log(err));
+        } else {
+          setLoadingUser(false);
+          console.log("err", res);
+          errorToast(res.error);
+        }
+      })
+      .catch((err) => {
+        dispatch(stopSpinner());
+        setLoadingUser(false);
+        errorToast(err);
+      });
   };
 
   return (
@@ -222,8 +296,8 @@ function Account() {
                             <div className="card">
                               <div className="card-header">
                                 <h3 className="mb-0">
-                                  {currentUser.firstName?.concat(
-                                    " " + currentUser.lastName
+                                  {currentUser.first_name?.concat(
+                                    " " + currentUser.last_name
                                   )}
                                 </h3>
                               </div>
@@ -260,21 +334,24 @@ function Account() {
                                   <table className="table">
                                     <thead>
                                       <tr>
-                                        <th>Order</th>
+                                        <th>Order No#</th>
                                         <th>Date</th>
                                         <th>Status</th>
+                                        <th>Products</th>
                                         <th>Total</th>
                                         <th>Action</th>
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      {orders.length > 0 ? (
-                                        orders.map((item, i) => (
+                                      {ordersList ? (
+                                        ordersList?.map((item, i) => (
                                           <OrderList
                                             key={i}
-                                            prodId={item._id}
-                                            total={item.total}
-                                            date={item.created}
+                                            orderId={item._id}
+                                            date={item.orderDate}
+                                            quantity={item.cartItems[0]}
+                                            status={item.status}
+                                            total={item.grandTotal}
                                             setModal={setModalIsOpen}
                                             setOrders={setViewOrder}
                                           />
@@ -309,28 +386,30 @@ function Account() {
                                 <div className="row">
                                   <div className="col-lg-8">
                                     <form
-                                      className="contact-form-style mt-30 mb-50"
-                                      action="#"
-                                      method="post"
+                                      className="mt-30 mb-50"
+                                      onSubmit={handleOrderSubmit(
+                                        onSubmitOrder
+                                      )}
                                     >
                                       <div className="input-style mb-20">
                                         <label>Order ID</label>
                                         <input
-                                          name="order-id"
-                                          placeholder="Found in your order confirmation email"
+                                          {...registerOrder("order_id", {
+                                            required: "This field is required!",
+                                          })}
                                           type="text"
+                                          name="order_id"
+                                          placeholder="Found in your order confirmation email"
                                         />
+                                        <p>{errors2?.order_id?.message}</p>
                                       </div>
-                                      <div className="input-style mb-20">
-                                        <label>Billing email</label>
-                                        <input
-                                          name="billing-email"
-                                          placeholder="Email you used during checkout"
-                                          type="email"
-                                        />
-                                      </div>
+                                      <h5 className="my-3">
+                                        {orderStatus
+                                          ? `Status: ${orderStatus}`
+                                          : ""}
+                                      </h5>
                                       <button
-                                        className="submit submit-auto-width"
+                                        className="btn btn-md btn-fill-out submit font-weight-bold"
                                         type="submit"
                                       >
                                         Track
@@ -354,7 +433,7 @@ function Account() {
                                     <h3 className="mb-0">Address</h3>
                                   </div>
                                   <div className="card-body">
-                                    <address>
+                                    <h5>
                                       {currentAddress
                                         ? currentAddress?.address +
                                           "," +
@@ -362,19 +441,18 @@ function Account() {
                                           currentAddress?.city +
                                           "," +
                                           " " +
-                                          currentAddress?.state +
-                                          " " +
-                                          currentAddress?.zipCode
+                                          currentAddress?.state
                                         : null}
-                                    </address>
-                                    <p>{currentAddress?.country}</p>
-                                    <a
-                                      href={void 0}
-                                      className="btn-small"
+                                    </h5>
+                                    <h6 className="my-4">
+                                      {currentAddress?.country}
+                                    </h6>
+                                    <button
+                                      className="btn btn-md btn-fill-out submit font-weight-bold"
                                       onClick={handleAddressEditClick}
                                     >
                                       Edit
-                                    </a>
+                                    </button>
                                   </div>
                                 </div>
                               </div>
@@ -409,7 +487,7 @@ function Account() {
                                 <h5>Account Details</h5>
                               </div>
                               <div className="card-body">
-                                <form method="post" name="enq">
+                                <form onSubmit={handleUserSubmit(onSubmitUser)}>
                                   <div className="row">
                                     <div className="form-group col-md-6">
                                       <label>
@@ -417,24 +495,30 @@ function Account() {
                                         <span className="required">*</span>
                                       </label>
                                       <input
-                                        required=""
+                                        {...registerUser("first_name", {
+                                          required: "This field is required!",
+                                        })}
                                         className="form-control"
-                                        name="name"
+                                        name="first_name"
                                         type="text"
-                                        defaultValue={currentUser.firstName}
+                                        defaultValue={currentUser.first_name}
                                       />
+                                      <p>{errors3?.first_name?.message}</p>
                                     </div>
                                     <div className="form-group col-md-6">
                                       <label>
-                                        Last Name{" "}
+                                        Last Name
                                         <span className="required">*</span>
                                       </label>
                                       <input
-                                        required=""
+                                        {...registerUser("last_name", {
+                                          required: "This field is required!",
+                                        })}
                                         className="form-control"
-                                        name="phone"
-                                        defaultValue={currentUser.lastName}
+                                        name="last_name"
+                                        defaultValue={currentUser.last_name}
                                       />
+                                      <p>{errors3?.last_name?.message}</p>
                                     </div>
                                     <div className="form-group col-md-12">
                                       <label>
@@ -447,9 +531,9 @@ function Account() {
                                         name="dname"
                                         type="text"
                                         defaultValue={
-                                          currentUser.firstName +
+                                          currentUser.first_name +
                                           " " +
-                                          currentUser.lastName
+                                          currentUser.last_name
                                         }
                                       />
                                     </div>
@@ -463,7 +547,8 @@ function Account() {
                                         className="form-control"
                                         name="email"
                                         type="email"
-                                        defaultValue={currentUser.userEmail}
+                                        defaultValue={currentUser.email}
+                                        disabled
                                       />
                                     </div>
                                     <div className="form-group col-md-12">
@@ -472,42 +557,56 @@ function Account() {
                                         <span className="required">*</span>
                                       </label>
                                       <input
-                                        required=""
+                                        {...registerUser("current_pw")}
+                                        name="current_pw"
                                         className="form-control"
-                                        name="password"
                                         type="password"
                                       />
                                     </div>
                                     <div className="form-group col-md-12">
                                       <label>
-                                        New Password{" "}
+                                        New Password
                                         <span className="required">*</span>
                                       </label>
                                       <input
-                                        required=""
+                                        {...registerUser("new_pw")}
+                                        name="new_pw"
                                         className="form-control"
-                                        name="npassword"
                                         type="password"
                                       />
                                     </div>
                                     <div className="form-group col-md-12">
                                       <label>
-                                        Confirm Password{" "}
+                                        Confirm Password
                                         <span className="required">*</span>
                                       </label>
                                       <input
-                                        required=""
+                                        {...registerUser("confirm_pw", {
+                                          validate: (val) => {
+                                            if (watch("new_pw") !== val) {
+                                              return "Passwords does'nt match";
+                                            }
+                                          },
+                                        })}
+                                        name="confirm_pw"
                                         className="form-control"
-                                        name="cpassword"
                                         type="password"
                                       />
+                                      <p>{errors3?.confirm_pw?.message}</p>
                                     </div>
-                                    <div className="col-md-12">
+
+                                    <div className="col-md-12 position-relative">
+                                      <BounceLoader
+                                        color={"#3bb77e"}
+                                        loading={loadingUser}
+                                        cssOverride={override2}
+                                        size={150}
+                                        aria-label="Loading Spinner"
+                                        data-testid="loader"
+                                      />
                                       <button
                                         type="submit"
-                                        className="btn btn-fill-out submit font-weight-bold"
-                                        name="submit"
-                                        value="Submit"
+                                        className="btn btn-md btn-fill-out submit font-weight-bold"
                                       >
                                         Save Change
                                       </button>
@@ -559,17 +658,23 @@ function Account() {
                       <th scope="col">Product</th>
                       <th scope="col">Name</th>
                       <th scope="col">Price</th>
+                      <th scope="col">Discount</th>
+                      <th scope="col">Quantity</th>
+                      <th scope="col">Total Price</th>
                     </tr>
                   </thead>
                   <tbody>
                     {viewOrder ? (
-                      viewOrder.map((item, i) => (
+                      Object.values(viewOrder?.cartItems[0]).map((item, i) => (
                         <ViewOrderRow
                           key={i}
-                          image={item.product.imageUrl}
-                          name={item.product.name}
-                          price={item.product.price}
-                          prodId={item.product._id}
+                          image={item.images[0]}
+                          name={item.name}
+                          productPrice={item.price}
+                          discount={item.discount.discountValue}
+                          quantity={item.quantity}
+                          price={item.calculations.subTotal}
+                          prodId={item.productId}
                         />
                       ))
                     ) : (
@@ -662,7 +767,6 @@ function Account() {
                         name="state"
                         placeholder="State *"
                         defaultValue={currentAddress?.state}
-                        disabled
                       />
                       <p className="text-danger">{errors.state?.message}</p>
                     </div>
@@ -675,7 +779,6 @@ function Account() {
                           {...register("country")}
                           name="country"
                           defaultValue={currentAddress?.country}
-                          disabled
                         >
                           <option value="">Select a country *</option>
                           <option value="Aland Islands">Aland Islands</option>

@@ -2,8 +2,17 @@ import CountdownTimer from "../../countdown/CountDownTimer";
 import ScrollAnimation from "react-animate-on-scroll";
 import "react-loading-skeleton/dist/skeleton.css";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import BASE_URL from "../../../utility-functions/config";
 
-function HomeEndDealsCard({ image, id, name, price, prodId, addToCart }) {
+function HomeEndDealsCard({
+  image,
+  id,
+  name,
+  price,
+  discount,
+  prodId,
+  addToCart,
+}) {
   const THREE_DAYS_IN_MS = 3 * 24 * 60 * 60 * 1000;
   const NOW_IN_MS = new Date().getTime();
 
@@ -37,7 +46,7 @@ function HomeEndDealsCard({ image, id, name, price, prodId, addToCart }) {
             <a href={void 0}>
               <LazyLoadImage
                 className="default-img prod-img-3"
-                src={image}
+                src={BASE_URL + "/" + image[0]}
                 alt=""
               />
             </a>
@@ -62,8 +71,8 @@ function HomeEndDealsCard({ image, id, name, price, prodId, addToCart }) {
             </div>
             <div className="product-card-bottom">
               <div className="product-price">
-                <span>${price}</span>
-                <span className="old-price">$33.8</span>
+                <span>${(price / 100) * discount}</span>
+                <span className="old-price">${price}</span>
               </div>
               <div className="add-cart">
                 <a href={void 0} className="add" onClick={addToCart}>

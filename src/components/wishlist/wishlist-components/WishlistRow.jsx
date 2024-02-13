@@ -11,79 +11,103 @@ import {
   startSpinner,
   stopSpinner,
 } from "../../../redux/reducers/spinnerReducer";
+import BASE_URL from "../../../utility-functions/config";
+import { updateCartQuantity } from "../../../redux/reducers/cartQuantityReducer";
+import { updateWishlistQuantity } from "../../../redux/reducers/wishlistQuantityReducer";
 
-function WishlistRow({ id, name, image, price, prodId }) {
+function WishlistRow({
+  id,
+  name,
+  image,
+  price,
+  discount,
+  prodId,
+  setLoading,
+  setWishlist,
+}) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const products = useSelector((state) => state.products.products);
 
-  var productArray;
   const handleCartClick = (e) => {
     const id = e.target.closest(".wishlist-item").getAttribute("data");
-    const filtered = products.filter((item) => item._id == id)[0];
     const currentUser = localStorage.getItem("current_user");
-    const item = localStorage.getItem("cartItem");
-    const cartItem = JSON.parse(item);
-    const cartId = localStorage.getItem("cartId");
-    const check = cartItem?.find((item) => item._id == id);
     if (currentUser) {
-      if (!check) {
-        if (!cartId) {
-          productArray = [filtered];
-          dispatch(startSpinner());
-          sendRequest("post", "cart/add", {
-            products: [
-              {
-                product: filtered._id,
-                quantity: 1,
-                price: 10000,
-                taxable: false,
-              },
-            ],
-          })
+      dispatch(startSpinner());
+      sendRequest("post", "cart", { id, quantity: 1 })
+        .then((res) => {
+          sendRequest("post", "wishlist", { prodId: id })
             .then((res) => {
-              dispatch(stopSpinner());
-              successToast("Product added into the cart!");
-              localStorage.setItem("cartItem", JSON.stringify(productArray));
-              localStorage.setItem("cartId", res.cartId);
-              dispatch(updateCartNavbar());
+              if (res.status) {
+                sendRequest("get", "wishlist")
+                  .then((res) => {
+                    setWishlist(res.wishlist);
+                  })
+                  .catch((err) => console.log(err));
+
+                sendRequest("get", "wishlist/qty")
+                  .then((res) => {
+                    console.log(res);
+                    dispatch(updateWishlistQuantity(res.wishlistQuantity));
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              }
             })
             .catch((err) => {
-              dispatch(stopSpinner());
               errorToast(err);
             });
-        } else {
-          productArray = [...cartItem, filtered];
-          const cartId = localStorage.getItem("cartId");
-          dispatch(startSpinner());
-          sendRequest("post", `cart/add/${cartId}`, {
-            product: {
-              product: filtered._id,
-              quantity: 1,
-              price: 10000,
-              taxable: false,
-            },
-          })
-            .then(() => {
-              dispatch(stopSpinner());
-              successToast("Product added into the cart!");
-              localStorage.setItem("cartItem", JSON.stringify(productArray));
-              dispatch(updateCartNavbar());
+          dispatch(stopSpinner());
+          successToast("Product added into the cart!");
+          sendRequest("get", "cart/qty")
+            .then((res) => {
+              console.log(res);
+              dispatch(updateCartQuantity(res.quantity));
             })
             .catch((err) => {
-              dispatch(stopSpinner());
-              errorToast(err);
+              console.log(err);
             });
-        }
-      } else {
-        errorToast("Item is already in the cart!");
-      }
+        })
+        .catch((err) => {
+          dispatch(stopSpinner());
+          errorToast(err);
+        });
     } else {
       errorToast("Please login first!");
       setTimeout(() => {
         navigate("/login");
       }, 3000);
     }
+  };
+
+  const handleRemoveItem = (e) => {
+    const id = e.target.closest(".wishlist-item").getAttribute("data");
+    setLoading(true);
+    sendRequest("post", "wishlist", { prodId: id })
+      .then((res) => {
+        if (res.status) {
+          setLoading(false);
+          successToast(res.message);
+          sendRequest("get", "wishlist")
+            .then((res) => {
+              setWishlist(res.wishlist);
+            })
+            .catch((err) => console.log(err));
+
+          sendRequest("get", "wishlist/qty")
+            .then((res) => {
+              console.log(res);
+              dispatch(updateWishlistQuantity(res.wishlistQuantity));
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      })
+      .catch((err) => {
+        errorToast(err);
+      });
   };
 
   return (
@@ -104,7 +128,7 @@ function WishlistRow({ id, name, image, price, prodId }) {
         </>
       </td>
       <td className="image product-thumbnail">
-        <LazyLoadImage src={image} alt="#" />
+        <LazyLoadImage src={BASE_URL + "/" + image} alt="#" />
       </td>
       <td className="product-des product-name">
         <>
@@ -122,6 +146,12 @@ function WishlistRow({ id, name, image, price, prodId }) {
       <td className="price" data-title="Price">
         <h3 className="text-brand">${price}</h3>
       </td>
+      <td className="price" data-title="Price">
+        <h3 className="text-brand">{discount}%</h3>
+      </td>
+      <td className="price" data-title="Price">
+        <h3 className="text-brand">${(price / 100) * discount}</h3>
+      </td>
       <td className="text-center detail-info" data-title="Stock">
         <span className="stock-status in-stock mb-0"> In Stock </span>
       </td>
@@ -131,7 +161,7 @@ function WishlistRow({ id, name, image, price, prodId }) {
         </button>
       </td>
       <td className="action text-center" data-title="Remove">
-        <a className="text-body">
+        <a className="text-body" onClick={handleRemoveItem}>
           <i className="fi-rs-trash"></i>
         </a>
       </td>

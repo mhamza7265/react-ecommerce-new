@@ -29,7 +29,10 @@ import { updateCartNavbar } from "../../redux/reducers/navbarUpdateReducers/cart
 import { useNavigate } from "react-router-dom";
 import { addCompareProduct } from "../../redux/reducers/compareProductsReducer";
 import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
-import { updateWishlistNavbar } from "../../redux/reducers/navbarUpdateReducers/wishlistUpdateReducer";
+import BASE_URL from "../../utility-functions/config";
+import { updateCartQuantity } from "../../redux/reducers/cartQuantityReducer";
+import { updateWishlistQuantity } from "../../redux/reducers/wishlistQuantityReducer";
+import { updateCart } from "../../redux/reducers/cartReducer";
 
 function ProductFull() {
   const [nav1, setNav1] = useState(null);
@@ -83,67 +86,33 @@ function ProductFull() {
       .catch((err) => console.log(err));
   }, []);
 
-  var productArray;
   const handleCartClick = (e) => {
     const id = e.target.closest(".single-product-parent").getAttribute("data");
-    const filtered = products.filter((item) => item._id == id)[0];
     const currentUser = localStorage.getItem("current_user");
-    const item = localStorage.getItem("cartItem");
-    const cartItem = JSON.parse(item);
-    const cartId = localStorage.getItem("cartId");
-    const check = cartItem?.find((item) => item._id == id);
     if (currentUser) {
-      if (!check) {
-        if (!cartId) {
-          productArray = [filtered];
-          dispatch(startSpinner());
-          sendRequest("post", "cart/add", {
-            products: [
-              {
-                product: filtered._id,
-                quantity: 1,
-                price: 10000,
-                taxable: false,
-              },
-            ],
-          })
-            .then((res) => {
-              dispatch(stopSpinner());
-              successToast("Product added into the cart!");
-              localStorage.setItem("cartItem", JSON.stringify(productArray));
-              localStorage.setItem("cartId", res.cartId);
-              dispatch(updateCartNavbar());
-            })
-            .catch((err) => {
-              dispatch(stopSpinner());
-              errorToast(err);
-            });
-        } else {
-          productArray = [...cartItem, filtered];
-          const cartId = localStorage.getItem("cartId");
-          dispatch(startSpinner());
-          sendRequest("post", `cart/add/${cartId}`, {
-            product: {
-              product: filtered._id,
-              quantity: 1,
-              price: 10000,
-              taxable: false,
-            },
-          })
-            .then(() => {
-              dispatch(stopSpinner());
-              successToast("Product added into the cart!");
-              localStorage.setItem("cartItem", JSON.stringify(productArray));
-              dispatch(updateCartNavbar());
-            })
-            .catch((err) => {
-              dispatch(stopSpinner());
-              errorToast(err);
-            });
-        }
-      } else {
-        errorToast("Item is already in the cart!");
-      }
+      dispatch(startSpinner());
+      sendRequest("post", "cart", { id, quantity: count })
+        .then((res) => {
+          dispatch(stopSpinner());
+          if (res.status) {
+            dispatch(updateCart(res.cart));
+            successToast(res.message);
+            sendRequest("get", "cart/qty")
+              .then((res) => {
+                console.log(res);
+                dispatch(updateCartQuantity(res.quantity));
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            errorToast(res.error);
+          }
+        })
+        .catch((err) => {
+          dispatch(stopSpinner());
+          errorToast(err);
+        });
     } else {
       errorToast("Please login first!");
       setTimeout(() => {
@@ -152,35 +121,45 @@ function ProductFull() {
     }
   };
 
-  const handleCompareClick = (e) => {
-    const id = e.target.closest(".single-product-parent").getAttribute("data");
-    const filteredProduct = products.find((item) => item._id == id);
-    const filtered = compared.find((item) => item._id == id);
-    if (!filtered && compared.length < 3) {
-      dispatch(addCompareProduct(filteredProduct));
-      successToast("Product added to compare!");
-    } else if (compared.length >= 3) {
-      errorToast("Only 3 products can be compared!");
-    } else {
-      errorToast("Product already added!");
-    }
-  };
+  // const handleCompareClick = (e) => {
+  //   const id = e.target.closest(".single-product-parent").getAttribute("data");
+  //   const filteredProduct = products.find((item) => item._id == id);
+  //   const filtered = compared.find((item) => item._id == id);
+  //   if (!filtered && compared.length < 3) {
+  //     dispatch(addCompareProduct(filteredProduct));
+  //     successToast("Product added to compare!");
+  //   } else if (compared.length >= 3) {
+  //     errorToast("Only 3 products can be compared!");
+  //   } else {
+  //     errorToast("Product already added!");
+  //   }
+  // };
 
   const handleWishlistClick = (e) => {
     const id = e.target.closest(".single-product-parent").getAttribute("data");
     const currentUser = localStorage.getItem("current_user");
     if (currentUser) {
       dispatch(startSpinner());
-      sendRequest("post", "wishlist", { product: id, isLiked: true })
+      sendRequest("post", "wishlist", { prodId: id })
         .then((res) => {
           dispatch(stopSpinner());
           successToast(res.message);
+          console.log("res", res.message);
 
           sendRequest("get", "wishlist")
             .then((res) => {
               dispatch(addWishlist(res.wishlist));
             })
             .catch((err) => console.log(err));
+
+          sendRequest("get", "wishlist/qty")
+            .then((res) => {
+              console.log(res);
+              dispatch(updateWishlistQuantity(res.wishlistQuantity));
+            })
+            .catch((err) => {
+              console.log(err);
+            });
         })
         .catch((err) => {
           dispatch(stopSpinner());
@@ -227,43 +206,43 @@ function ProductFull() {
                       >
                         <div className="single-prod">
                           <LazyLoadImage
-                            src={singleProduct?.imageUrl}
+                            src={`${BASE_URL}/${singleProduct?.images[0]}`}
                             alt="product image"
                           />
                         </div>
                         <div className="single-prod">
                           <LazyLoadImage
-                            src={singleProduct?.imageUrl}
+                            src={`${BASE_URL}/${singleProduct?.images[1]}`}
                             alt="product image"
                           />
                         </div>
                         <div className="single-prod">
                           <LazyLoadImage
-                            src={singleProduct?.imageUrl}
+                            src={`${BASE_URL}/${singleProduct?.images[0]}`}
                             alt="product image"
                           />
                         </div>
                         <div className="single-prod">
                           <LazyLoadImage
-                            src={singleProduct?.imageUrl}
+                            src={`${BASE_URL}/${singleProduct?.images[1]}`}
                             alt="product image"
                           />
                         </div>
                         <div className="single-prod">
                           <LazyLoadImage
-                            src={singleProduct?.imageUrl}
+                            src={`${BASE_URL}/${singleProduct?.images[0]}`}
                             alt="product image"
                           />
                         </div>
                         <div className="single-prod">
                           <LazyLoadImage
-                            src={singleProduct?.imageUrl}
+                            src={`${BASE_URL}/${singleProduct?.images[1]}`}
                             alt="product image"
                           />
                         </div>
                         <div className="single-prod">
                           <LazyLoadImage
-                            src={singleProduct?.imageUrl}
+                            src={`${BASE_URL}/${singleProduct?.images[0]}`}
                             alt="product image"
                           />
                         </div>
@@ -321,11 +300,13 @@ function ProductFull() {
                     <div className="clearfix product-price-cover">
                       <div className="product-price primary-color float-left">
                         <span className="current-price text-brand">
-                          ${singleProduct?.price}
+                          $
+                          {(singleProduct?.price / 100) *
+                            singleProduct?.discount.discountValue}
                         </span>
                         <span>
                           <span className="save-price font-md color3 ml-15">
-                            26% Off
+                            {singleProduct?.discount.discountValue}% Off
                           </span>
                           <span className="old-price font-md ml-15">
                             ${singleProduct?.price}
@@ -334,12 +315,7 @@ function ProductFull() {
                       </div>
                     </div>
                     <div className="short-desc mb-30">
-                      <p className="font-lg">
-                        Lorem ipsum dolor, sit amet consectetur adipisicing
-                        elit. Aliquam rem officia, corrupti reiciendis minima
-                        nisi modi, quasi, odio minus dolore impedit fuga eum
-                        eligendi.
-                      </p>
+                      <p className="font-lg">{singleProduct?.description}</p>
                     </div>
                     <div className="attr-detail attr-size mb-30">
                       <strong className="mr-10">Size / Weight: </strong>
@@ -405,13 +381,13 @@ function ProductFull() {
                             <i className="fi-rs-heart"></i>
                           )}
                         </a>
-                        <a
+                        {/* <a
                           aria-label="Compare"
                           className="action-btn hover-up"
                           onClick={handleCompareClick}
                         >
                           <i className="fi-rs-shuffle"></i>
-                        </a>
+                        </a> */}
                       </div>
                     </div>
                     <div className="font-xs">
@@ -1005,7 +981,7 @@ function ProductFull() {
                                 alt=""
                               />
                               <LazyLoadImage
-                                className="hover-img"
+                                className="hover-img prod-img"
                                 src={prod22}
                                 alt=""
                               />
@@ -1063,7 +1039,7 @@ function ProductFull() {
                                 alt=""
                               />
                               <LazyLoadImage
-                                className="hover-img"
+                                className="hover-img prod-img"
                                 src={prod42}
                                 alt=""
                               />
@@ -1120,7 +1096,7 @@ function ProductFull() {
                                 alt=""
                               />
                               <LazyLoadImage
-                                className="hover-img"
+                                className="hover-img prod-img"
                                 src={prod42}
                                 alt=""
                               />
@@ -1177,7 +1153,7 @@ function ProductFull() {
                                 alt=""
                               />
                               <LazyLoadImage
-                                className="hover-img"
+                                className="hover-img prod-img"
                                 src={prod32}
                                 alt=""
                               />

@@ -48,25 +48,32 @@ function Register() {
     setLoading(true);
     const reqData = {
       email: data.email,
-      firstname: data.first_name,
-      lastname: data.last_name,
-      password: data.password,
-    };
-    sendRequest("post", "auth/register", {
-      email: data.email,
       firstName: data.first_name,
       lastName: data.last_name,
       password: data.password,
-    })
+      role: "basic",
+    };
+    sendRequest("post", "register", reqData)
       .then((res) => {
         setLoading(false);
-        if (res.success) {
+        if (res.status) {
           toast({
-            title: "Success!",
+            title: res.message,
             position: "top-right",
             isClosable: true,
             duration: 3000,
             status: "success",
+          });
+          setTimeout(() => {
+            navigate("/login");
+          }, 3000);
+        } else {
+          toast({
+            title: res.error,
+            position: "top-right",
+            isClosable: true,
+            duration: 3000,
+            status: "error",
           });
           setTimeout(() => {
             navigate("/login");
@@ -76,7 +83,7 @@ function Register() {
       .catch((err) => {
         setLoading(false);
         toast({
-          title: err,
+          title: err.error,
           position: "top-right",
           isClosable: true,
           duration: 3000,

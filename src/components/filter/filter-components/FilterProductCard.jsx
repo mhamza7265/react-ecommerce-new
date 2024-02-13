@@ -49,7 +49,7 @@ function FilterProductCard({ setmodal, image, name, prodId, price }) {
   const handleModelClick = (e) => {
     const id = e.target.closest(".filter-card-parent").getAttribute("data");
     const filtered = products.filter((item) => item._id == id)[0];
-    dispatch(addSingleProduct(filtered));
+    // dispatch(addSingleProduct(filtered));
     setmodal(true);
   };
 

@@ -10,13 +10,9 @@ import { useDispatch } from "react-redux";
 function HomeSectionProduct({ setmodal }) {
   const products = useSelector((state) => state.products.products);
   const search = useSelector((state) => state.search.search);
-  const reqProducts = products ? products.slice(1, 11) : null;
+  // const reqProducts = products ? products.slice(1, 11) : null;
   const [searchedProd, setSearchedProd] = useState([]);
   const [wishlist, setWishlist] = useState(null);
-  const dispatch = useDispatch();
-
-  const user = localStorage.getItem("current_user");
-  const currentUser = JSON.parse(user);
 
   useEffect(() => {
     const searchedProducts = products?.filter((item) =>
@@ -44,7 +40,7 @@ function HomeSectionProduct({ setmodal }) {
             animateOnce={true}
           >
             <h3>Popular Products</h3>
-            <ul className="nav nav-tabs links" id="myTab" role="tablist">
+            {/* <ul className="nav nav-tabs links" id="myTab" role="tablist">
               <li className="nav-item" role="presentation">
                 <button
                   className="nav-link active"
@@ -143,7 +139,7 @@ function HomeSectionProduct({ setmodal }) {
                   Fruits
                 </button>
               </li>
-            </ul>
+            </ul> */}
           </ScrollAnimation>
           {/* <!--End nav-tabs--> */}
           <div className="tab-content" id="myTabContent">
@@ -158,29 +154,17 @@ function HomeSectionProduct({ setmodal }) {
                   ? productData.map((_, index) => (
                       <ProductsSection key={index} id={`${index}00`} />
                     ))
-                  : searchedProd?.length > 0
-                  ? searchedProd?.map((item, i) => (
-                      <HomeProductCard
-                        setmodal={setmodal}
-                        id={`${i}00`}
-                        key={i}
-                        name={item.name}
-                        image={item.imageUrl}
-                        price={item.price}
-                        prodId={item._id}
-                        wishlist={wishlist}
-                      />
-                    ))
                   : products?.map((item, i) => (
                       <HomeProductCard
                         setmodal={setmodal}
                         id={`${i}00`}
                         key={i}
                         name={item.name}
-                        image={item.imageUrl}
+                        img1={item.images[0]}
+                        img2={item.images[1]}
                         price={item.price}
+                        discountVal={item.discount.discountValue}
                         prodId={item._id}
-                        wishlist={wishlist}
                       />
                     ))}
               </div>

@@ -9,11 +9,15 @@ import sendRequest from "../../../utility-functions/apiManager";
 import { BounceLoader } from "react-spinners";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addWishlist } from "../../../redux/reducers/wishlistReducer";
+import { updateWishlistNavbar } from "../../../redux/reducers/navbarUpdateReducers/wishlistUpdateReducer";
 
 function Login() {
   const [loading, setLoading] = useState(false);
   const [pwVisible, setPwVisible] = useState(false);
   const toast = useToast();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
     register,
@@ -38,12 +42,12 @@ function Login() {
 
   const onSubmit = (data) => {
     setLoading(true);
-    sendRequest("post", "auth/login", {
+    sendRequest("post", "login", {
       email: data.email,
       password: data.password,
     })
       .then((res) => {
-        if (res.success) {
+        if (res.status) {
           setLoading(false);
           toast({
             title: "Success!",
@@ -52,18 +56,26 @@ function Login() {
             duration: 3000,
             status: "success",
           });
-
+          console.log("token", res);
           const userObj = {
             token: res.token,
-            userId: res.user.id,
-            userEmail: res.user.email,
-            firstName: res.user.firstName,
-            lastName: res.user.lastName,
           };
           localStorage.setItem("current_user", JSON.stringify(userObj));
+
+          dispatch(updateWishlistNavbar());
+
           setTimeout(() => {
             navigate("/");
           }, 3000);
+        } else {
+          setLoading(false);
+          toast({
+            title: res.error,
+            position: "top-right",
+            isClosable: true,
+            duration: 3000,
+            status: "error",
+          });
         }
       })
       .catch((err) => {

@@ -29,6 +29,18 @@ import sendRequest from "./utility-functions/apiManager";
 import { addProduct } from "./redux/reducers/productReducer";
 import { addCategory } from "./redux/reducers/categoryReducer";
 import { addWishlist } from "./redux/reducers/wishlistReducer";
+import AllProducts from "./components/allProductsInCategory/AllProducts";
+import { updateOrder } from "./redux/reducers/orderReducer";
+import { updateCartQuantity } from "./redux/reducers/cartQuantityReducer";
+import { updateWishlistQuantity } from "./redux/reducers/wishlistQuantityReducer";
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import { updateCart } from "./redux/reducers/cartReducer";
+import SearchedProducts from "./components/searchedProducts/SearchedProducts";
+
+const stripePromise = loadStripe(
+  "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
+);
 
 function App() {
   const dispatch = useDispatch();
@@ -36,34 +48,91 @@ function App() {
     (state) => state.updateWishlistNavbar.number
   );
 
+  const options = {
+    mode: "payment",
+    amount: 1099,
+    currency: "usd",
+    paymentMethodCreation: "manual",
+    // Fully customizable with appearance API.
+    appearance: {
+      /*...*/
+    },
+  };
+
   const user = localStorage.getItem("current_user");
   const currentUser = JSON.parse(user);
 
   useEffect(() => {
-    sendRequest("get", "product/")
+    sendRequest("get", "product")
       .then((res) => {
-        dispatch(addProduct(res.products));
+        dispatch(addProduct(res.data));
       })
       .catch((err) => {
         console.log(err);
       });
-  }, [currentUser]);
+  }, []);
 
   useEffect(() => {
-    sendRequest("get", "category/list")
+    sendRequest("get", "cart/qty")
       .then((res) => {
+        console.log(res);
+        dispatch(updateCartQuantity(res.quantity));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    sendRequest("get", "cart")
+      .then((res) => {
+        if (res.status) {
+          dispatch(updateCart(res.cart[0]));
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    sendRequest("get", "wishlist/qty")
+      .then((res) => {
+        console.log(res);
+        dispatch(updateWishlistQuantity(res.wishlistQuantity));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    sendRequest("get", "orders")
+      .then((res) => {
+        if (res.status) dispatch(updateOrder(res.orders));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    sendRequest("get", "category")
+      .then((res) => {
+        console.log("categories", res);
         dispatch(addCategory(res.categories));
       })
       .catch((err) => console.log(err));
-  }, [currentUser]);
+  }, []);
 
   useEffect(() => {
+    console.log("fetch");
     sendRequest("get", "wishlist")
       .then((res) => {
         dispatch(addWishlist(res.wishlist));
       })
       .catch((err) => console.log(err));
-  }, []);
+  }, [updateWishlist]);
 
   return (
     <BrowserRouter>
@@ -119,7 +188,9 @@ function App() {
           element={
             <Preloader>
               <HaveAuth>
-                <Checkout />
+                <Elements stripe={stripePromise} options={options}>
+                  <Checkout />
+                </Elements>
               </HaveAuth>
             </Preloader>
           }
@@ -193,6 +264,22 @@ function App() {
           element={
             <Preloader>
               <About />
+            </Preloader>
+          }
+        />
+        <Route
+          path="/allProducts"
+          element={
+            <Preloader>
+              <AllProducts />
+            </Preloader>
+          }
+        />
+        <Route
+          path="/searchedProducts"
+          element={
+            <Preloader>
+              <SearchedProducts />
             </Preloader>
           }
         />

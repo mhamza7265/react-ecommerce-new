@@ -10,6 +10,8 @@ import sendRequest, {
 import { updateCartNavbar } from "../../redux/reducers/navbarUpdateReducers/cartUpdateReducer";
 import { useNavigate } from "react-router";
 import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
+import { updateCartQuantity } from "../../redux/reducers/cartQuantityReducer";
+import { updateCart } from "../../redux/reducers/cartReducer";
 
 function HomeSectionEndDeal() {
   const products = useSelector((state) => state.products.products);
@@ -17,67 +19,33 @@ function HomeSectionEndDeal() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  var productArray;
   const handleCartClick = (e) => {
     const id = e.target.closest(".end-deal-parent").getAttribute("data");
-    const filtered = products.filter((item) => item._id == id)[0];
     const currentUser = localStorage.getItem("current_user");
-    const item = localStorage.getItem("cartItem");
-    const cartItem = JSON.parse(item);
-    const cartId = localStorage.getItem("cartId");
-    const check = cartItem?.find((item) => item._id == id);
     if (currentUser) {
-      if (!check) {
-        if (!cartId) {
-          productArray = [filtered];
-          dispatch(startSpinner());
-          sendRequest("post", "cart/add", {
-            products: [
-              {
-                product: filtered._id,
-                quantity: 1,
-                price: 10000,
-                taxable: false,
-              },
-            ],
-          })
-            .then((res) => {
-              dispatch(stopSpinner());
-              successToast("Product added into the cart!");
-              localStorage.setItem("cartItem", JSON.stringify(productArray));
-              localStorage.setItem("cartId", res.cartId);
-              dispatch(updateCartNavbar());
-            })
-            .catch((err) => {
-              dispatch(stopSpinner());
-              errorToast(err);
-            });
-        } else {
-          productArray = [...cartItem, filtered];
-          const cartId = localStorage.getItem("cartId");
-          dispatch(startSpinner());
-          sendRequest("post", `cart/add/${cartId}`, {
-            product: {
-              product: filtered._id,
-              quantity: 1,
-              price: 10000,
-              taxable: false,
-            },
-          })
-            .then(() => {
-              dispatch(stopSpinner());
-              successToast("Product added into the cart!");
-              localStorage.setItem("cartItem", JSON.stringify(productArray));
-              dispatch(updateCartNavbar());
-            })
-            .catch((err) => {
-              dispatch(stopSpinner());
-              errorToast(err);
-            });
-        }
-      } else {
-        errorToast("Item is already in the cart!");
-      }
+      dispatch(startSpinner());
+      sendRequest("post", "cart", { id, quantity: 1 })
+        .then((res) => {
+          dispatch(stopSpinner());
+          if (res.status) {
+            dispatch(updateCart(res.cart));
+            successToast(res.message);
+            sendRequest("get", "cart/qty")
+              .then((res) => {
+                console.log(res);
+                dispatch(updateCartQuantity(res.quantity));
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            errorToast(res.error);
+          }
+        })
+        .catch((err) => {
+          dispatch(stopSpinner());
+          errorToast(err);
+        });
     } else {
       errorToast("Please login first!");
       setTimeout(() => {
@@ -97,10 +65,10 @@ function HomeSectionEndDeal() {
             animateOnce={true}
           >
             <h3 className="">Deals Of The Day</h3>
-            <a className="show-all">
+            {/* <a className="show-all">
               All Deals
               <i className="fi-rs-angle-right"></i>
-            </a>
+            </a> */}
           </ScrollAnimation>
           <div className="row">
             {!products
@@ -112,8 +80,9 @@ function HomeSectionEndDeal() {
                     key={i}
                     id={`${i}00`}
                     name={item.name}
-                    image={item.imageUrl}
+                    image={item.images}
                     price={item.price}
+                    discount={item.discount.discountValue}
                     prodId={item._id}
                     addToCart={handleCartClick}
                   />

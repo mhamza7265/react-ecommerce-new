@@ -9,44 +9,69 @@ import sendRequest, {
 } from "../../utility-functions/apiManager";
 import { Link, useNavigate } from "react-router-dom";
 import CartSkeleton from "./skeleton-components/CartSkeleton";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
+import { updateCart } from "../../redux/reducers/cartReducer";
+import { updateCartQuantity } from "../../redux/reducers/cartQuantityReducer";
 
 function Cart() {
   const [cartItems, setCartItems] = useState(null);
   const [skeletontime, setSkeletontime] = useState(false);
   const [total, setTotal] = useState(0);
+  const [refresh, setRefresh] = useState(0);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const currentCart = useSelector((state) => state.cart.cart);
+  const cartQuantity = useSelector((state) => state.cartQuantity.quantity);
 
   useEffect(() => {
-    const item = localStorage.getItem("cartItem");
-    const cartItem = JSON.parse(item);
-    setCartItems(cartItem);
-    setTimeout(() => {
-      setSkeletontime(true);
-    }, 10000);
-  }, []);
+    sendRequest("get", "cart").then((res) => {
+      console.log("cart", res.cart[0].cartItems[0]);
+      setCartItems(res.cart[0].cartItems[0]);
+      dispatch(updateCart(res.cart[0]));
+      const calculation = {
+        subTotal: res.cart[0].subTotal,
+        discount: res.cart[0].discount,
+        grandTotal: res.cart[0].grandTotal,
+      };
+      setTotal(calculation);
+      setTimeout(() => {
+        setSkeletontime(true);
+      }, 10000);
+    });
+  }, [refresh]);
 
-  const handleDeleteClick = (e, value, setCount) => {
+  const handleDeleteClick = (e, quantity) => {
     const id = e.target.closest(".cart-item").getAttribute("data");
-    const cartId = localStorage.getItem("cartId");
     dispatch(startSpinner());
-    sendRequest("delete", `cart/delete/${cartId}/${id}`)
-      .then(() => {
-        dispatch(stopSpinner());
-        successToast("Product removed from cart!");
-        total > value
-          ? setTotal(parseInt(total) - parseInt(value))
-          : total == value
-          ? setTotal(0)
-          : null;
-        setCount(0);
-        const item = localStorage.getItem("cartItem");
-        const cartItem = JSON.parse(item);
-        const filtered = cartItem.filter((item) => item._id !== id);
-        localStorage.setItem("cartItem", JSON.stringify(filtered));
-        setCartItems(filtered);
+    sendRequest("delete", `cart`, { product: id, quantity })
+      .then((res) => {
+        if (res.status) {
+          dispatch(stopSpinner());
+          successToast("Product removed from cart!");
+          sendRequest("get", "cart")
+            .then((res) => {
+              console.log("cart", res.cart[0].cartItems[0]);
+              setCartItems(res.cart[0].cartItems[0]);
+              const calculation = {
+                subTotal: res.cart[0].subTotal,
+                discount: res.cart[0].discount,
+                grandTotal: res.cart[0].grandTotal,
+              };
+              setTotal(calculation);
+              sendRequest("get", "cart/qty")
+                .then((res) => {
+                  console.log(res);
+                  dispatch(updateCartQuantity(res.quantity));
+                })
+                .catch((err) => {
+                  console.log(err);
+                });
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
       })
       .catch((err) => {
         dispatch(stopSpinner());
@@ -54,34 +79,29 @@ function Cart() {
       });
   };
 
-  const handleClearClick = () => {
-    const cartId = localStorage.getItem("cartId");
-    dispatch(startSpinner());
-    sendRequest("delete", `cart/delete/${cartId}`)
-      .then(() => {
-        dispatch(stopSpinner());
-        successToast("Cart has been cleared!");
-        localStorage.removeItem("cartId");
-        localStorage.removeItem("cartItem");
-        setCartItems(null);
-        setTotal(0);
-        setTimeout(() => {
-          navigate("/");
-        }, 3000);
-      })
-      .catch((err) => {
-        dispatch(stopSpinner());
-        errorToast(err);
-      });
-  };
+  // const handleClearClick = () => {
+  //   const cartId = localStorage.getItem("cartId");
+  //   dispatch(startSpinner());
+  //   sendRequest("delete", `cart/delete/${cartId}`)
+  //     .then(() => {
+  //       dispatch(stopSpinner());
+  //       successToast("Cart has been cleared!");
+  //       localStorage.removeItem("cartId");
+  //       localStorage.removeItem("cartItem");
+  //       setCartItems(null);
+  //       setTimeout(() => {
+  //         navigate("/");
+  //       }, 3000);
+  //     })
+  //     .catch((err) => {
+  //       dispatch(stopSpinner());
+  //       errorToast(err);
+  //     });
+  // };
 
-  const handleTotalSum = (data) => {
-    setTotal(parseInt(total) + parseInt(data));
-  };
+  const handleTotalSum = (data) => {};
 
-  const handleTotalDiff = (data, value) => {
-    total > 0 && value > 0 ? setTotal(parseInt(total) - parseInt(data)) : null;
-  };
+  const handleTotalDiff = (data, value) => {};
 
   return (
     <div>
@@ -108,18 +128,18 @@ function Cart() {
                     <h6 className="text-body">
                       There are{" "}
                       <span className="text-brand">
-                        {cartItems ? cartItems.length : 0}
+                        {cartQuantity ? cartQuantity : 0}
                       </span>{" "}
-                      products in your cart
+                      product{cartQuantity > 1 ? "s" : ""} in your cart
                     </h6>
                     <h6 className="text-body">
-                      <a
+                      {/* <a
                         href={void 0}
                         className="text-muted"
                         onClick={handleClearClick}
                       >
                         <i className="fi-rs-trash mr-5"></i>Clear Cart
-                      </a>
+                      </a> */}
                     </h6>
                   </div>
                 </>
@@ -127,7 +147,10 @@ function Cart() {
             </div>
             <div className="row">
               <div className="col-lg-8">
-                <div className="table-responsive shopping-summery">
+                <div
+                  className="table-responsive shopping-summery"
+                  data={currentCart._id}
+                >
                   <table className="table table-wishlist">
                     <thead>
                       <tr className="main-heading">
@@ -151,7 +174,9 @@ function Cart() {
                         </th>
                         <th scope="col">Unit Price</th>
                         <th scope="col">Quantity</th>
-                        <th scope="col">Subtotal</th>
+                        <th scope="col">Subtotel</th>
+                        <th scope="col">Discount</th>
+                        <th scope="col">Total</th>
                         <th scope="col" className="end">
                           Remove
                         </th>
@@ -159,19 +184,25 @@ function Cart() {
                     </thead>
                     <tbody>
                       {cartItems ? (
-                        cartItems.map((item, i) => (
+                        Object.values(cartItems).map((item, i) => (
                           <CartItems
                             key={i}
                             img1={product21}
                             id={item.id}
-                            prodId={item._id}
+                            prodId={item.productId}
                             name={item.name}
-                            image={item.imageUrl}
+                            image={item.images[0][0]}
                             price={item.price}
                             del={handleDeleteClick}
                             setIncrementTotal={handleTotalSum}
                             setDecrementTotal={handleTotalDiff}
                             cartItems={cartItems}
+                            total={item.calculations.subTotal}
+                            subTotal={item.calculations.total}
+                            quantity={item.quantity}
+                            discount={50}
+                            setCartItems={setCartItems}
+                            refresh={setRefresh}
                             setTotal={setTotal}
                           />
                         ))
@@ -565,7 +596,9 @@ function Cart() {
                             <h6 className="text-muted">Subtotal</h6>
                           </td>
                           <td className="cart_total_amount">
-                            <h4 className="text-brand text-end">${total}</h4>
+                            <h4 className="text-brand text-end">
+                              ${total.subTotal}
+                            </h4>
                           </td>
                         </tr>
                         <tr>
@@ -592,6 +625,16 @@ function Cart() {
                           </td>{" "}
                         </tr>{" "}
                         <tr>
+                          <td className="cart_total_label">
+                            <h6 className="text-muted">Discount</h6>
+                          </td>
+                          <td className="cart_total_amount">
+                            <h5 className="text-heading text-end">
+                              {`${total.discount} %`}
+                            </h5>
+                          </td>{" "}
+                        </tr>
+                        <tr>
                           <td scope="col" colSpan="2">
                             <div className="divider-2 mt-10 mb-10"></div>
                           </td>
@@ -601,7 +644,9 @@ function Cart() {
                             <h6 className="text-muted">Total</h6>
                           </td>
                           <td className="cart_total_amount">
-                            <h4 className="text-brand text-end">${total}</h4>
+                            <h4 className="text-brand text-end">
+                              ${total.grandTotal}
+                            </h4>
                           </td>
                         </tr>
                       </tbody>

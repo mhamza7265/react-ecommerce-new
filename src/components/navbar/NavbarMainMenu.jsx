@@ -122,7 +122,7 @@ function NavbarMainMenu() {
                 </li>
               </ul>
             </li>
-            <li className="position-static">
+            {/* <li className="position-static">
               <a href={void 0}>
                 Mega menu <i className="fi-rs-angle-down"></i>
               </a>
@@ -226,7 +226,7 @@ function NavbarMainMenu() {
                   </div>
                 </li>
               </ul>
-            </li>
+            </li> */}
             <li className="d-none">
               <a href={void 0}>
                 Blog <i className="fi-rs-angle-down"></i>
@@ -273,15 +273,15 @@ function NavbarMainMenu() {
                 <li>
                   <Link to="/account">My Account</Link>
                 </li>
-                <li>
+                {/* <li>
                   <Link to="/login">Login</Link>
                 </li>
                 <li>
                   <Link to="/register">Register</Link>
-                </li>
-                <li>
+                </li> */}
+                {/* <li>
                   <Link to="/forgotpw">Forgot password</Link>
-                </li>
+                </li> */}
                 <li>
                   <Link to="/resetpw">Reset password</Link>
                 </li>

@@ -10,6 +10,12 @@ import singleProductReducer from "../reducers/singleProductReducer";
 import wishlistReducer from "../reducers/wishlistReducer";
 import searchReducer from "../reducers/searchReducer";
 import spinnerReducer from "../reducers/spinnerReducer";
+import allProductReducer from "../reducers/allProductReducers";
+import cartReducer from "../reducers/cartReducer";
+import orderReducer from "../reducers/orderReducer";
+import cartQuantityReducer from "../reducers/cartQuantityReducer";
+import wishlistQuantityReducer from "../reducers/wishlistQuantityReducer";
+import searchProductReducer from "../reducers/searchedProductsReducer";
 
 const rootReducer = combineReducers({
   categories: categoryReducer,
@@ -21,6 +27,12 @@ const rootReducer = combineReducers({
   spinner: spinnerReducer,
   updateWishlistNavbar: updateWishlistNavbarReducer,
   updateCartNavbar: updateCartNavbarReducer,
+  allProducts: allProductReducer,
+  cart: cartReducer,
+  order: orderReducer,
+  cartQuantity: cartQuantityReducer,
+  wishlistQuantity: wishlistQuantityReducer,
+  searchProducts: searchProductReducer,
 });
 const store = createStore(rootReducer, composeWithDevTools());
 

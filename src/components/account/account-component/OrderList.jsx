@@ -6,16 +6,26 @@ import {
 } from "../../../redux/reducers/spinnerReducer";
 import { useDispatch } from "react-redux";
 
-function OrderList({ prodId, total, date, setModal, setOrders }) {
+function OrderList({
+  orderId,
+  total,
+  date,
+  quantity,
+  status,
+  setModal,
+  setOrders,
+}) {
   const dispatch = useDispatch();
 
   const handleModalClick = (e) => {
     const id = e.target.closest(".order-row-parent").getAttribute("data");
+    console.log("orderId", id);
     dispatch(startSpinner());
     sendRequest("get", `order/${id}`)
       .then((res) => {
         dispatch(stopSpinner());
-        setOrders(res.order.products);
+        console.log("singleorder", res);
+        setOrders(res.orderDetail);
         setModal(true);
       })
       .catch((err) => {
@@ -27,15 +37,19 @@ function OrderList({ prodId, total, date, setModal, setOrders }) {
   useEffect(() => {}, []);
 
   return (
-    <tr className="order-row-parent" data={prodId}>
-      <td>#{prodId}</td>
+    <tr className="order-row-parent" data={orderId}>
+      <td>{orderId}</td>
       <td>{date}</td>
-      <td>Processing</td>
-      <td>${total}</td>
+      <td>{status}</td>
+      <td>{Object.keys(quantity).length}</td>
+      <td>${total.toFixed()}</td>
       <td>
-        <a href={void 0} onClick={handleModalClick}>
+        <button
+          className="btn btn-sm btn-fill-out submit font-weight-bold"
+          onClick={handleModalClick}
+        >
           View
-        </a>
+        </button>
       </td>
     </tr>
   );

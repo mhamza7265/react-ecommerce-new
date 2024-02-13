@@ -62,7 +62,7 @@ function HomeSectionBestsell({ setmodal }) {
             animateOnce={true}
           >
             <h3 className="">Daily Best Sells</h3>
-            <ul className="nav nav-tabs links" id="myTab-2" role="tablist">
+            {/* <ul className="nav nav-tabs links" id="myTab-2" role="tablist">
               <li className="nav-item" role="presentation">
                 <button
                   className="nav-link active"
@@ -105,7 +105,7 @@ function HomeSectionBestsell({ setmodal }) {
                   New added
                 </button>
               </li>
-            </ul>
+            </ul> */}
           </ScrollAnimation>
           <div className="row">
             <ScrollAnimation
@@ -153,11 +153,12 @@ function HomeSectionBestsell({ setmodal }) {
                               <HomeBestSellCard
                                 key={i}
                                 name={item.name}
-                                image={item.imageUrl}
+                                image={item.images}
                                 price={item.price}
                                 prodId={item._id}
                                 setmodal={setmodal}
                                 wishlist={wishlist}
+                                discount={item.discount.discountValue}
                               />
                             ))}
                       </Slider>
