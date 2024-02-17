@@ -1,11 +1,8 @@
-import appleicon from "../../../assets/imgs/theme/icons/logo-apple.svg";
-import googleicon from "../../../assets/imgs/theme/icons/logo-google.svg";
-import fbicon from "../../../assets/imgs/theme/icons/logo-facebook.svg";
 import Footer from "../../footer/footer";
 import Navbar from "../../navbar/Navbar";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useForm } from "react-hook-form";
 import sendRequest, {
+  errorToast,
   successToast,
   warningToast,
 } from "../../../utility-functions/apiManager";
@@ -14,9 +11,7 @@ import { useState } from "react";
 import { BounceLoader } from "react-spinners";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-import GoogleLoginButton from "./GoogleLoginButton";
 import { GoogleLogin } from "@react-oauth/google";
-import { useGoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 
 function Register() {
@@ -141,6 +136,11 @@ function Register() {
             }, 5000);
           }
         });
+      } else {
+        errorToast(res.error);
+        setTimeout(() => {
+          navigate("/login");
+        }, 3000);
       }
     });
   };
