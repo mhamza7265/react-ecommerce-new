@@ -171,7 +171,7 @@ function Cart() {
               <div className="col-lg-8">
                 <div
                   className="table-responsive shopping-summery"
-                  data={currentCart._id}
+                  data={currentCart?._id}
                 >
                   <table className="table table-wishlist">
                     <thead>
@@ -619,7 +619,10 @@ function Cart() {
                           </td>
                           <td className="cart_total_amount">
                             <h4 className="text-brand text-end">
-                              ${total.subTotal.toFixed()}
+                              $
+                              {total?.length > 0
+                                ? total?.subTotal?.toFixed()
+                                : 0}
                             </h4>
                           </td>
                         </tr>
@@ -667,7 +670,10 @@ function Cart() {
                           </td>
                           <td className="cart_total_amount">
                             <h4 className="text-brand text-end">
-                              ${total.grandTotal.toFixed()}
+                              $
+                              {total?.length > 0
+                                ? total?.grandTotal?.toFixed()
+                                : 0}
                             </h4>
                           </td>
                         </tr>

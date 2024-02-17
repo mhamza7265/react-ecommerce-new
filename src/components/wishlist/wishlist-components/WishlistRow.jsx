@@ -13,6 +13,8 @@ import {
 import BASE_URL from "../../../utility-functions/config";
 import { updateCartQuantity } from "../../../redux/reducers/cartQuantityReducer";
 import { updateWishlistQuantity } from "../../../redux/reducers/wishlistQuantityReducer";
+import { addWishlist } from "../../../redux/reducers/wishlistReducer";
+import { updateCart } from "../../../redux/reducers/cartReducer";
 
 function WishlistRow({
   id,
@@ -34,13 +36,17 @@ function WishlistRow({
       dispatch(startSpinner());
       sendRequest("post", "cart", { id, quantity: 1 })
         .then((res) => {
+          dispatch(stopSpinner());
           if (res.status) {
-            dispatch(stopSpinner());
-            successToast("Product added into the cart!");
+            successToast(res.message);
+            dispatch(updateCart(res.cart));
+
             sendRequest("get", "cart/qty")
               .then((res) => {
-                console.log(res);
-                dispatch(updateCartQuantity(res.quantity));
+                if (res.status) {
+                  console.log(res);
+                  dispatch(updateCartQuantity(res.quantity));
+                }
               })
               .catch((err) => {
                 console.log(err);
@@ -50,14 +56,23 @@ function WishlistRow({
                 if (res.status) {
                   sendRequest("get", "wishlist")
                     .then((res) => {
-                      setWishlist(res.wishlist);
+                      if (res.status) {
+                        setWishlist(res.wishlist);
+                        dispatch(addWishlist(res.wishlist));
+                      } else {
+                        console.log(res);
+                      }
                     })
                     .catch((err) => console.log(err));
 
                   sendRequest("get", "wishlist/qty")
                     .then((res) => {
-                      console.log(res);
-                      dispatch(updateWishlistQuantity(res.wishlistQuantity));
+                      if (res.status) {
+                        console.log(res);
+                        dispatch(updateWishlistQuantity(res.wishlistQuantity));
+                      } else {
+                        console.log(res);
+                      }
                     })
                     .catch((err) => {
                       console.log(err);
@@ -90,22 +105,32 @@ function WishlistRow({
 
   const handleRemoveItem = (e) => {
     const id = e.target.closest(".wishlist-item").getAttribute("data");
-    setLoading(true);
+    dispatch(startSpinner());
     sendRequest("post", "wishlist", { prodId: id })
       .then((res) => {
         if (res.status) {
-          setLoading(false);
+          dispatch(stopSpinner());
           successToast(res.message);
           sendRequest("get", "wishlist")
             .then((res) => {
-              setWishlist(res.wishlist);
+              dispatch(stopSpinner());
+              if (res.status) {
+                setWishlist(res.wishlist);
+                dispatch(addWishlist(res.wishlist));
+              } else {
+                console.log(res);
+              }
             })
             .catch((err) => console.log(err));
 
           sendRequest("get", "wishlist/qty")
             .then((res) => {
-              console.log(res);
-              dispatch(updateWishlistQuantity(res.wishlistQuantity));
+              if (res.status) {
+                console.log(res);
+                dispatch(updateWishlistQuantity(res.wishlistQuantity));
+              } else {
+                console.log(res);
+              }
             })
             .catch((err) => {
               console.log(err);

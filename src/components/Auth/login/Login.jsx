@@ -4,19 +4,23 @@ import Navbar from "../../navbar/Navbar";
 import { Link } from "react-router-dom";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useForm } from "react-hook-form";
-import { useToast } from "@chakra-ui/react";
-import sendRequest from "../../../utility-functions/apiManager";
+import sendRequest, {
+  errorToast,
+  successToast,
+} from "../../../utility-functions/apiManager";
 import { BounceLoader } from "react-spinners";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addWishlist } from "../../../redux/reducers/wishlistReducer";
-import { updateWishlistNavbar } from "../../../redux/reducers/navbarUpdateReducers/wishlistUpdateReducer";
+import { updateCartQuantity } from "../../../redux/reducers/cartQuantityReducer";
+import { updateCart } from "../../../redux/reducers/cartReducer";
+import { updateWishlistQuantity } from "../../../redux/reducers/wishlistQuantityReducer";
+import { updateOrder } from "../../../redux/reducers/orderReducer";
 
 function Login() {
   const [loading, setLoading] = useState(false);
   const [pwVisible, setPwVisible] = useState(false);
-  const toast = useToast();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const {
@@ -49,13 +53,7 @@ function Login() {
       .then((res) => {
         if (res.status) {
           setLoading(false);
-          toast({
-            title: "Success!",
-            position: "top-right",
-            isClosable: true,
-            duration: 3000,
-            status: "success",
-          });
+          successToast(res.login);
           console.log("token", res);
           const userObj = {
             token: res.token,
@@ -63,6 +61,47 @@ function Login() {
           localStorage.setItem("current_user", JSON.stringify(userObj));
 
           // dispatch(updateWishlistNavbar());
+          sendRequest("get", "cart/qty")
+            .then((res) => {
+              console.log(res);
+              dispatch(updateCartQuantity(res.quantity));
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+
+          sendRequest("get", "cart")
+            .then((res) => {
+              if (res.status) {
+                dispatch(updateCart(res.cart[0]));
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+
+          sendRequest("get", "wishlist/qty")
+            .then((res) => {
+              console.log(res);
+              dispatch(updateWishlistQuantity(res.wishlistQuantity));
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+
+          sendRequest("get", "orders")
+            .then((res) => {
+              if (res.status) dispatch(updateOrder(res.orders));
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+
+          sendRequest("get", "wishlist")
+            .then((res) => {
+              dispatch(addWishlist(res.wishlist));
+            })
+            .catch((err) => console.log(err));
 
           setTimeout(() => {
             navigate("/");
@@ -70,24 +109,12 @@ function Login() {
         } else {
           console.log("login", res);
           setLoading(false);
-          toast({
-            title: res.login,
-            position: "top-right",
-            isClosable: true,
-            duration: 3000,
-            status: "error",
-          });
+          errorToast(res.login);
         }
       })
       .catch((err) => {
         setLoading(false);
-        toast({
-          title: err.error,
-          position: "top-right",
-          isClosable: true,
-          duration: 3000,
-          status: "error",
-        });
+        errorToast(err.login);
       });
   };
   return (

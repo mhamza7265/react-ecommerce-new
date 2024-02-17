@@ -2,15 +2,17 @@ import Footer from "../footer/footer";
 import Navbar from "../navbar/Navbar";
 import { useState, useEffect } from "react";
 import WishlistRow from "./wishlist-components/WishlistRow";
-import sendRequest from "../../utility-functions/apiManager";
+import sendRequest, { errorToast } from "../../utility-functions/apiManager";
 import WishlistSkeleton from "./skeleton-components/WishlistSkeleton";
 import { Link } from "react-router-dom";
 import { BounceLoader } from "react-spinners";
+import { useNavigate } from "react-router-dom";
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState(null);
   const [skeletontime, setSkeletontime] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const override = {
     display: "block",
@@ -26,7 +28,16 @@ function Wishlist() {
   useEffect(() => {
     sendRequest("get", "wishlist")
       .then((res) => {
-        setWishlist(res.wishlist);
+        if (res.status) {
+          setWishlist(res.wishlist);
+        } else {
+          errorToast(res.error);
+          if (res.type == "updatePassword") {
+            setTimeout(() => {
+              navigate("/updatePw");
+            }, 2000);
+          }
+        }
       })
       .catch((err) => console.log(err));
 
