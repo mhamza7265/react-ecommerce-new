@@ -17,6 +17,10 @@ import { updateCartQuantity } from "../../../redux/reducers/cartQuantityReducer"
 import { updateCart } from "../../../redux/reducers/cartReducer";
 import { updateWishlistQuantity } from "../../../redux/reducers/wishlistQuantityReducer";
 import { updateOrder } from "../../../redux/reducers/orderReducer";
+import {
+  startSpinner,
+  stopSpinner,
+} from "../../../redux/reducers/spinnerReducer";
 
 function Login() {
   const [loading, setLoading] = useState(false);
@@ -45,14 +49,14 @@ function Login() {
   };
 
   const onSubmit = (data) => {
-    setLoading(true);
+    dispatch(startSpinner());
     sendRequest("post", "login", {
       email: data.email,
       password: data.password,
     })
       .then((res) => {
         if (res.status) {
-          setLoading(false);
+          dispatch(stopSpinner());
           successToast(res.login);
           console.log("token", res);
           const userObj = {
@@ -108,12 +112,12 @@ function Login() {
           }, 3000);
         } else {
           console.log("login", res);
-          setLoading(false);
+          dispatch(stopSpinner());
           errorToast(res.login);
         }
       })
       .catch((err) => {
-        setLoading(false);
+        dispatch(stopSpinner());
         errorToast(err.login);
       });
   };
