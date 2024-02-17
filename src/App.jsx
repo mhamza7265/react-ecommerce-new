@@ -37,6 +37,7 @@ import { Elements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { updateCart } from "./redux/reducers/cartReducer";
 import SearchedProducts from "./components/searchedProducts/SearchedProducts";
+import UpdatePassword from "./components/Auth/updatePassword/UpdatePassword";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -60,7 +61,7 @@ function App() {
   };
 
   const user = localStorage.getItem("current_user");
-  const currentUser = JSON.parse(user);
+  // const currentUser = JSON.parse(user);
 
   useEffect(() => {
     sendRequest("get", "product")
@@ -135,157 +136,168 @@ function App() {
   }, [updateWishlist]);
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <Preloader>
-              <Home />
-            </Preloader>
-          }
-        />
-        <Route
-          path="/compare"
-          element={
-            <Preloader>
-              <Compare />
-            </Preloader>
-          }
-        />
-        <Route
-          path="/wishlist"
-          element={
-            <Preloader>
-              <HaveAuth>
-                <Wishlist />
-              </HaveAuth>
-            </Preloader>
-          }
-        />
-        <Route
-          path="/account"
-          element={
-            <Preloader>
-              <HaveAuth>
-                <Account />
-              </HaveAuth>
-            </Preloader>
-          }
-        />
-        <Route
-          path="/cart"
-          element={
-            <Preloader>
-              <HaveAuth>
-                <Cart />
-              </HaveAuth>
-            </Preloader>
-          }
-        />
-        <Route
-          path="/checkout"
-          element={
-            <Preloader>
-              <HaveAuth>
-                <Elements stripe={stripePromise} options={options}>
-                  <Checkout />
-                </Elements>
-              </HaveAuth>
-            </Preloader>
-          }
-        />
-        <Route
-          path="/login"
-          element={
-            <Preloader>
-              <Login />
-            </Preloader>
-          }
-        />
-        <Route
-          path="/register"
-          element={
-            <Preloader>
-              <Register />
-            </Preloader>
-          }
-        />
-        <Route
-          path="/forgotpw"
-          element={
-            <Preloader>
-              <ForgotPassword />
-            </Preloader>
-          }
-        />
-        <Route
-          path="/resetpw"
-          element={
-            <Preloader>
-              <ResetPassword />
-            </Preloader>
-          }
-        />
-        <Route
-          path="/contact"
-          element={
-            <Preloader>
-              <Contact />
-            </Preloader>
-          }
-        />
-        <Route
-          path="*"
-          element={
-            <Preloader>
-              <NotFound404 />
-            </Preloader>
-          }
-        />
-        <Route
-          path="/singleproduct"
-          element={
-            <Preloader>
-              <ProductFull />
-            </Preloader>
-          }
-        />
-        <Route
-          path="/filter"
-          element={
-            <Preloader>
-              <Filter />
-            </Preloader>
-          }
-        />
-        <Route
-          path="/about"
-          element={
-            <Preloader>
-              <About />
-            </Preloader>
-          }
-        />
-        <Route
-          path="/allProducts"
-          element={
-            <Preloader>
-              <AllProducts />
-            </Preloader>
-          }
-        />
-        <Route
-          path="/searchedProducts"
-          element={
-            <Preloader>
-              <SearchedProducts />
-            </Preloader>
-          }
-        />
-      </Routes>
-      <ScrollToTop />
-    </BrowserRouter>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Preloader>
+                <Home />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/compare"
+            element={
+              <Preloader>
+                <Compare />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/wishlist"
+            element={
+              <Preloader>
+                <HaveAuth>
+                  <Wishlist />
+                </HaveAuth>
+              </Preloader>
+            }
+          />
+          <Route
+            path="/account"
+            element={
+              <Preloader>
+                <HaveAuth>
+                  <Account />
+                </HaveAuth>
+              </Preloader>
+            }
+          />
+          <Route
+            path="/cart"
+            element={
+              <Preloader>
+                <HaveAuth>
+                  <Cart />
+                </HaveAuth>
+              </Preloader>
+            }
+          />
+          <Route
+            path="/checkout"
+            element={
+              <Preloader>
+                <HaveAuth>
+                  <Elements stripe={stripePromise} options={options}>
+                    <Checkout />
+                  </Elements>
+                </HaveAuth>
+              </Preloader>
+            }
+          />
+          <Route
+            path="/login"
+            element={
+              <Preloader>
+                <Login />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <Preloader>
+                <Register />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/forgotpw"
+            element={
+              <Preloader>
+                <ForgotPassword />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/resetpw"
+            element={
+              <Preloader>
+                <ResetPassword />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/contact"
+            element={
+              <Preloader>
+                <Contact />
+              </Preloader>
+            }
+          />
+          <Route
+            path="*"
+            element={
+              <Preloader>
+                <NotFound404 />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/singleproduct"
+            element={
+              <Preloader>
+                <ProductFull />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/filter"
+            element={
+              <Preloader>
+                <Filter />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/about"
+            element={
+              <Preloader>
+                <About />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/allProducts"
+            element={
+              <Preloader>
+                <AllProducts />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/searchedProducts"
+            element={
+              <Preloader>
+                <SearchedProducts />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/updatePw"
+            element={
+              <Preloader>
+                <UpdatePassword />
+              </Preloader>
+            }
+          />
+        </Routes>
+        <ScrollToTop />
+      </BrowserRouter>
+      =
+    </>
   );
 }
 

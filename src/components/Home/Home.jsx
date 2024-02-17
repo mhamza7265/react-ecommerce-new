@@ -67,6 +67,11 @@ function Home() {
               });
           } else {
             errorToast(res.error);
+            if (res.type == "updatePassword") {
+              setTimeout(() => {
+                navigate("/updatePw");
+              }, 2000);
+            }
           }
         })
         .catch((err) => {

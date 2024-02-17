@@ -32,9 +32,7 @@ function Account() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const shippingAddress = localStorage.getItem("shippingAddress");
   const storedData = localStorage.getItem("current_user");
-  const storedToken = JSON.parse(storedData)?.token;
   const ordersList = useSelector((state) => state.order.orders);
 
   const {
@@ -77,28 +75,52 @@ function Account() {
     width: "10px",
     height: "55px",
   };
+
   useEffect(() => {
     sendRequest("get", "user")
       .then((res) => {
-        setCurrentUser(res.user);
+        if (res.status) {
+          setCurrentUser(res.user);
+        } else {
+          errorToast(res.error);
+          if (res.type == "updatePassword") {
+            setTimeout(() => {
+              navigate("/updatePw");
+            }, 2000);
+          }
+        }
       })
       .catch((err) => console.log(err));
-  }, []);
 
-  useEffect(() => {
     sendRequest("get", "orders")
       .then((res) => {
-        if (res.status) setOrders(res.orders);
+        if (res.status) {
+          setOrders(res.orders);
+        } else {
+          console.log(res.error);
+          // if (res.type == "updatePassword") {
+          //   setTimeout(() => {
+          //     navigate("/updatePw");
+          //   }, 2000);
+          // }
+        }
       })
       .catch((err) => {
         // errorToast(err);
       });
-  }, []);
 
-  useEffect(() => {
     sendRequest("get", `address`)
       .then((res) => {
-        setCurrentAddress(res.address);
+        if (res.status) {
+          setCurrentAddress(res.address);
+        } else {
+          console.log(res.error);
+          // if (res.type == "updatePassword") {
+          //   setTimeout(() => {
+          //     navigate("/updatePw");
+          //   }, 2000);
+          // }
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -157,6 +179,13 @@ function Account() {
         if (res.status) {
           console.log("status", res);
           setOrderStatus(res.orderStatus);
+        } else {
+          errorToast(res.error);
+          if (res.type == "updatePassword") {
+            setTimeout(() => {
+              navigate("/updatePw");
+            }, 2000);
+          }
         }
       })
       .catch((err) => {
@@ -186,6 +215,11 @@ function Account() {
           setLoadingUser(false);
           console.log("err", res);
           errorToast(res.error);
+          if (res.type == "updatePassword") {
+            setTimeout(() => {
+              navigate("/updatePw");
+            }, 2000);
+          }
         }
       })
       .catch((err) => {

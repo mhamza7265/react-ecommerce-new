@@ -1,7 +1,5 @@
-import zappericon from "../../assets/imgs/theme/icons/payment-zapper.svg";
 import paymaster from "../../assets/imgs/theme/icons/payment-master.svg";
 import visaicon from "../../assets/imgs/theme/icons/payment-visa.svg";
-import paypalicon from "../../assets/imgs/theme/icons/payment-paypal.svg";
 import Navbar from "../navbar/Navbar";
 import Footer from "../footer/footer";
 import { useEffect, useState } from "react";
@@ -21,7 +19,6 @@ import {
   useStripe,
   PaymentElement,
 } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
 import { updateCartQuantity } from "../../redux/reducers/cartQuantityReducer";
 import { updateOrder } from "../../redux/reducers/orderReducer";
 
@@ -31,15 +28,11 @@ function Checkout() {
   const [cart, setCart] = useState([]);
   const [errorMessage, setErrorMessage] = useState();
   const [onlinePayment, setOnlinePayment] = useState(false);
-  const [sum, setSum] = useState(0);
-  const [currentAddress, setCurrentAddress] = useState("");
+  const [currentUser, setCurrentUser] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const currentCart = useSelector((state) => state.cart.cart);
   const cartQuantity = useSelector((state) => state.cartQuantity.quantity);
-  // const updateCart = useSelector((state) => state.updateCartNavbar.number);
-  const shippingAddress = localStorage.getItem("shippingAddress");
-  // const currentUser = localStorage.getItem("current_user");
 
   const {
     register,
@@ -50,10 +43,40 @@ function Checkout() {
 
   useEffect(() => {
     console.log("cart");
-    sendRequest("get", "cart").then((res) => {
-      setCart(res.cart[0]);
-      console.log("cart", cart);
-    });
+    sendRequest("get", "cart")
+      .then((res) => {
+        if (res.status) {
+          setCart(res.cart[0]);
+          console.log("cart", cart);
+        } else {
+          errorToast(res.error);
+          if (res.type == "updatePassword") {
+            setTimeout(() => {
+              navigate("/updatePw");
+            }, 2000);
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    sendRequest("get", "user")
+      .then((res) => {
+        if (res.status) {
+          setCurrentUser(res.user);
+        } else {
+          errorToast(res.error);
+          if (res.type == "updatePassword") {
+            setTimeout(() => {
+              navigate("/updatePw");
+            }, 2000);
+          }
+        }
+      })
+      .catch((err) => console.log(err));
   }, []);
 
   const onSubmit = async (d) => {
@@ -94,6 +117,13 @@ function Checkout() {
             navigate("/account");
           }, 3000);
           return "success";
+        } else {
+          errorToast(res.error);
+          if (res.type == "updatePassword") {
+            setTimeout(() => {
+              navigate("/updatePw");
+            }, 2000);
+          }
         }
       })
       .catch((err) => {
@@ -141,7 +171,8 @@ function Checkout() {
         elements,
         params: {
           billing_details: {
-            name: "Jenny Rosen",
+            name: currentUser?.first_name + " " + currentUser?.last_name,
+            email: currentUser?.email,
           },
         },
       });
@@ -169,11 +200,24 @@ function Checkout() {
 
       sendRequest("post", "create-confirm-intent", {
         paymentMethodId: paymentMethod.id,
-      }).then((res) => {
-        dispatch(stopSpinner());
-        console.log("res", res);
-        handleSubmit(onSubmit)();
-      });
+      })
+        .then((res) => {
+          if (res.status) {
+            dispatch(stopSpinner());
+            console.log("res", res);
+            handleSubmit(onSubmit)();
+          } else {
+            errorToast(res.error);
+            if (res.type == "updatePassword") {
+              setTimeout(() => {
+                navigate("/updatePw");
+              }, 2000);
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
 
     // Handle any next actions or errors. See the Handle any next actions step for implementation.
@@ -243,7 +287,6 @@ function Checkout() {
                         type="text"
                         name="billing_address"
                         placeholder="Address *"
-                        defaultValue={currentAddress?.address}
                       />
                       <p className="text-danger">
                         {errors.billing_address?.message}
@@ -270,7 +313,6 @@ function Checkout() {
                         type="text"
                         name="city"
                         placeholder="City / Town *"
-                        defaultValue={currentAddress?.city}
                       />
                       <p className="text-danger">{errors.city?.message}</p>
                     </div>
@@ -282,7 +324,6 @@ function Checkout() {
                         type="text"
                         name="state"
                         placeholder="State *"
-                        defaultValue={currentAddress?.state}
                       />
                       <p className="text-danger">{errors.state?.message}</p>
                     </div>
@@ -296,7 +337,6 @@ function Checkout() {
                             required: "This field is required",
                           })}
                           name="country"
-                          defaultValue={currentAddress?.country}
                         >
                           <option value="">Select a country *</option>
                           <option value="Aland Islands">Aland Islands</option>
@@ -571,7 +611,6 @@ function Checkout() {
                         type="text"
                         name="zipcode"
                         placeholder="Postcode / ZIP *"
-                        defaultValue={currentAddress?.zipCode}
                       />
                       <p className="text-danger">{errors.zipcode?.message}</p>
                     </div>
@@ -1086,7 +1125,7 @@ function Checkout() {
               <div className="d-flex align-items-end justify-content-between mb-30">
                 <h4>Your Order</h4>
                 <h5 className="text-black">
-                  Subtotal : ${cart ? cart.grandTotal.toFixed() : 0}
+                  Subtotal : ${cart ? cart?.grandTotal?.toFixed() : 0}
                 </h5>
               </div>
               <div className="divider-2 mb-30"></div>

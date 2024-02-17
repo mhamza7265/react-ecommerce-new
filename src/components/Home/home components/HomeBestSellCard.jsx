@@ -47,22 +47,31 @@ function HomeBestSellCard({ name, price, image, prodId, setmodal, discount }) {
       sendRequest("post", "wishlist", { prodId: id })
         .then((res) => {
           dispatch(stopSpinner());
-          successToast(res.message);
+          if (res.status) {
+            successToast(res.message);
 
-          sendRequest("get", "wishlist")
-            .then((res) => {
-              dispatch(addWishlist(res.wishlist));
-            })
-            .catch((err) => console.log(err));
+            sendRequest("get", "wishlist")
+              .then((res) => {
+                dispatch(addWishlist(res.wishlist));
+              })
+              .catch((err) => console.log(err));
 
-          sendRequest("get", "wishlist/qty")
-            .then((res) => {
-              console.log(res);
-              dispatch(updateWishlistQuantity(res.wishlistQuantity));
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+            sendRequest("get", "wishlist/qty")
+              .then((res) => {
+                console.log(res);
+                dispatch(updateWishlistQuantity(res.wishlistQuantity));
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            errorToast(res.error);
+            if (res.type == "updatePassword") {
+              setTimeout(() => {
+                navigate("/updatePw");
+              }, 2000);
+            }
+          }
         })
         .catch((err) => {
           dispatch(stopSpinner());
@@ -97,10 +106,16 @@ function HomeBestSellCard({ name, price, image, prodId, setmodal, discount }) {
               });
           } else {
             errorToast(res.error);
+            if (res.type == "updatePassword") {
+              setTimeout(() => {
+                navigate("/updatePw");
+              }, 2000);
+            }
           }
         })
         .catch((err) => {
           dispatch(stopSpinner());
+          console.log("reserror", err);
           errorToast(err);
         });
     } else {

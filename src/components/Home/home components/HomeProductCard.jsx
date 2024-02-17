@@ -15,8 +15,6 @@ import {
 import { addWishlist } from "../../../redux/reducers/wishlistReducer";
 import { updateCartQuantity } from "../../../redux/reducers/cartQuantityReducer";
 import { updateWishlistQuantity } from "../../../redux/reducers/wishlistQuantityReducer";
-import { useState } from "react";
-import { useEffect } from "react";
 import { updateCart } from "../../../redux/reducers/cartReducer";
 
 function HomeProductCard({
@@ -45,23 +43,32 @@ function HomeProductCard({
       sendRequest("post", "wishlist", { prodId: id })
         .then((res) => {
           dispatch(stopSpinner());
-          successToast(res.message);
-          console.log("res", res.message);
+          if (res.status) {
+            successToast(res.message);
+            console.log("res", res.message);
 
-          sendRequest("get", "wishlist")
-            .then((res) => {
-              dispatch(addWishlist(res.wishlist));
-            })
-            .catch((err) => console.log(err));
+            sendRequest("get", "wishlist")
+              .then((res) => {
+                dispatch(addWishlist(res.wishlist));
+              })
+              .catch((err) => console.log(err));
 
-          sendRequest("get", "wishlist/qty")
-            .then((res) => {
-              console.log(res);
-              dispatch(updateWishlistQuantity(res.wishlistQuantity));
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+            sendRequest("get", "wishlist/qty")
+              .then((res) => {
+                console.log(res);
+                dispatch(updateWishlistQuantity(res.wishlistQuantity));
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            errorToast(res.error);
+            if (res.type == "updatePassword") {
+              setTimeout(() => {
+                navigate("/updatePw");
+              }, 2000);
+            }
+          }
         })
         .catch((err) => {
           dispatch(stopSpinner());
@@ -140,6 +147,12 @@ function HomeProductCard({
               });
           } else {
             errorToast(res.error);
+            console.log("reserror", res.type);
+            if (res.type == "updatePassword") {
+              setTimeout(() => {
+                navigate("/updatePw");
+              }, 2000);
+            }
           }
         })
         .catch((err) => {

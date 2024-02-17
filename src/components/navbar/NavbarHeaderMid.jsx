@@ -3,7 +3,7 @@ import wishicon from "../../assets/imgs/theme/icons/icon-heart.svg";
 import carticon from "../../assets/imgs/theme/icons/icon-cart.svg";
 import accnticon from "../../assets/imgs/theme/icons/icon-user.svg";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import sendRequest, {
@@ -19,7 +19,6 @@ import { updateCartQuantity } from "../../redux/reducers/cartQuantityReducer";
 import { addSearchProduct } from "../../redux/reducers/searchedProductsReducer";
 
 function NavbarHeaderMid() {
-  const updatedCart = useSelector((state) => state.updateCartNavbar.number);
   const products = useSelector((state) => state.products.products);
   const cartQuantity = useSelector((state) => state.cartQuantity.quantity);
   const wishlistQuantity = useSelector(
@@ -31,8 +30,6 @@ function NavbarHeaderMid() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentCart = useSelector((state) => state.cart.cart);
-
-  console.log("searched", search);
 
   const handleWishlistNavClick = () => {
     const currentUser = localStorage.getItem("current_user");
@@ -84,6 +81,13 @@ function NavbarHeaderMid() {
             .catch((err) => {
               console.log(err);
             });
+        } else {
+          errorToast(res.error);
+          if (res.type == "updatePassword") {
+            setTimeout(() => {
+              navigate("/updatePw");
+            }, 2000);
+          }
         }
       })
       .catch((err) => {

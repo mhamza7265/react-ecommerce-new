@@ -14,8 +14,6 @@ function ViewOrderRow({
   image,
   prodId,
 }) {
-  const products = useSelector((state) => state.products.products);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleSingleProductClick = (e) => {

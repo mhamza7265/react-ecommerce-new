@@ -1,19 +1,4 @@
-import cat1 from "../../assets/imgs/theme/icons/category-1.svg";
-import cat2 from "../../assets/imgs/theme/icons/category-2.svg";
-import cat3 from "../../assets/imgs/theme/icons/category-3.svg";
-import cat4 from "../../assets/imgs/theme/icons/category-4.svg";
-import cat5 from "../../assets/imgs/theme/icons/category-5.svg";
-import cat6 from "../../assets/imgs/theme/icons/category-6.svg";
-import cat7 from "../../assets/imgs/theme/icons/category-7.svg";
-import cat8 from "../../assets/imgs/theme/icons/category-8.svg";
-import cat9 from "../../assets/imgs/theme/icons/category-9.svg";
-import cat10 from "../../assets/imgs/theme/icons/category-10.svg";
-import icon1 from "../../assets/imgs/theme/icons/icon-1.svg";
-import icon2 from "../../assets/imgs/theme/icons/icon-2.svg";
-import icon3 from "../../assets/imgs/theme/icons/icon-3.svg";
-import icon4 from "../../assets/imgs/theme/icons/icon-4.svg";
 import { useState } from "react";
-import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useSelector } from "react-redux";
 import NavebarMidMainCatComponent from "./navbar-components/NavebarMidMainCatComponent";
 
@@ -26,9 +11,6 @@ function NavbarMainCat() {
   };
   const categories = useSelector((state) => state.categories.categories);
 
-  // const handleExpandClick = () => {
-  //   setExpandActive(true);
-  // };
   return (
     <div>
       <div className="main-categori-wrap d-none d-lg-block me-5">

@@ -25,20 +25,33 @@ function Cart() {
   const cartQuantity = useSelector((state) => state.cartQuantity.quantity);
 
   useEffect(() => {
-    sendRequest("get", "cart").then((res) => {
-      console.log("cart", res.cart[0].cartItems[0]);
-      setCartItems(res.cart[0].cartItems[0]);
-      dispatch(updateCart(res.cart[0]));
-      const calculation = {
-        subTotal: res.cart[0].subTotal,
-        discount: res.cart[0].discount,
-        grandTotal: res.cart[0].grandTotal,
-      };
-      setTotal(calculation);
-      setTimeout(() => {
-        setSkeletontime(true);
-      }, 10000);
-    });
+    sendRequest("get", "cart")
+      .then((res) => {
+        if (res.status) {
+          console.log("cart", res?.cart[0]?.cartItems[0]);
+          setCartItems(res?.cart[0]?.cartItems[0]);
+          dispatch(updateCart(res?.cart[0]));
+          const calculation = {
+            subTotal: res?.cart[0]?.subTotal,
+            discount: res?.cart[0]?.discount,
+            grandTotal: res?.cart[0]?.grandTotal,
+          };
+          setTotal(calculation);
+          setTimeout(() => {
+            setSkeletontime(true);
+          }, 10000);
+        } else {
+          errorToast(res.error);
+          if (res.type == "updatePassword") {
+            setTimeout(() => {
+              navigate("/updatePw");
+            }, 2000);
+          }
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, [refresh]);
 
   const handleDeleteClick = (e, quantity) => {
@@ -51,22 +64,31 @@ function Cart() {
           successToast("Product removed from cart!");
           sendRequest("get", "cart")
             .then((res) => {
-              console.log("cart", res.cart[0].cartItems[0]);
-              setCartItems(res.cart[0].cartItems[0]);
-              const calculation = {
-                subTotal: res.cart[0].subTotal,
-                discount: res.cart[0].discount,
-                grandTotal: res.cart[0].grandTotal,
-              };
-              setTotal(calculation);
-              sendRequest("get", "cart/qty")
-                .then((res) => {
-                  console.log(res);
-                  dispatch(updateCartQuantity(res.quantity));
-                })
-                .catch((err) => {
-                  console.log(err);
-                });
+              if (res.status) {
+                console.log("cart", res.cart[0].cartItems[0]);
+                setCartItems(res.cart[0].cartItems[0]);
+                const calculation = {
+                  subTotal: res.cart[0].subTotal,
+                  discount: res.cart[0].discount,
+                  grandTotal: res.cart[0].grandTotal,
+                };
+                setTotal(calculation);
+                sendRequest("get", "cart/qty")
+                  .then((res) => {
+                    console.log(res);
+                    dispatch(updateCartQuantity(res.quantity));
+                  })
+                  .catch((err) => {
+                    console.log(err);
+                  });
+              } else {
+                errorToast(res.error);
+                if (res.type == "updatePassword") {
+                  setTimeout(() => {
+                    navigate("/updatePw");
+                  }, 2000);
+                }
+              }
             })
             .catch((err) => {
               console.log(err);
@@ -154,7 +176,7 @@ function Cart() {
                   <table className="table table-wishlist">
                     <thead>
                       <tr className="main-heading">
-                        <th className="custome-checkbox start pl-30">
+                        {/* <th className="custome-checkbox start pl-30">
                           <>
                             <input
                               className="form-check-input"
@@ -168,7 +190,7 @@ function Cart() {
                               htmlFor="exampleCheckbox11"
                             ></label>
                           </>
-                        </th>
+                        </th> */}
                         <th scope="col" colSpan="2">
                           Product
                         </th>
@@ -597,7 +619,7 @@ function Cart() {
                           </td>
                           <td className="cart_total_amount">
                             <h4 className="text-brand text-end">
-                              ${total.subTotal}
+                              ${total.subTotal.toFixed()}
                             </h4>
                           </td>
                         </tr>
@@ -645,7 +667,7 @@ function Cart() {
                           </td>
                           <td className="cart_total_amount">
                             <h4 className="text-brand text-end">
-                              ${total.grandTotal}
+                              ${total.grandTotal.toFixed()}
                             </h4>
                           </td>
                         </tr>

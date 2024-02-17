@@ -5,17 +5,27 @@ import ScrollAnimation from "react-animate-on-scroll";
 import BestSellSection from "./skeleton-components/BestsellSection";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import sendRequest from "../../utility-functions/apiManager";
+import sendRequest, { errorToast } from "../../utility-functions/apiManager";
+import { useNavigate } from "react-router";
 
 function HomeSectionBestsell({ setmodal }) {
   const products = useSelector((state) => state.products.products);
+  const navigate = useNavigate();
   const [wishlist, setWishlist] = useState(null);
 
   useEffect(() => {
     sendRequest("get", "wishlist")
       .then((res) => {
-        // dispatch(addWishlist(res.wishlist));
-        setWishlist(res.wishlist);
+        if (res.status) {
+          setWishlist(res.wishlist);
+        } else {
+          console.log(res.error);
+          // if (res.type == "updatePassword") {
+          //   setTimeout(() => {
+          //     navigate("/updatePw");
+          //   }, 2000);
+          // }
+        }
       })
       .catch((err) => console.log(err));
   }, []);
@@ -116,9 +126,9 @@ function HomeSectionBestsell({ setmodal }) {
               <div className="banner-img style-2">
                 <div className="banner-text">
                   <h2 className="mb-100">Bring nature into your home</h2>
-                  <a className="btn btn-xs">
+                  {/* <a className="btn btn-xs">
                     Shop Now <i className="fi-rs-arrow-small-right"></i>
-                  </a>
+                  </a> */}
                 </div>
               </div>
             </ScrollAnimation>

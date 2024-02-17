@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import Skeleton from "react-loading-skeleton";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import sendRequest from "../../utility-functions/apiManager";
-import { BarLoader } from "react-spinners";
+import sendRequest, {
+  errorToast,
+  successToast,
+} from "../../utility-functions/apiManager";
 import { useDispatch } from "react-redux";
 import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
 import BASE_URL from "../../utility-functions/config";
+import { useNavigate } from "react-router";
 
 function CartItems({
   id,
@@ -23,102 +25,124 @@ function CartItems({
 }) {
   const [count, setCount] = useState(1);
   const [value, setValue] = useState(0);
-  const [spinnerStatus, setSpinnerStatus] = useState(false);
+  const [productQuantity, setProductQuantity] = useState(0);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  const override = {
-    display: "block",
-    position: "absolute",
-    top: 0,
-    left: 0,
-    margin: "0 auto",
-    borderColor: "red",
-    height: "1px",
-    width: "100%",
-    backgroundColor: "#3bb77e",
-    padding: 0,
-  };
 
   useEffect(() => {
     setCount(quantity);
     setValue(quantity);
   }, [value]);
 
+  useEffect(() => {
+    sendRequest("get", `product/quantity/${prodId}`).then((res) => {
+      setProductQuantity(res.availableQuantity);
+    });
+  });
+
   const handleDecrementClick = (e) => {
-    count > 1 ? setCount(() => count - 1) : null;
+    if (count > 1) {
+      setCount(() => count - 1);
+    } else {
+      return;
+    }
     const handleSendRequest = (countValue) => {
       const id = e.target.closest(".cart-item").getAttribute("data");
-      console.log("count", count);
       let calculate = quantity - countValue;
-      console.log("calculate", calculate);
-      console.log("quantity", quantity);
-      // setSpinnerStatus(true);
       dispatch(startSpinner());
       sendRequest("post", "cart", {
         id,
         quantity: calculate,
         decreaseQuantity: true,
-      }).then((res) => {
-        // setSpinnerStatus(false);
-        dispatch(stopSpinner());
-        console.log(res);
-        setCartItems(res.cart.cartItems[0]);
-        sendRequest("get", "cart/total")
-          .then((res) => {
-            if (res.status) {
-              setTotal(res.calculation);
+      })
+        .then((res) => {
+          dispatch(stopSpinner());
+          if (res.status) {
+            setCartItems(res.cart.cartItems[0]);
+            successToast(res.message);
+            sendRequest("get", "cart/total")
+              .then((res) => {
+                if (res.status) {
+                  setTotal(res.calculation);
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            errorToast(res.error);
+            if (res.type == "updatePassword") {
+              setTimeout(() => {
+                navigate("/updatePw");
+              }, 2000);
             }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
+          }
+        })
+        .catch((err) => {
+          errorToast(err.error);
+        });
     };
     handleSendRequest(count > 1 ? count - 1 : count);
   };
 
   const handleIncrementClick = (e) => {
-    setCount((prevCount) => prevCount + 1);
+    productQuantity > 0 ? setCount((prevCount) => prevCount + 1) : null;
 
     const handleSendRequest = (countValue) => {
+      console.log("product quantity available", productQuantity);
       const id = e.target.closest(".cart-item").getAttribute("data");
       dispatch(startSpinner());
       sendRequest("post", "cart", {
         id,
         quantity: Math.abs(parseInt(countValue) - parseInt(quantity)),
-      }).then((res) => {
-        dispatch(stopSpinner());
-        setCartItems(res.cart.cartItems[0]);
-        sendRequest("get", "cart/total")
-          .then((res) => {
-            if (res.status) {
-              setTotal(res.calculation);
+        increaseQuantity: true,
+      })
+        .then((res) => {
+          dispatch(stopSpinner());
+          if (res.status) {
+            setCartItems(res.cart.cartItems[0]);
+            successToast(res.message);
+            sendRequest("get", `product/quantity/${id}`).then((res) => {
+              console.log("availableQuantity", res.availableQuantity);
+              setProductQuantity(res.availableQuantity);
+            });
+            sendRequest("get", "cart/total")
+              .then((res) => {
+                if (res.status) {
+                  setTotal(res.calculation);
+                }
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+          } else {
+            errorToast(res.error);
+            if (res.type == "updatePassword") {
+              setTimeout(() => {
+                navigate("/updatePw");
+              }, 2000);
             }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      });
+          }
+        })
+        .catch((err) => {
+          errorToast(err.error);
+        });
     };
 
     handleSendRequest(count + 1);
   };
 
   const delItem = (e) => {
-    del(e, quantity);
+    if (window.confirm("Do you want to remove this product from cart?")) {
+      del(e, quantity);
+    } else {
+      return;
+    }
   };
 
   return (
     <tr className="cart-item position-relative" data={prodId}>
-      <BarLoader
-        color={"#ffffff"}
-        loading={spinnerStatus}
-        cssOverride={override}
-        size={150}
-        aria-label="Loading Spinner"
-        data-testid="loader"
-      />
-      <td className="custome-checkbox pl-30">
+      {/* <td className="custome-checkbox pl-30">
         <>
           <input
             className="form-check-input"
@@ -131,7 +155,7 @@ function CartItems({
             htmlFor={`exampleCheckbox${id}`}
           ></label>
         </>
-      </td>
+      </td> */}
       <td className="image product-thumbnail">
         <LazyLoadImage src={BASE_URL + "/" + image} alt="#" />
       </td>

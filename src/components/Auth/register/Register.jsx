@@ -5,12 +5,19 @@ import Footer from "../../footer/footer";
 import Navbar from "../../navbar/Navbar";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useForm } from "react-hook-form";
-import sendRequest from "../../../utility-functions/apiManager";
+import sendRequest, {
+  successToast,
+  warningToast,
+} from "../../../utility-functions/apiManager";
 import { useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { BounceLoader } from "react-spinners";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import GoogleLoginButton from "./GoogleLoginButton";
+import { GoogleLogin } from "@react-oauth/google";
+import { useGoogleLogin } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
 
 function Register() {
   const [loading, setLoading] = useState(false);
@@ -92,11 +99,83 @@ function Register() {
         console.log(err);
       });
   };
+
+  // const handleSocialClick = async (e) => {
+  //   // sendRequest("get", "auth/google/callback");
+  //   location.replace(
+  //     "https://accounts.google.com/o/oauth2/v2/auth?display=popup&client_id=813599049172-c41a2al6qbidi189fnj2i528bt8i93d1.apps.googleusercontent.com&redirect_uri=http://localhost:3000/auth/google/callback&response_type=code&scope=profile email"
+  //   );
+  // };
+
+  const handleSuccess = (response) => {
+    console.log("Google login successful", jwtDecode(response.credential));
+    const user = jwtDecode(response.credential);
+    console.log("user", user);
+    sendRequest("post", "register", {
+      email: user.email,
+      firstName: user.given_name,
+      lastName: user.family_name,
+      password: "111111",
+      role: "basic",
+      passwordCreated: false,
+    }).then((res) => {
+      console.log(res);
+      if (res.status) {
+        successToast(res.message);
+        sendRequest("post", "login", {
+          email: user.email,
+          password: "111111",
+        }).then((res) => {
+          console.log("loggedIn", res);
+          if (res.status) {
+            const userObj = {
+              token: res.token,
+            };
+            localStorage.setItem("current_user", JSON.stringify(userObj));
+
+            warningToast(
+              "Current password is '111111', please update to use your account."
+            );
+            setTimeout(() => {
+              navigate("/");
+            }, 5000);
+          }
+        });
+      }
+    });
+  };
+
+  // const handleGoogleFailure = (error) => {
+  //   console.error("Google login failed", error);
+  // };
+
+  // const login = useGoogleLogin({
+  //   onSuccess: async (codeResponse) => {
+  //     console.log("code", codeResponse.code);
+  //     // sendRequest("get", "auth/google/callback", {
+  //     //   code: codeResponse.code,
+  //     // }).then((res) => console.log("googleRes", res));
+  //     // const fetching = await fetch(
+  //     //   "http://localhost:3000/auth/google/callback",
+  //     //   {
+  //     //     method: "post",
+  //     //     headers: { "Content-Type": "application/json" },
+  //     //     body: { code: codeResponse.code },
+  //     //     mode: "no-cors",
+  //     //   }
+  //     // );
+
+  //     // console.log("googleRes", fetching);
+  //   },
+  //   flow: "auth-code",
+  // });
+
   return (
     <div>
       <Navbar />
       <div className="page-header breadcrumb-wrap">
         <div className="container">
+          ;
           <div className="breadcrumb">
             <Link to={"/"} rel="nofollow">
               <i className="fi-rs-home mr-5"></i>Home
@@ -322,18 +401,43 @@ function Register() {
                 </div>
                 <div className="col-lg-6 pr-30 d-none d-lg-block">
                   <div className="card-login mt-115">
-                    <a className="social-login facebook-login">
+                    {/* <a
+                      className="social-login facebook-login"
+                      onClick={handleSocialClick}
+                      data={"facebook"}
+                    >
                       <LazyLoadImage src={fbicon} alt="" />
                       <span>Continue with Facebook</span>
                     </a>
-                    <a className="social-login google-login">
+                    <a
+                      className="social-login google-login"
+                      onClick={() => login()}
+                      data={"google"}
+                    >
                       <LazyLoadImage src={googleicon} alt="" />
                       <span>Continue with Google</span>
-                    </a>
-                    <a className="social-login apple-login">
+                    </a> */}
+                    {/* <a className="social-login apple-login">
                       <LazyLoadImage src={appleicon} alt="" />
                       <span>Continue with Apple</span>
-                    </a>
+                    </a> */}
+                    {/* <GoogleLoginButton
+                      onSuccess={handleGoogleSuccess}
+                      onFailure={handleGoogleFailure}
+                    /> */}
+                    <GoogleLogin
+                      onSuccess={(credentialResponse) => {
+                        // console.log(credentialResponse);
+                        // console.log(
+                        //   "decode",
+                        //   jwtDecode(credentialResponse.credential)
+                        // );
+                        handleSuccess(credentialResponse);
+                      }}
+                      onError={() => {
+                        console.log("Login Failed");
+                      }}
+                    />
                   </div>
                 </div>
               </div>

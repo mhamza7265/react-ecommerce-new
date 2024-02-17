@@ -4,13 +4,13 @@ import ScrollAnimation from "react-animate-on-scroll";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import ProductsSection from "./skeleton-components/ProductsSection";
-import sendRequest from "../../utility-functions/apiManager";
-import { useDispatch } from "react-redux";
+import sendRequest, { errorToast } from "../../utility-functions/apiManager";
+import { useNavigate } from "react-router";
 
 function HomeSectionProduct({ setmodal }) {
   const products = useSelector((state) => state.products.products);
   const search = useSelector((state) => state.search.search);
-  // const reqProducts = products ? products.slice(1, 11) : null;
+  const navigate = useNavigate();
   const [searchedProd, setSearchedProd] = useState([]);
   const [wishlist, setWishlist] = useState(null);
 
@@ -24,8 +24,17 @@ function HomeSectionProduct({ setmodal }) {
   useEffect(() => {
     sendRequest("get", "wishlist")
       .then((res) => {
-        // dispatch(addWishlist(res.wishlist));
-        setWishlist(res.wishlist);
+        if (res.status) {
+          // dispatch(addWishlist(res.wishlist));
+          setWishlist(res.wishlist);
+        } else {
+          console.log(res.error);
+          // if (res.type == "updatePassword") {
+          //   setTimeout(() => {
+          //     navigate("/updatePw");
+          //   }, 2000);
+          // }
+        }
       })
       .catch((err) => console.log(err));
   }, []);

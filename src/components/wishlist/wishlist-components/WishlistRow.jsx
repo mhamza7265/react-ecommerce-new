@@ -5,7 +5,6 @@ import sendRequest, {
 } from "../../../utility-functions/apiManager";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import { updateCartNavbar } from "../../../redux/reducers/navbarUpdateReducers/cartUpdateReducer";
 import { useNavigate } from "react-router";
 import {
   startSpinner,
@@ -27,7 +26,6 @@ function WishlistRow({
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const products = useSelector((state) => state.products.products);
 
   const handleCartClick = (e) => {
     const id = e.target.closest(".wishlist-item").getAttribute("data");
@@ -36,38 +34,47 @@ function WishlistRow({
       dispatch(startSpinner());
       sendRequest("post", "cart", { id, quantity: 1 })
         .then((res) => {
-          sendRequest("post", "wishlist", { prodId: id })
-            .then((res) => {
-              if (res.status) {
-                sendRequest("get", "wishlist")
-                  .then((res) => {
-                    setWishlist(res.wishlist);
-                  })
-                  .catch((err) => console.log(err));
+          if (res.status) {
+            dispatch(stopSpinner());
+            successToast("Product added into the cart!");
+            sendRequest("get", "cart/qty")
+              .then((res) => {
+                console.log(res);
+                dispatch(updateCartQuantity(res.quantity));
+              })
+              .catch((err) => {
+                console.log(err);
+              });
+            sendRequest("post", "wishlist", { prodId: id })
+              .then((res) => {
+                if (res.status) {
+                  sendRequest("get", "wishlist")
+                    .then((res) => {
+                      setWishlist(res.wishlist);
+                    })
+                    .catch((err) => console.log(err));
 
-                sendRequest("get", "wishlist/qty")
-                  .then((res) => {
-                    console.log(res);
-                    dispatch(updateWishlistQuantity(res.wishlistQuantity));
-                  })
-                  .catch((err) => {
-                    console.log(err);
-                  });
-              }
-            })
-            .catch((err) => {
-              errorToast(err);
-            });
-          dispatch(stopSpinner());
-          successToast("Product added into the cart!");
-          sendRequest("get", "cart/qty")
-            .then((res) => {
-              console.log(res);
-              dispatch(updateCartQuantity(res.quantity));
-            })
-            .catch((err) => {
-              console.log(err);
-            });
+                  sendRequest("get", "wishlist/qty")
+                    .then((res) => {
+                      console.log(res);
+                      dispatch(updateWishlistQuantity(res.wishlistQuantity));
+                    })
+                    .catch((err) => {
+                      console.log(err);
+                    });
+                }
+              })
+              .catch((err) => {
+                errorToast(err);
+              });
+          } else {
+            errorToast(res.error);
+            if (res.type == "updatePassword") {
+              setTimeout(() => {
+                navigate("/updatePw");
+              }, 2000);
+            }
+          }
         })
         .catch((err) => {
           dispatch(stopSpinner());
@@ -103,6 +110,13 @@ function WishlistRow({
             .catch((err) => {
               console.log(err);
             });
+        } else {
+          errorToast(res.error);
+          if (res.type == "updatePassword") {
+            setTimeout(() => {
+              navigate("/updatePw");
+            }, 2000);
+          }
         }
       })
       .catch((err) => {

@@ -62,15 +62,16 @@ function Login() {
           };
           localStorage.setItem("current_user", JSON.stringify(userObj));
 
-          dispatch(updateWishlistNavbar());
+          // dispatch(updateWishlistNavbar());
 
           setTimeout(() => {
             navigate("/");
           }, 3000);
         } else {
+          console.log("login", res);
           setLoading(false);
           toast({
-            title: res.error,
+            title: res.login,
             position: "top-right",
             isClosable: true,
             duration: 3000,
@@ -81,7 +82,7 @@ function Login() {
       .catch((err) => {
         setLoading(false);
         toast({
-          title: err,
+          title: err.error,
           position: "top-right",
           isClosable: true,
           duration: 3000,

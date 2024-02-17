@@ -5,6 +5,7 @@ import {
   stopSpinner,
 } from "../../../redux/reducers/spinnerReducer";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 
 function OrderList({
   orderId,
@@ -16,6 +17,7 @@ function OrderList({
   setOrders,
 }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleModalClick = (e) => {
     const id = e.target.closest(".order-row-parent").getAttribute("data");
@@ -24,17 +26,24 @@ function OrderList({
     sendRequest("get", `order/${id}`)
       .then((res) => {
         dispatch(stopSpinner());
-        console.log("singleorder", res);
-        setOrders(res.orderDetail);
-        setModal(true);
+        if (res.status) {
+          console.log("singleorder", res);
+          setOrders(res.orderDetail);
+          setModal(true);
+        } else {
+          errorToast(res.error);
+          if (res.type == "updatePassword") {
+            setTimeout(() => {
+              navigate("/updatePw");
+            }, 2000);
+          }
+        }
       })
       .catch((err) => {
         console.log(err);
         dispatch(stopSpinner());
       });
   };
-
-  useEffect(() => {}, []);
 
   return (
     <tr className="order-row-parent" data={orderId}>
