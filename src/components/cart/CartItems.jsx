@@ -156,7 +156,7 @@ function CartItems({
           ></label>
         </>
       </td> */}
-      <td className="image product-thumbnail">
+      <td className="image product-thumbnail pl-30">
         <LazyLoadImage src={BASE_URL + "/" + image} alt="#" />
       </td>
       <td className="product-des product-name">

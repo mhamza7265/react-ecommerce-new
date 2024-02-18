@@ -148,7 +148,7 @@ function Cart() {
                   <h1 className="heading-2 mb-10">Your Cart</h1>
                   <div className="d-flex justify-content-between">
                     <h6 className="text-body">
-                      There are{" "}
+                      There {cartQuantity > 1 ? "are" : "is"}{" "}
                       <span className="text-brand">
                         {cartQuantity ? cartQuantity : 0}
                       </span>{" "}
@@ -191,7 +191,7 @@ function Cart() {
                             ></label>
                           </>
                         </th> */}
-                        <th scope="col" colSpan="2">
+                        <th scope="col" colSpan="2" className="start pl-30">
                           Product
                         </th>
                         <th scope="col">Unit Price</th>
@@ -619,10 +619,7 @@ function Cart() {
                           </td>
                           <td className="cart_total_amount">
                             <h4 className="text-brand text-end">
-                              $
-                              {total?.length > 0
-                                ? total?.subTotal?.toFixed()
-                                : 0}
+                              ${total?.subTotal?.toFixed()}
                             </h4>
                           </td>
                         </tr>
@@ -670,10 +667,7 @@ function Cart() {
                           </td>
                           <td className="cart_total_amount">
                             <h4 className="text-brand text-end">
-                              $
-                              {total?.length > 0
-                                ? total?.grandTotal?.toFixed()
-                                : 0}
+                              ${total?.grandTotal?.toFixed()}
                             </h4>
                           </td>
                         </tr>

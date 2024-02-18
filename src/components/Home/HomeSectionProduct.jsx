@@ -174,6 +174,7 @@ function HomeSectionProduct({ setmodal }) {
                         price={item.price}
                         discountVal={item.discount.discountValue}
                         prodId={item._id}
+                        category={item.category.name}
                       />
                     ))}
               </div>

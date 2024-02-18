@@ -17,7 +17,15 @@ import { updateCartQuantity } from "../../../redux/reducers/cartQuantityReducer"
 import { updateWishlistQuantity } from "../../../redux/reducers/wishlistQuantityReducer";
 import { updateCart } from "../../../redux/reducers/cartReducer";
 
-function HomeBestSellCard({ name, price, image, prodId, setmodal, discount }) {
+function HomeBestSellCard({
+  name,
+  price,
+  image,
+  prodId,
+  setmodal,
+  discount,
+  category,
+}) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const wishlistList = useSelector((state) => state.wishlist.wishlist);
@@ -176,12 +184,14 @@ function HomeBestSellCard({ name, price, image, prodId, setmodal, discount }) {
           </div>
         </>
         <div className="product-badges product-badges-position product-badges-mrg">
-          <span className="hot">Save 15%</span>
+          <span className="hot">Save {discount}%</span>
         </div>
       </div>
       <div className="product-content-wrap">
         <div className="product-category">
-          <a href={void 0}>Hodo Foods</a>
+          <a href={void 0}>
+            {category[0].toUpperCase() + category.substring(1)}
+          </a>
         </div>
         <h2 className="prod-name">
           <a href={void 0}>{name}</a>

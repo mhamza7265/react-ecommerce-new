@@ -6,7 +6,7 @@ const openApis = ["auth/login", "auth/register"];
 const { toast } = createStandaloneToast();
 
 const setRequestOptions = (method, url, payload) => {
-  console.log("payload", payload);
+  // console.log("payload", payload);
   const storedItem = localStorage.getItem("current_user");
   const storedData = JSON.parse(storedItem);
   const filtered = openApis.find((item) => item == url);
@@ -36,7 +36,7 @@ const setRequestOptions = (method, url, payload) => {
   } else {
     header["params"] = payload;
   }
-  console.log("headers", header);
+  // console.log("headers", header);
   return header;
 };
 
@@ -51,7 +51,7 @@ const sendRequest = (method, url, payload) => {
       })
       .catch((error) => {
         if (error.response) {
-          console.log("APICatch - ", error.response.data);
+          // console.log("APICatch - ", error.response.data);
         }
         reject(error.response?.data.error);
       });

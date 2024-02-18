@@ -169,6 +169,7 @@ function HomeSectionBestsell({ setmodal }) {
                                 setmodal={setmodal}
                                 wishlist={wishlist}
                                 discount={item.discount.discountValue}
+                                category={item.category.name}
                               />
                             ))}
                       </Slider>

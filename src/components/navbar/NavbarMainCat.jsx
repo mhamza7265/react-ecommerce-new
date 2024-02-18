@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import NavebarMidMainCatComponent from "./navbar-components/NavebarMidMainCatComponent";
+import { dropdownIsOpen } from "../../redux/reducers/openCloseCategoryDdReducer";
 
 function NavbarMainCat() {
-  const [classActive, setClassActive] = useState(false);
   const [expandActive, setExpandActive] = useState(false);
+  const openCloseDd = useSelector((state) => state.openCloseDdReducer.open);
+  const dispatch = useDispatch();
+
   const handleClick = () => {
-    setClassActive(!classActive);
+    dispatch(dropdownIsOpen(!openCloseDd));
     expandActive ? setExpandActive(false) : null;
   };
   const categories = useSelector((state) => state.categories.categories);
@@ -18,12 +21,12 @@ function NavbarMainCat() {
           <span className="fi-rs-apps"></span>{" "}
           <span className="et">Browse</span> All Categories
           <i
-            className={`${classActive ? "fi-rs-angle-up" : "fi-rs-angle-down"}`}
+            className={`${openCloseDd ? "fi-rs-angle-up" : "fi-rs-angle-down"}`}
           ></i>
         </a>
         <div
           className={`categories-dropdown-wrap categories-dropdown-active-large font-heading ${
-            classActive ? "open" : null
+            openCloseDd ? "open" : null
           }`}
         >
           <div
@@ -108,6 +111,7 @@ function NavbarMainCat() {
                     id={item._id}
                     name={item.name}
                     image={item.image}
+                    closeDropdown={handleClick}
                   />
                 ))}
             </ul>

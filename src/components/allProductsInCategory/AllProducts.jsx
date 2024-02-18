@@ -106,30 +106,21 @@ function AllProducts() {
     <div>
       <section className="product-tabs section-padding position-relative">
         <Navbar />
-        <div className="container mt-5">
+        <div className="container  mb-30 mt-50">
           {/* <!--End nav-tabs--> */}
+          <div className="mb-50">
+            <h1 className="heading-2 mb-10">Products</h1>
+            <h6 className="text-body">
+              There {allProductsByCategory?.length > 1 ? "are" : "is"}
+              <span> </span>
+              <span className="text-brand">
+                {allProductsByCategory ? allProductsByCategory?.length : 0}
+              </span>{" "}
+              product{allProductsByCategory?.length > 1 ? "s" : ""} available in
+              this category
+            </h6>
+          </div>
           <div className="tab-content" id="myTabContent">
-            <div
-              className="d-flex justify-content-between"
-              style={{ margin: "30px 0 10px 0" }}
-            >
-              <h6 className="text-body">
-                <span className="text-brand">
-                  {allProductsByCategory ? allProductsByCategory?.length : 0}
-                </span>{" "}
-                product{allProductsByCategory?.length > 1 ? "s" : ""} are
-                availabale in this category
-              </h6>
-              <h6 className="text-body">
-                {/* <a
-                        href={void 0}
-                        className="text-muted"
-                        onClick={handleClearClick}
-                      >
-                        <i className="fi-rs-trash mr-5"></i>Clear Cart
-                      </a> */}
-              </h6>
-            </div>
             <div
               className="tab-pane fade show active"
               id="tab-one"
@@ -149,6 +140,7 @@ function AllProducts() {
                       price={item.price}
                       discountVal={item.discount.discountValue}
                       prodId={item._id}
+                      category={item.category.name}
                     />
                   ))
                 ) : (

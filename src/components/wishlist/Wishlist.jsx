@@ -76,11 +76,11 @@ function Wishlist() {
                   <>
                     <h1 className="heading-2 mb-10">Your Wishlist</h1>
                     <h6 className="text-body">
-                      There are{" "}
+                      There {wishlist?.length > 1 ? "are" : "is"}{" "}
                       <span className="text-brand">
                         {wishlist ? wishlist.length : 0}
                       </span>{" "}
-                      products in this list
+                      product{wishlist?.length > 1 ? "s" : ""} in this list
                     </h6>
                   </>
                 </div>
@@ -88,22 +88,7 @@ function Wishlist() {
                   <table className="table table-wishlist">
                     <thead>
                       <tr className="main-heading">
-                        <th className="custome-checkbox start pl-30">
-                          <>
-                            <input
-                              className="form-check-input"
-                              type="checkbox"
-                              name="checkbox"
-                              id="exampleCheckbox11"
-                              value=""
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="exampleCheckbox11"
-                            ></label>
-                          </>
-                        </th>
-                        <th scope="col" colSpan="2">
+                        <th scope="col" colSpan="2" className="start pl-30">
                           Product
                         </th>
                         <th scope="col">Price</th>

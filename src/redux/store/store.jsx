@@ -17,6 +17,7 @@ import cartQuantityReducer from "../reducers/cartQuantityReducer";
 import wishlistQuantityReducer from "../reducers/wishlistQuantityReducer";
 import searchProductReducer from "../reducers/searchedProductsReducer";
 import passwordUpdateModalReducer from "../reducers/PasswordUpdateModelReducer";
+import openCloseCategoryDdReducer from "../reducers/openCloseCategoryDdReducer";
 
 const rootReducer = combineReducers({
   categories: categoryReducer,
@@ -35,6 +36,7 @@ const rootReducer = combineReducers({
   wishlistQuantity: wishlistQuantityReducer,
   searchProducts: searchProductReducer,
   passwordUpdateModal: passwordUpdateModalReducer,
+  openCloseDdReducer: openCloseCategoryDdReducer,
 });
 const store = createStore(rootReducer, composeWithDevTools());
 

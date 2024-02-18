@@ -26,6 +26,7 @@ function HomeProductCard({
   price,
   discountVal,
   prodId,
+  category,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -232,7 +233,10 @@ function HomeProductCard({
           </div>
           <div className="product-content-wrap">
             <div className="product-category">
-              <a href={void 0}>Hodo Foods</a>
+              <a href={void 0}>
+                {category &&
+                  category[0]?.toUpperCase() + category?.substring(1)}
+              </a>
             </div>
             <h2 className="prod-name">
               <a onClick={handleSingleProductClick} href={void 0}>

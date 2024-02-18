@@ -9,7 +9,7 @@ import sendRequest from "../../../utility-functions/apiManager";
 import { addAllProduct } from "../../../redux/reducers/allProductReducers";
 import { useNavigate } from "react-router";
 
-function NavebarMidMainCatComponent({ id, name, image }) {
+function NavebarMidMainCatComponent({ id, name, image, closeDropdown }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -26,12 +26,14 @@ function NavebarMidMainCatComponent({ id, name, image }) {
         console.log(err);
         dispatch(stopSpinner());
       });
+    closeDropdown();
   };
+
   return (
     <li className="category-card" data={id}>
       <a onClick={handleAllProductsClick}>
         <LazyLoadImage src={BASE_URL + "/" + image} alt="" />
-        {name}
+        {name[0].toUpperCase() + name.substring(1)}
       </a>
     </li>
   );

@@ -140,8 +140,6 @@ function Account() {
   };
 
   const onSubmit = (data) => {
-    console.log("data", data);
-    setLoading(true);
     dispatch(startSpinner());
     sendRequest("put", "address", {
       address: data.billing_address,
@@ -151,22 +149,15 @@ function Account() {
     })
       .then((res) => {
         dispatch(stopSpinner());
-        setLoading(false);
-        sendRequest("get", `address`)
-          .then((res) => {
-            setCurrentAddress(res.address);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-        setAddressModalIsOpen(false);
-        successToast(res.message);
+        if (res.status) {
+          setCurrentAddress(res.address);
+          setAddressModalIsOpen(false);
+          successToast(res.message);
+        }
       })
       .catch((err) => {
         dispatch(stopSpinner());
-        setLoading(false);
-        console.log("address-response", err);
-        successToast("Try agin later");
+        errorToast(err.error);
       });
   };
 
@@ -207,7 +198,7 @@ function Account() {
           successToast(res.message);
           sendRequest("get", "user")
             .then((res) => {
-              console.log("user data");
+              console.log("user data", res);
               setCurrentUser(res.user);
             })
             .catch((err) => console.log(err));
@@ -377,7 +368,7 @@ function Account() {
                                       </tr>
                                     </thead>
                                     <tbody>
-                                      {ordersList ? (
+                                      {ordersList?.length > 0 ? (
                                         ordersList?.map((item, i) => (
                                           <OrderList
                                             key={i}
@@ -476,7 +467,7 @@ function Account() {
                                           "," +
                                           " " +
                                           currentAddress?.state
-                                        : null}
+                                        : "No address found!"}
                                     </h5>
                                     <h6 className="my-4">
                                       {currentAddress?.country}
@@ -535,7 +526,7 @@ function Account() {
                                         className="form-control"
                                         name="first_name"
                                         type="text"
-                                        defaultValue={currentUser.first_name}
+                                        defaultValue={currentUser?.first_name}
                                       />
                                       <p>{errors3?.first_name?.message}</p>
                                     </div>
@@ -550,7 +541,7 @@ function Account() {
                                         })}
                                         className="form-control"
                                         name="last_name"
-                                        defaultValue={currentUser.last_name}
+                                        defaultValue={currentUser?.last_name}
                                       />
                                       <p>{errors3?.last_name?.message}</p>
                                     </div>
@@ -564,11 +555,12 @@ function Account() {
                                         className="form-control"
                                         name="dname"
                                         type="text"
-                                        defaultValue={
-                                          currentUser.first_name +
+                                        value={
+                                          currentUser?.first_name +
                                           " " +
-                                          currentUser.last_name
+                                          currentUser?.last_name
                                         }
+                                        disabled
                                       />
                                     </div>
                                     <div className="form-group col-md-12">
@@ -581,7 +573,7 @@ function Account() {
                                         className="form-control"
                                         name="email"
                                         type="email"
-                                        defaultValue={currentUser.email}
+                                        defaultValue={currentUser?.email}
                                         disabled
                                       />
                                     </div>

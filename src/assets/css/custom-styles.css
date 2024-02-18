@@ -61,6 +61,7 @@ span[aria-label="Loading Spinner"] > span {
 
 .prod-img {
   height: 200px;
+  object-fit: contain;
 }
 
 .prod-name {
@@ -69,6 +70,7 @@ span[aria-label="Loading Spinner"] > span {
 
 .prod-img-2 {
   height: 180px;
+  object-fit: contain;
 }
 
 .prod-img-3 {
@@ -135,4 +137,12 @@ span[aria-label="Loading Spinner"] > span {
   background-image: unset !important;
   background-repeat: unset !important;
   background-position: unset !important;
+}
+
+.main-categori-wrap .categori-dropdown-inner {
+  min-width: 235px !important;
+}
+
+.categories-dropdown-active-large {
+  min-width: 235px !important;
 }

@@ -56,7 +56,7 @@ function HomeCategorySectionCard({ img1, id, name, quantity, prodId }) {
         </figure>
         <h6>
           <a href={void 0} onClick={handleAllProductsClick}>
-            {name}
+            {name[0].toUpperCase() + name.substring(1)}
           </a>
         </h6>
         <span>

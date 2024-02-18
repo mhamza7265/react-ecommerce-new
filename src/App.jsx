@@ -38,6 +38,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { updateCart } from "./redux/reducers/cartReducer";
 import SearchedProducts from "./components/searchedProducts/SearchedProducts";
 import UpdatePassword from "./components/Auth/updatePassword/UpdatePassword";
+import { dropdownIsOpen } from "./redux/reducers/openCloseCategoryDdReducer";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -135,8 +136,21 @@ function App() {
       .catch((err) => console.log(err));
   }, [updateWishlist]);
 
+  const handleClick = (e) => {
+    const targetElement = e.target.getAttribute("class");
+    if (
+      targetElement !== "categories-button-active" &&
+      targetElement !== "fi-rs-angle-down" &&
+      targetElement !== "fi-rs-angle-up" &&
+      targetElement !== "fi-rs-apps" &&
+      targetElement !== "et"
+    ) {
+      dispatch(dropdownIsOpen(false));
+    }
+  };
+
   return (
-    <>
+    <div className="app" onClick={handleClick}>
       <BrowserRouter>
         <Routes>
           <Route
@@ -297,7 +311,7 @@ function App() {
         <ScrollToTop />
       </BrowserRouter>
       =
-    </>
+    </div>
   );
 }
 
