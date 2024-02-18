@@ -106,7 +106,7 @@ function AllProducts() {
     <div>
       <section className="product-tabs section-padding position-relative">
         <Navbar />
-        <div className="container  mb-30 mt-50">
+        <div className="container mb-30 mt-50">
           {/* <!--End nav-tabs--> */}
           <div className="mb-50">
             <h1 className="heading-2 mb-10">Products</h1>
