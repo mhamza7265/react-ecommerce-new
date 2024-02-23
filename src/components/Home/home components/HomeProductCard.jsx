@@ -46,7 +46,6 @@ function HomeProductCard({
           dispatch(stopSpinner());
           if (res.status) {
             successToast(res.message);
-            console.log("res", res.message);
 
             sendRequest("get", "wishlist")
               .then((res) => {
@@ -68,6 +67,10 @@ function HomeProductCard({
               setTimeout(() => {
                 navigate("/updatePw");
               }, 2000);
+            } else if (res.type == "loginToContinue") {
+              setTimeout(() => {
+                navigate("/login");
+              }, 3000);
             }
           }
         })
@@ -82,20 +85,6 @@ function HomeProductCard({
       }, 3000);
     }
   };
-
-  // const handleCompareClick = (e) => {
-  //   const id = e.target.closest(".product-parent").getAttribute("data");
-  //   const filteredProduct = products.find((item) => item._id == id);
-  //   const filtered = compared.find((item) => item._id == id);
-  //   if (!filtered && compared.length < 3) {
-  //     dispatch(addCompareProduct(filteredProduct));
-  //     successToast("Product added to compare!");
-  //   } else if (compared.length >= 3) {
-  //     errorToast("Only 3 products can be compared!");
-  //   } else {
-  //     errorToast("Product already added!");
-  //   }
-  // };
 
   const handleModelClick = (e) => {
     const id = e.target.closest(".product-parent").getAttribute("data");
@@ -153,6 +142,10 @@ function HomeProductCard({
               setTimeout(() => {
                 navigate("/updatePw");
               }, 2000);
+            } else if (res.type == "loginToContinue") {
+              setTimeout(() => {
+                navigate("/login");
+              }, 3000);
             }
           }
         })

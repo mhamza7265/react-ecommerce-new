@@ -150,7 +150,6 @@ function ProductFull() {
           dispatch(stopSpinner());
           if (res.status) {
             successToast(res.message);
-            console.log("res", res.message);
 
             sendRequest("get", "wishlist")
               .then((res) => {

@@ -59,7 +59,6 @@ function Home() {
             successToast(res.message);
             sendRequest("get", "cart/qty")
               .then((res) => {
-                console.log(res);
                 dispatch(updateCartQuantity(res.quantity));
               })
               .catch((err) => {

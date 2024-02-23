@@ -18,6 +18,8 @@ import wishlistQuantityReducer from "../reducers/wishlistQuantityReducer";
 import searchProductReducer from "../reducers/searchedProductsReducer";
 import passwordUpdateModalReducer from "../reducers/PasswordUpdateModelReducer";
 import openCloseCategoryDdReducer from "../reducers/openCloseCategoryDdReducer";
+import bestsellingProductReducer from "../reducers/bestsellingProductReducer";
+import ProductsByPageReducer from "../reducers/productsByPageReducer";
 
 const rootReducer = combineReducers({
   categories: categoryReducer,
@@ -37,6 +39,8 @@ const rootReducer = combineReducers({
   searchProducts: searchProductReducer,
   passwordUpdateModal: passwordUpdateModalReducer,
   openCloseDdReducer: openCloseCategoryDdReducer,
+  bestsellingProducts: bestsellingProductReducer,
+  productsByPage: ProductsByPageReducer,
 });
 const store = createStore(rootReducer, composeWithDevTools());
 

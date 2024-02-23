@@ -28,7 +28,6 @@ function Cart() {
     sendRequest("get", "cart")
       .then((res) => {
         if (res.status) {
-          console.log("cart", res?.cart[0]?.cartItems[0]);
           setCartItems(res?.cart[0]?.cartItems[0]);
           dispatch(updateCart(res?.cart[0]));
           const calculation = {
@@ -46,6 +45,10 @@ function Cart() {
             setTimeout(() => {
               navigate("/updatePw");
             }, 2000);
+          } else if (res.type == "loginToContinue") {
+            setTimeout(() => {
+              navigate("/login");
+            }, 3000);
           }
         }
       })
@@ -65,7 +68,6 @@ function Cart() {
           sendRequest("get", "cart")
             .then((res) => {
               if (res.status) {
-                console.log("cart", res.cart[0].cartItems[0]);
                 setCartItems(res.cart[0].cartItems[0]);
                 const calculation = {
                   subTotal: res.cart[0].subTotal,

@@ -25,11 +25,11 @@ function HomeBestSellCard({
   setmodal,
   discount,
   category,
+  sold,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const wishlistList = useSelector((state) => state.wishlist.wishlist);
-
   const filtered = wishlistList?.find((item) => item.productId == prodId);
 
   const handleModelClick = (e) => {
@@ -78,6 +78,10 @@ function HomeBestSellCard({
               setTimeout(() => {
                 navigate("/updatePw");
               }, 2000);
+            } else if (res.type == "loginToContinue") {
+              setTimeout(() => {
+                navigate("/login");
+              }, 3000);
             }
           }
         })
@@ -106,7 +110,6 @@ function HomeBestSellCard({
             successToast(res.message);
             sendRequest("get", "cart/qty")
               .then((res) => {
-                console.log(res);
                 dispatch(updateCartQuantity(res.quantity));
               })
               .catch((err) => {
@@ -118,6 +121,10 @@ function HomeBestSellCard({
               setTimeout(() => {
                 navigate("/updatePw");
               }, 2000);
+            } else if (res.type == "loginToContinue") {
+              setTimeout(() => {
+                navigate("/login");
+              }, 3000);
             }
           }
         })
@@ -206,7 +213,7 @@ function HomeBestSellCard({
           </>
         </div>
         <div className="sold mt-15 mb-15">
-          <div className="progress mb-5">
+          {/* <div className="progress mb-5">
             <div
               className="progress-bar"
               role="progressbar"
@@ -214,8 +221,8 @@ function HomeBestSellCard({
               aria-valuemin="0"
               aria-valuemax="100"
             ></div>
-          </div>
-          <span className="font-xs text-heading"> Sold: 90/120</span>
+          </div> */}
+          <span className="font-xs text-heading"> Sold: {sold.count}</span>
         </div>
         <a
           href={void 0}

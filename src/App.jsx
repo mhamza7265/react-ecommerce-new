@@ -39,6 +39,8 @@ import { updateCart } from "./redux/reducers/cartReducer";
 import SearchedProducts from "./components/searchedProducts/SearchedProducts";
 import UpdatePassword from "./components/Auth/updatePassword/UpdatePassword";
 import { dropdownIsOpen } from "./redux/reducers/openCloseCategoryDdReducer";
+import { addBestsellProduct } from "./redux/reducers/bestsellingProductReducer";
+import { addProductByPage } from "./redux/reducers/productsByPageReducer";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -75,9 +77,28 @@ function App() {
   }, []);
 
   useEffect(() => {
+    sendRequest("get", "products/listing")
+      .then((res) => {
+        dispatch(addProductByPage(res.products.docs));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    sendRequest("get", "products/bestsell")
+      .then((res) => {
+        dispatch(addBestsellProduct(res.products));
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  useEffect(() => {
     sendRequest("get", "cart/qty")
       .then((res) => {
-        console.log(res);
         dispatch(updateCartQuantity(res.quantity));
       })
       .catch((err) => {
@@ -100,7 +121,6 @@ function App() {
   useEffect(() => {
     sendRequest("get", "wishlist/qty")
       .then((res) => {
-        console.log(res);
         dispatch(updateWishlistQuantity(res.wishlistQuantity));
       })
       .catch((err) => {
@@ -121,14 +141,12 @@ function App() {
   useEffect(() => {
     sendRequest("get", "category")
       .then((res) => {
-        console.log("categories", res);
         dispatch(addCategory(res.categories));
       })
       .catch((err) => console.log(err));
   }, []);
 
   useEffect(() => {
-    console.log("fetch");
     sendRequest("get", "wishlist")
       .then((res) => {
         dispatch(addWishlist(res.wishlist));

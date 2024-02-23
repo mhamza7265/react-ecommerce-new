@@ -103,9 +103,7 @@ function Register() {
   // };
 
   const handleSuccess = (response) => {
-    console.log("Google login successful", jwtDecode(response.credential));
     const user = jwtDecode(response.credential);
-    console.log("user", user);
     sendRequest("post", "register", {
       email: user.email,
       firstName: user.given_name,
@@ -121,7 +119,6 @@ function Register() {
           email: user.email,
           password: "111111",
         }).then((res) => {
-          console.log("loggedIn", res);
           if (res.status) {
             const userObj = {
               token: res.token,

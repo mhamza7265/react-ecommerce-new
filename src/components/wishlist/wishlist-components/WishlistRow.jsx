@@ -15,6 +15,8 @@ import { updateCartQuantity } from "../../../redux/reducers/cartQuantityReducer"
 import { updateWishlistQuantity } from "../../../redux/reducers/wishlistQuantityReducer";
 import { addWishlist } from "../../../redux/reducers/wishlistReducer";
 import { updateCart } from "../../../redux/reducers/cartReducer";
+import { useState } from "react";
+import { useEffect } from "react";
 
 function WishlistRow({
   id,
@@ -25,9 +27,24 @@ function WishlistRow({
   prodId,
   setLoading,
   setWishlist,
+  stockStatus,
 }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  // const [stockStatus, setStockStatus] = useState(0);
+  // useEffect(() => {
+  //   sendRequest("get", `product/quantity/${prodId}`)
+  //     .then((res) => {
+  //       if (res.status) {
+  //         setStockStatus(res.availableQuantity);
+  //       } else {
+  //         console.log(res.error);
+  //       }
+  //     })
+  //     .catch((err) => {
+  //       console.log(err.error);
+  //     });
+  // });
 
   const handleCartClick = (e) => {
     const id = e.target.closest(".wishlist-item").getAttribute("data");
@@ -44,7 +61,6 @@ function WishlistRow({
             sendRequest("get", "cart/qty")
               .then((res) => {
                 if (res.status) {
-                  console.log(res);
                   dispatch(updateCartQuantity(res.quantity));
                 }
               })
@@ -68,7 +84,6 @@ function WishlistRow({
                   sendRequest("get", "wishlist/qty")
                     .then((res) => {
                       if (res.status) {
-                        console.log(res);
                         dispatch(updateWishlistQuantity(res.wishlistQuantity));
                       } else {
                         console.log(res);
@@ -126,7 +141,6 @@ function WishlistRow({
           sendRequest("get", "wishlist/qty")
             .then((res) => {
               if (res.status) {
-                console.log(res);
                 dispatch(updateWishlistQuantity(res.wishlistQuantity));
               } else {
                 console.log(res);
@@ -177,7 +191,11 @@ function WishlistRow({
         <h3 className="text-brand">${(price / 100) * discount}</h3>
       </td>
       <td className="text-center detail-info" data-title="Stock">
-        <span className="stock-status in-stock mb-0"> In Stock </span>
+        {stockStatus?.quantity > 0 ? (
+          <span className="stock-status in-stock mb-0"> In Stock </span>
+        ) : (
+          <span className="stock-status out-stock mb-0"> Out of Stock </span>
+        )}
       </td>
       <td className="text-right" data-title="Cart">
         <button onClick={handleCartClick} className="btn btn-sm">

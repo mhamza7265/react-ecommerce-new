@@ -30,7 +30,6 @@ function UpdatePassword() {
   } = useForm();
 
   const onSubmit = (data) => {
-    console.log("dataa", data);
     dispatch(startSpinner());
     sendRequest("post", "user/password", {
       current_pw: data.current_password,
@@ -38,7 +37,6 @@ function UpdatePassword() {
     })
       .then((res) => {
         dispatch(stopSpinner());
-        console.log("update", res);
         if (res.status) {
           successToast(res.passwordUpdated);
           localStorage.removeItem("current_user");

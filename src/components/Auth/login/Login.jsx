@@ -58,7 +58,6 @@ function Login() {
         if (res.status) {
           dispatch(stopSpinner());
           successToast(res.login);
-          console.log("token", res);
           const userObj = {
             token: res.token,
           };
@@ -111,7 +110,6 @@ function Login() {
             navigate("/");
           }, 3000);
         } else {
-          console.log("login", res);
           dispatch(stopSpinner());
           errorToast(res.login);
         }

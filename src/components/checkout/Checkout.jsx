@@ -29,6 +29,7 @@ function Checkout() {
   const [errorMessage, setErrorMessage] = useState();
   const [onlinePayment, setOnlinePayment] = useState(false);
   const [currentUser, setCurrentUser] = useState("");
+  const [buttonIsDisabled, setButtonIsDisabled] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const currentCart = useSelector((state) => state.cart.cart);
@@ -42,12 +43,10 @@ function Checkout() {
   } = useForm();
 
   useEffect(() => {
-    console.log("cart");
     sendRequest("get", "cart")
       .then((res) => {
         if (res.status) {
           setCart(res.cart[0]);
-          console.log("cart", cart);
         } else {
           errorToast(res.error);
           if (res.type == "updatePassword") {
@@ -81,6 +80,7 @@ function Checkout() {
 
   const onSubmit = async (d) => {
     dispatch(startSpinner());
+    setButtonIsDisabled(true);
     sendRequest("post", "checkout", {
       address: d.billing_address + " " + d.billing_address2,
       city: d.city,
@@ -95,6 +95,7 @@ function Checkout() {
     })
       .then((res) => {
         dispatch(stopSpinner());
+        setButtonIsDisabled(false);
         if (res.status) {
           successToast(res.message);
           sendRequest("get", "cart/qty")
@@ -104,7 +105,6 @@ function Checkout() {
               sendRequest("get", "orders")
                 .then((res) => {
                   if (res.status) dispatch(updateOrder(res.orders));
-                  console.log("orderslist", res.orders);
                 })
                 .catch((err) => {
                   console.log(err);
@@ -128,13 +128,13 @@ function Checkout() {
       })
       .catch((err) => {
         dispatch(stopSpinner());
+        setButtonIsDisabled(false);
         errorToast(err._message);
         return "failed";
       });
   };
 
   const handleRadioChange = (e) => {
-    console.log("radio", e.target.id);
     if (e.target.id == "exampleRadios5") {
       setOnlinePayment(true);
     } else {
@@ -149,12 +149,13 @@ function Checkout() {
 
   const handlePaymentSubmit = async (event) => {
     event.preventDefault();
-
+    setButtonIsDisabled(true);
     const isValid = await trigger();
     if (isValid) {
       dispatch(startSpinner());
       if (!stripe) {
         dispatch(stopSpinner());
+        setButtonIsDisabled(false);
         return;
       }
 
@@ -163,6 +164,7 @@ function Checkout() {
       if (submitError) {
         dispatch(stopSpinner());
         handleError(submitError);
+        setButtonIsDisabled(false);
         return;
       }
 
@@ -182,10 +184,9 @@ function Checkout() {
         // creating the PaymentMethod. Show the error to your customer (for example, payment details incomplete)
         dispatch(stopSpinner());
         handleError(error);
+        setButtonIsDisabled(false);
         return;
       }
-
-      console.log("payment method", paymentMethod);
 
       // Create the PaymentIntent
       // const res = await fetch("/create-confirm-intent", {
@@ -202,12 +203,15 @@ function Checkout() {
         paymentMethodId: paymentMethod.id,
       })
         .then((res) => {
-          if (res.status) {
+          setButtonIsDisabled(false);
+          console.log("payment", res);
+          if (res.status == "succeeded") {
             dispatch(stopSpinner());
-            console.log("res", res);
             handleSubmit(onSubmit)();
           } else {
-            errorToast(res.error);
+            dispatch(stopSpinner());
+            errorToast(res.error.raw.message);
+            console.log("paymentError", res.error.raw.message);
             if (res.type == "updatePassword") {
               setTimeout(() => {
                 navigate("/updatePw");
@@ -216,6 +220,7 @@ function Checkout() {
           }
         })
         .catch((err) => {
+          setButtonIsDisabled(false);
           console.log(err);
         });
     }
@@ -1052,8 +1057,13 @@ function Checkout() {
                       style={{ width: "max-content" }}
                       className="ms-auto checkout-btn"
                     >
-                      <button className="btn btn-fill-out btn-block mt-30 ml-auto">
-                        Place an Order<i className="fi-rs-sign-out ml-15"></i>
+                      <button
+                        className={`btn btn-fill-out btn-block mt-30 ml-auto ${
+                          buttonIsDisabled ? "disabled" : ""
+                        }`}
+                      >
+                        Place an Order
+                        <i className="fas fa-cart-arrow-down ml-15"></i>
                       </button>
                     </div>
                   )}
@@ -1069,6 +1079,7 @@ function Checkout() {
                       name="payment_option"
                       id="exampleRadios4"
                       onChange={handleRadioChange}
+                      defaultChecked
                     />
                     <label
                       className="form-check-label"
@@ -1109,9 +1120,11 @@ function Checkout() {
                 <PaymentElement />
                 <button
                   type="sumbit"
-                  className="btn btn-fill-out btn-block mt-30 ml-auto"
+                  className={`btn btn-fill-out btn-block mt-30 ml-auto ${
+                    buttonIsDisabled ? "disabled" : ""
+                  }`}
                 >
-                  Place an Order<i className="fi-rs-sign-out ml-15"></i>
+                  Place an Order<i className="fas fa-cart-arrow-down ml-15"></i>
                 </button>
                 {errorMessage && <div>{errorMessage}</div>}
               </form>

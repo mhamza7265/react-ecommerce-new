@@ -1,43 +1,55 @@
-import productData from "../productdata/ProductData";
 import HomeProductCard from "./home components/HomeProductCard";
 import ScrollAnimation from "react-animate-on-scroll";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import ProductsSection from "./skeleton-components/ProductsSection";
 import sendRequest, { errorToast } from "../../utility-functions/apiManager";
-import { useNavigate } from "react-router";
+import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
+import { useDispatch } from "react-redux";
 
 function HomeSectionProduct({ setmodal }) {
-  const products = useSelector((state) => state.products.products);
-  const search = useSelector((state) => state.search.search);
-  const navigate = useNavigate();
-  const [searchedProd, setSearchedProd] = useState([]);
-  const [wishlist, setWishlist] = useState(null);
+  const productsByPage = useSelector((state) => state.productsByPage.products);
+  const [nextPage, setNextPage] = useState(null);
+  const [productsList, setProductsList] = useState("");
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    const searchedProducts = products?.filter((item) =>
-      item.name.toUpperCase().match(search.toUpperCase())
-    );
-    setSearchedProd(searchedProducts);
-  }, [search]);
-
-  useEffect(() => {
-    sendRequest("get", "wishlist")
+    setProductsList(productsByPage);
+    sendRequest("get", "products/listing")
       .then((res) => {
         if (res.status) {
-          // dispatch(addWishlist(res.wishlist));
-          setWishlist(res.wishlist);
+          setNextPage({
+            nextPage: res.products.hasNextPage,
+            currentPage: res.products.page,
+          });
         } else {
-          console.log(res.error);
-          // if (res.type == "updatePassword") {
-          //   setTimeout(() => {
-          //     navigate("/updatePw");
-          //   }, 2000);
-          // }
+          console.log(res);
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
+
+  const handleLoadMoreClick = () => {
+    dispatch(startSpinner());
+    sendRequest("get", `products/listing?page=${nextPage.currentPage + 1}`)
+      .then((res) => {
+        dispatch(stopSpinner());
+        if (res.status) {
+          const newProductsPage = productsList.concat(res.products.docs);
+          setProductsList(newProductsPage);
+
+          setNextPage({
+            nextPage: res.products.hasNextPage,
+            currentPage: res.products.page,
+          });
+        }
+      })
+      .catch((err) => {
+        errorToast(err.error);
+        console.log(err);
+      });
+  };
 
   return (
     <div>
@@ -159,24 +171,21 @@ function HomeSectionProduct({ setmodal }) {
               aria-labelledby="tab-one"
             >
               <div className="row product-grid-4">
-                {!products && !searchedProd
-                  ? productData.map((_, index) => (
-                      <ProductsSection key={index} id={`${index}00`} />
-                    ))
-                  : products?.map((item, i) => (
-                      <HomeProductCard
-                        setmodal={setmodal}
-                        id={`${i}00`}
-                        key={i}
-                        name={item.name}
-                        img1={item.images[0]}
-                        img2={item.images[1]}
-                        price={item.price}
-                        discountVal={item.discount.discountValue}
-                        prodId={item._id}
-                        category={item.category.name}
-                      />
-                    ))}
+                {productsList &&
+                  productsList?.map((item, i) => (
+                    <HomeProductCard
+                      setmodal={setmodal}
+                      id={`${i}00`}
+                      key={i}
+                      name={item.name}
+                      img1={item.images[0]}
+                      img2={item.images[1]}
+                      price={item.price}
+                      discountVal={item.discount.discountValue}
+                      prodId={item._id}
+                      category={item.category.name}
+                    />
+                  ))}
               </div>
               {/* <!--End product-grid-4--> */}
             </div>
@@ -184,6 +193,16 @@ function HomeSectionProduct({ setmodal }) {
           </div>
           {/* <!--End tab-content--> */}
         </div>
+        {nextPage?.nextPage && (
+          <div className="d-flex justify-content-center">
+            <button
+              className="btn btn-fill-out btn-block mt-30 mx-auto"
+              onClick={handleLoadMoreClick}
+            >
+              Load More <i className="fa fa-refresh"></i>
+            </button>
+          </div>
+        )}
       </section>
     </div>
   );

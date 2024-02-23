@@ -7,12 +7,17 @@ import WishlistSkeleton from "./skeleton-components/WishlistSkeleton";
 import { Link } from "react-router-dom";
 import { BounceLoader } from "react-spinners";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState(null);
+  const [nextPage, setNextPage] = useState(null);
+  const [stockStatus, setStockStatus] = useState(null);
   const [skeletontime, setSkeletontime] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const override = {
     display: "block",
@@ -26,25 +31,72 @@ function Wishlist() {
   };
 
   useEffect(() => {
-    sendRequest("get", "wishlist")
+    sendRequest("get", "wishlist/listing")
       .then((res) => {
         if (res.status) {
-          setWishlist(res.wishlist);
+          setWishlist(res.wishlist.docs);
+          setNextPage({
+            nextPage: res.wishlist.hasNextPage,
+            currentPage: res.wishlist.page,
+          });
         } else {
           errorToast(res.error);
           if (res.type == "updatePassword") {
             setTimeout(() => {
               navigate("/updatePw");
             }, 2000);
+          } else if (res.type == "loginToContinue") {
+            setTimeout(() => {
+              navigate("/login");
+            }, 3000);
           }
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        console.log(err);
+      });
 
     setTimeout(() => {
       setSkeletontime(true);
     }, 10000);
   }, []);
+
+  useEffect(() => {
+    const wishlistArray = wishlist?.map((item) => item.productId);
+    sendRequest("post", "products", { productsId: wishlistArray?.toString() })
+      .then((res) => {
+        console.log(
+          "productsQuantity",
+          res.products["65ae6d19c97e90026aa2993b"]
+        );
+        setStockStatus(res.products);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [wishlist]);
+
+  // const wishArray = wishlist?.map((item) => item.productId);
+  // console.log("wishhhh", wishArray?.toString());
+
+  const handleLoadMoreClick = () => {
+    dispatch(startSpinner());
+    sendRequest("get", `wishlist/listing?page=${nextPage.currentPage + 1}`)
+      .then((res) => {
+        dispatch(stopSpinner());
+        if (res.status) {
+          const newWishlist = wishlist.concat(res.wishlist.docs);
+          setWishlist(newWishlist);
+          setNextPage({
+            nextPage: res.wishlist.hasNextPage,
+            currentPage: res.wishlist.page,
+          });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <div>
@@ -102,7 +154,7 @@ function Wishlist() {
                       </tr>
                     </thead>
                     <tbody style={{ marginBottom: "30px" }}>
-                      {wishlist.length > 0 ? (
+                      {wishlist?.length > 0 ? (
                         wishlist.map((item, i) => (
                           <WishlistRow
                             key={i}
@@ -114,6 +166,7 @@ function Wishlist() {
                             prodId={item.productId}
                             setLoading={setLoading}
                             setWishlist={setWishlist}
+                            stockStatus={stockStatus[item.productId]}
                           />
                         ))
                       ) : (
@@ -124,6 +177,16 @@ function Wishlist() {
                 </div>
               </div>
             </div>
+            {nextPage.nextPage && (
+              <div className="d-flex justify-content-center">
+                <button
+                  className="btn btn-fill-out btn-block mt-30 mx-auto"
+                  onClick={handleLoadMoreClick}
+                >
+                  Load More <i className="fa fa-refresh"></i>
+                </button>
+              </div>
+            )}
           </div>
         </>
       ) : (

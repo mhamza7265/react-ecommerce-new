@@ -31,7 +31,7 @@ function NavbarHeaderBottom({ setactive, isactive }) {
   const override = {
     display: "block",
     position: "absolute",
-    top: 70,
+    top: "100%",
     left: 0,
     margin: "0 auto",
     borderColor: "red",

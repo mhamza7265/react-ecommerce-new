@@ -89,7 +89,6 @@ function CartItems({
     productQuantity > 0 ? setCount((prevCount) => prevCount + 1) : null;
 
     const handleSendRequest = (countValue) => {
-      console.log("product quantity available", productQuantity);
       const id = e.target.closest(".cart-item").getAttribute("data");
       dispatch(startSpinner());
       sendRequest("post", "cart", {
@@ -103,7 +102,6 @@ function CartItems({
             setCartItems(res.cart.cartItems[0]);
             successToast(res.message);
             sendRequest("get", `product/quantity/${id}`).then((res) => {
-              console.log("availableQuantity", res.availableQuantity);
               setProductQuantity(res.availableQuantity);
             });
             sendRequest("get", "cart/total")

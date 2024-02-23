@@ -75,6 +75,7 @@ span[aria-label="Loading Spinner"] > span {
 
 .prod-img-3 {
   height: 300px;
+  object-fit: contain;
 }
 
 .checkout-btn {
@@ -145,4 +146,25 @@ span[aria-label="Loading Spinner"] > span {
 
 .categories-dropdown-active-large {
   min-width: 235px !important;
+}
+
+.search-Suggestions {
+  width: 615px;
+  position: absolute;
+  top: 54%;
+  left: 20%;
+  z-index: 9;
+  background: white;
+  box-shadow: 0 0 10px 0px rgb(126, 123, 123);
+  border-radius: 5px;
+  padding: 15px 10px;
+}
+
+.search-suggestion-p {
+  cursor: pointer;
+}
+
+.search-suggestion-p:hover {
+  background-color: #86dfb5;
+  color: #000;
 }

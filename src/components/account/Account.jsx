@@ -162,13 +162,11 @@ function Account() {
   };
 
   const onSubmitOrder = (data) => {
-    console.log("data", data);
     dispatch(startSpinner());
     sendRequest("get", `order/status/${data.order_id}`)
       .then((res) => {
         dispatch(stopSpinner());
         if (res.status) {
-          console.log("status", res);
           setOrderStatus(res.orderStatus);
         } else {
           errorToast(res.error);
@@ -186,19 +184,16 @@ function Account() {
   };
 
   const onSubmitUser = (data) => {
-    console.log("user data", data);
     setLoadingUser(true);
     dispatch(startSpinner());
     sendRequest("put", "user", data)
       .then((res) => {
         dispatch(stopSpinner());
-        console.log("updatedUser", res);
         if (res.status) {
           setLoadingUser(false);
           successToast(res.message);
           sendRequest("get", "user")
             .then((res) => {
-              console.log("user data", res);
               setCurrentUser(res.user);
             })
             .catch((err) => console.log(err));

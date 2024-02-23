@@ -21,13 +21,11 @@ function OrderList({
 
   const handleModalClick = (e) => {
     const id = e.target.closest(".order-row-parent").getAttribute("data");
-    console.log("orderId", id);
     dispatch(startSpinner());
     sendRequest("get", `order/${id}`)
       .then((res) => {
         dispatch(stopSpinner());
         if (res.status) {
-          console.log("singleorder", res);
           setOrders(res.orderDetail);
           setModal(true);
         } else {

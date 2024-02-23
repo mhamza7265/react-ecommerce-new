@@ -3,7 +3,6 @@ import wishicon from "../../assets/imgs/theme/icons/icon-heart.svg";
 import carticon from "../../assets/imgs/theme/icons/icon-cart.svg";
 import accnticon from "../../assets/imgs/theme/icons/icon-user.svg";
 import { Link } from "react-router-dom";
-import { useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import sendRequest, {
@@ -16,17 +15,21 @@ import { useNavigate } from "react-router-dom";
 import { stopSpinner, startSpinner } from "../../redux/reducers/spinnerReducer";
 import { updateCart } from "../../redux/reducers/cartReducer";
 import { updateCartQuantity } from "../../redux/reducers/cartQuantityReducer";
-import { addSearchProduct } from "../../redux/reducers/searchedProductsReducer";
 
-function NavbarHeaderMid() {
+function NavbarHeaderMid({
+  setAutocomplete,
+  search,
+  setSearch,
+  searchError,
+  setSearchError,
+  handleSearchClick,
+}) {
   const products = useSelector((state) => state.products.products);
   const cartQuantity = useSelector((state) => state.cartQuantity.quantity);
   const wishlistQuantity = useSelector(
     (state) => state.wishlistQuantity.quantity
   );
   const currentUser = localStorage.getItem("current_user");
-  const [search, setSearch] = useState("");
-  const [searchError, setSearchError] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentCart = useSelector((state) => state.cart.cart);
@@ -69,7 +72,6 @@ function NavbarHeaderMid() {
               if (res.status) {
                 sendRequest("get", "cart/qty")
                   .then((res) => {
-                    console.log("quantity av", res);
                     dispatch(updateCartQuantity(res.quantity));
                   })
                   .catch((err) => {
@@ -100,28 +102,24 @@ function NavbarHeaderMid() {
     const value = e.target.value;
     setSearchError(false);
     setSearch(value);
-  };
-
-  const handleSearchClick = (e) => {
-    if (search !== "") {
-      setSearchError(false);
-      dispatch(startSpinner());
-      sendRequest("post", "products/filter", { products: search }).then(
-        (res) => {
-          dispatch(stopSpinner());
-          console.log("searcedProd", res.filtered);
-          dispatch(addSearchProduct(res.filtered));
-          setSearch("");
-          navigate("/searchedProducts");
-        }
-      );
+    if (value !== "") {
+      sendRequest("post", "products/filter", {
+        products: value,
+        autoComplete: true,
+      })
+        .then((res) => {
+          setAutocomplete(res.filteredNames);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     } else {
-      setSearchError(true);
+      setAutocomplete("");
     }
   };
 
   return (
-    <div>
+    <div className="position-relative">
       <div className="header-middle header-middle-ptb-1 d-none d-lg-block">
         <div className="container">
           <div className="header-wrap">
@@ -148,7 +146,7 @@ function NavbarHeaderMid() {
                   </Link>
                 </div>
                 <div className="header-right">
-                  <div className="search-style-2">
+                  <div className="search-style-2 position-relative">
                     <form onSubmit={(e) => e.preventDefault()}>
                       {/* <select className="select-active">
                         <option>All Categories</option>

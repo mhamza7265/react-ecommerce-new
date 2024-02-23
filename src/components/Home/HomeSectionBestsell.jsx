@@ -9,7 +9,9 @@ import sendRequest, { errorToast } from "../../utility-functions/apiManager";
 import { useNavigate } from "react-router";
 
 function HomeSectionBestsell({ setmodal }) {
-  const products = useSelector((state) => state.products.products);
+  const bestsellProducts = useSelector(
+    (state) => state.bestsellingProducts.products
+  );
   const navigate = useNavigate();
   const [wishlist, setWishlist] = useState(null);
 
@@ -155,11 +157,11 @@ function HomeSectionBestsell({ setmodal }) {
                       id="carausel-4-columns"
                     >
                       <Slider {...settings}>
-                        {!products
+                        {!bestsellProducts
                           ? bestCellData.map((_, i) => (
                               <BestSellSection key={i} />
                             ))
-                          : products.map((item, i) => (
+                          : bestsellProducts.product.map((item, i) => (
                               <HomeBestSellCard
                                 key={i}
                                 name={item.name}
@@ -170,6 +172,7 @@ function HomeSectionBestsell({ setmodal }) {
                                 wishlist={wishlist}
                                 discount={item.discount.discountValue}
                                 category={item.category.name}
+                                sold={bestsellProducts.productIds[item._id]}
                               />
                             ))}
                       </Slider>

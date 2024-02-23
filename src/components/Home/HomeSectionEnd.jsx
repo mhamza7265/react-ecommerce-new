@@ -5,12 +5,15 @@ import End from "./skeleton-components/End";
 
 function HomeSectionEnd() {
   const products = useSelector((state) => state.products.products);
-  const fourProductsOne = products ? products.slice(1, 4) : null;
-  const fourProductsTwo = products ? products.slice(3, 6) : null;
-  const fourProductsThree = products ? products.slice(4, 7) : null;
-  const fourProductsFour = products ? products.slice(5, 8) : null;
-
-  console.log("four products", fourProductsOne);
+  const bestSellingProducts = useSelector(
+    (state) => state.bestsellingProducts.products
+  );
+  const fourProductsOne = bestSellingProducts
+    ? bestSellingProducts.product.slice(0, 4)
+    : null;
+  const fourProductsTwo = products ? products.slice(4, 8) : null;
+  const fourProductsThree = products ? products.slice(0, 4) : null;
+  const fourProductsFour = products ? products.slice(12, 16) : null;
 
   return (
     <div>
