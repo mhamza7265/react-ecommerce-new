@@ -13,17 +13,19 @@ function Products() {
       </div>
       <table className="bg-white">
         <thead>
-          <th>Serial#</th>
-          <th>SKU</th>
-          <th>Name</th>
-          <th>Description</th>
-          <th>Category</th>
-          <th>Available Quantity</th>
-          <th>Price</th>
-          <th>Discount</th>
-          <th>Image</th>
-          <th>Image</th>
-          <th>Action</th>
+          <tr>
+            <th>Serial#</th>
+            <th>SKU</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Available Quantity</th>
+            <th>Price</th>
+            <th>Discount</th>
+            <th>Image</th>
+            <th>Image</th>
+            <th>Action</th>
+          </tr>
         </thead>
         <tbody>
           {products &&
