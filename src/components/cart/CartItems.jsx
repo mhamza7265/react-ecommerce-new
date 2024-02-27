@@ -8,6 +8,7 @@ import { useDispatch } from "react-redux";
 import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
 import BASE_URL from "../../utility-functions/config";
 import { useNavigate } from "react-router";
+import { updateCart } from "../../redux/reducers/cartReducer";
 
 function CartItems({
   id,
@@ -58,6 +59,7 @@ function CartItems({
         .then((res) => {
           dispatch(stopSpinner());
           if (res.status) {
+            dispatch(updateCart(res.cart));
             setCartItems(res.cart.cartItems[0]);
             successToast(res.message);
             sendRequest("get", "cart/total")
@@ -104,6 +106,7 @@ function CartItems({
             sendRequest("get", `product/quantity/${id}`).then((res) => {
               setProductQuantity(res.availableQuantity);
             });
+            dispatch(updateCart(res.cart));
             sendRequest("get", "cart/total")
               .then((res) => {
                 if (res.status) {

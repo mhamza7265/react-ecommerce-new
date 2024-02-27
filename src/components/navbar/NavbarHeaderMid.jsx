@@ -260,8 +260,10 @@ function NavbarHeaderMid({
                             }}
                           >
                             <ul>
-                              {currentCart ? (
-                                Object.values(currentCart.cartItems[0]).map(
+                              {currentCart &&
+                              Object.keys(currentCart?.cartItems[0])?.length >
+                                0 ? (
+                                Object.values(currentCart?.cartItems[0])?.map(
                                   (item, i) => (
                                     <NavbarMidCartDropdown
                                       key={i}

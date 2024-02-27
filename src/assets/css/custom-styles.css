@@ -168,3 +168,55 @@ span[aria-label="Loading Spinner"] > span {
   background-color: #86dfb5;
   color: #000;
 }
+
+.admin-login {
+  background-image: url("../../admin_panel/assets/images/login_vector_art.svg");
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.admin-login .login {
+  background-color: #5c5a5a;
+  border-radius: 15px;
+}
+
+.form-group .admin-login-input:focus {
+  background: #bce3c9 !important;
+  border-color: #bce3c9;
+}
+
+.form-group .admin-login-input {
+  background: #bce3c9 !important;
+  border-color: #bce3c9;
+}
+
+.order-action-dd {
+  background-color: #88d1af;
+  position: absolute;
+  top: 75%;
+  left: 0;
+  z-index: 9;
+  padding: 13px;
+}
+
+.text-small {
+  font-size: 16px;
+  display: block;
+  text-wrap: nowrap;
+}
+
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+.status-select {
+  border: 1px solid #000;
+}
+
+.category-img {
+  height: 100px;
+  width: 100px;
+  object-fit: contain;
+  border-radius: 10px;
+}

@@ -20,6 +20,7 @@ import passwordUpdateModalReducer from "../reducers/PasswordUpdateModelReducer";
 import openCloseCategoryDdReducer from "../reducers/openCloseCategoryDdReducer";
 import bestsellingProductReducer from "../reducers/bestsellingProductReducer";
 import ProductsByPageReducer from "../reducers/productsByPageReducer";
+import orderReducerAdmin from "../reducers/admin_reducers/orderReducerAdmin";
 
 const rootReducer = combineReducers({
   categories: categoryReducer,
@@ -41,6 +42,8 @@ const rootReducer = combineReducers({
   openCloseDdReducer: openCloseCategoryDdReducer,
   bestsellingProducts: bestsellingProductReducer,
   productsByPage: ProductsByPageReducer,
+  //admin reducers,
+  adminOrder: orderReducerAdmin,
 });
 const store = createStore(rootReducer, composeWithDevTools());
 

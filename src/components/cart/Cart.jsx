@@ -24,6 +24,8 @@ function Cart() {
   const currentCart = useSelector((state) => state.cart.cart);
   const cartQuantity = useSelector((state) => state.cartQuantity.quantity);
 
+  console.log("cartItems", cartItems);
+
   useEffect(() => {
     sendRequest("get", "cart")
       .then((res) => {
@@ -68,6 +70,7 @@ function Cart() {
           sendRequest("get", "cart")
             .then((res) => {
               if (res.status) {
+                dispatch(updateCart(res.cart[0]));
                 setCartItems(res.cart[0].cartItems[0]);
                 const calculation = {
                   subTotal: res.cart[0].subTotal,
@@ -207,7 +210,7 @@ function Cart() {
                       </tr>
                     </thead>
                     <tbody>
-                      {cartItems ? (
+                      {cartItems && Object.keys(cartItems).length > 0 ? (
                         Object.values(cartItems).map((item, i) => (
                           <CartItems
                             key={i}

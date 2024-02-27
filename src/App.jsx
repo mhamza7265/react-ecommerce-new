@@ -2,6 +2,8 @@ import "./assets/css/main.css";
 import "./assets/css/carousel.css";
 import "./assets/css/custom-styles.css";
 import "animate.css/animate.min.css";
+import "../src/admin_panel/assets/libs/boxicons-2.1.1/css/boxicons.min.css";
+import "../src/admin_panel//scss/App.scss";
 import Home from "./components/Home/Home";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -41,6 +43,15 @@ import UpdatePassword from "./components/Auth/updatePassword/UpdatePassword";
 import { dropdownIsOpen } from "./redux/reducers/openCloseCategoryDdReducer";
 import { addBestsellProduct } from "./redux/reducers/bestsellingProductReducer";
 import { addProductByPage } from "./redux/reducers/productsByPageReducer";
+import MainLayout from "./admin_panel/layout/MainLayout";
+import Dashboard from "./admin_panel/pages/Dashboard";
+import Blank from "./admin_panel/pages/Blank";
+import LoginPage from "./admin_panel/pages/LoginPage";
+import AdminAuth from "./admin_panel/pages/AdminAuth";
+import Orders from "./admin_panel/pages/orders";
+import Categories from "./admin_panel/pages/categories/Categories";
+import Products from "./admin_panel/pages/products/Products";
+import Customers from "./admin_panel/pages/customers/Customers";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -325,6 +336,24 @@ function App() {
               </Preloader>
             }
           />
+          <Route path="/admin/login" element={<LoginPage />}></Route>
+          <Route
+            path="/admin"
+            element={
+              <AdminAuth>
+                <MainLayout />
+              </AdminAuth>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route path="*" element={<Blank />} />
+            <Route path="orders" element={<Orders />} />
+            <Route path="categories" element={<Categories />} />
+            <Route path="products" element={<Products />} />
+            <Route path="customers" element={<Customers />} />
+            <Route path="settings" element={<Blank />} />
+            <Route path="stats" element={<Blank />} />
+          </Route>
         </Routes>
         <ScrollToTop />
       </BrowserRouter>
