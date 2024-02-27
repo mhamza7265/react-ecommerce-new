@@ -1,6 +1,51 @@
+import { addCategory } from "../../../redux/reducers/categoryReducer";
+import sendRequest, {
+  errorToast,
+  successToast,
+} from "../../../utility-functions/apiManager";
 import BASE_URL from "../../../utility-functions/config";
+import { useDispatch } from "react-redux";
 
-function CategoryRow({ serial, id, name, description, image, created }) {
+function CategoryRow({
+  serial,
+  id,
+  name,
+  description,
+  image,
+  created,
+  setCategoryId,
+  setEditCategoryModalIsOpen,
+}) {
+  const dispatch = useDispatch();
+
+  const handleDeleteClick = () => {
+    if (confirm("Do you want to remove this category?")) {
+      sendRequest("delete", `category/${id}`).then((res) => {
+        if (res.status) {
+          successToast("Category removed");
+          sendRequest("get", "category")
+            .then((res) => {
+              if (res.status) {
+                dispatch(addCategory(res.categories));
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          errorToast("Category could not be removed");
+        }
+      });
+    } else {
+      return;
+    }
+  };
+
+  const handleEditClick = () => {
+    setCategoryId({ id, name, description, image });
+    setEditCategoryModalIsOpen(true);
+  };
+
   return (
     <tr data={id}>
       <td>{serial + 1}</td>
@@ -10,10 +55,18 @@ function CategoryRow({ serial, id, name, description, image, created }) {
         <img className="category-img" src={BASE_URL + "/" + image} />
       </td>
       <td>{created}</td>
-      <td>
-        <button className="btn btn-sm btn-success">
-          <i className="fa-solid fa-chevron-down"></i>
-        </button>
+      <td className="position-relative">
+        <div className="d-flex justify-content-between">
+          <button
+            className="btn btn-sm btn-secondary"
+            onClick={handleEditClick}
+          >
+            <i className="fa fa-pen"></i>
+          </button>
+          <button className="btn btn-sm btn-danger" onClick={handleDeleteClick}>
+            <i className="fa fa-trash"></i>
+          </button>
+        </div>
       </td>
     </tr>
   );

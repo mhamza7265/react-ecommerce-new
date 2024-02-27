@@ -5,27 +5,39 @@ import { createStandaloneToast } from "@chakra-ui/react";
 const openApis = ["auth/login", "auth/register"];
 const { toast } = createStandaloneToast();
 
-const setRequestOptions = (method, url, payload) => {
+const setRequestOptions = (method, url, payload, contentType) => {
   // console.log("payload", payload);
   const storedItem = localStorage.getItem("current_user");
   const storedData = JSON.parse(storedItem);
   const filtered = openApis.find((item) => item == url);
   let header = {};
-  if (!filtered == undefined) {
-    header = {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-    };
-  } else if (filtered == undefined) {
-    header = {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: storedData?.token,
-      },
-    };
+  if (contentType && contentType == "formData") {
+    if (filtered == undefined) {
+      header = {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "multipart/form-data",
+          Authorization: storedData?.token,
+        },
+      };
+    }
+  } else {
+    if (!filtered == undefined) {
+      header = {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      };
+    } else if (filtered == undefined) {
+      header = {
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: storedData?.token,
+        },
+      };
+    }
   }
 
   header["method"] = method;
@@ -40,11 +52,11 @@ const setRequestOptions = (method, url, payload) => {
   return header;
 };
 
-const sendRequest = (method, url, payload) => {
+const sendRequest = (method, url, payload, contentType) => {
   // console.log(url, payload);
   return new Promise((resolve, reject) => {
     axios
-      .request(setRequestOptions(method, url, payload))
+      .request(setRequestOptions(method, url, payload, contentType))
       .then((response) => {
         // console.log(url, response);
         resolve(response.data);
