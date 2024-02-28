@@ -12,9 +12,16 @@ function ProductsRow({
   discount,
   images,
   deleteProduct,
+  setEditProductModalIsOpen,
+  setProductId,
 }) {
   const handleDeleteClick = () => {
     deleteProduct(id);
+  };
+
+  const handleEditClick = () => {
+    setProductId(id);
+    setEditProductModalIsOpen(true);
   };
 
   return (
@@ -35,7 +42,10 @@ function ProductsRow({
       </td>
       <td>
         <div className="d-flex justify-content-between">
-          <button className="btn btn-sm btn-secondary me-1">
+          <button
+            className="btn btn-sm btn-secondary me-1"
+            onClick={handleEditClick}
+          >
             <i className="fa fa-pen"></i>
           </button>
           <button className="btn btn-sm btn-danger" onClick={handleDeleteClick}>

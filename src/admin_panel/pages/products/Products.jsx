@@ -13,10 +13,18 @@ function Products() {
   const [productsByPage, setProductsByPage] = useState(null);
   const [paginateIsDisabled, setPaginateIsDisabled] = useState(false);
   const [newProductModalIsOpen, setNewProductModalIsOpen] = useState(false);
+  const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
+  const [productId, setProductId] = useState(null);
   const {
     register: registerNew,
     handleSubmit: handleNewProSubmit,
-    formState: { errors: errorsNew },
+    // formState: { errors: errorsNew },
+  } = useForm();
+
+  const {
+    register: registerEdit,
+    handleSubmit: handleEditProSubmit,
+    // formState: { errors: errorsNew },
   } = useForm();
 
   useEffect(() => {
@@ -159,6 +167,45 @@ function Products() {
     }
   };
 
+  const onEditProductSubmit = (data) => {
+    console.log("formData", data);
+    const formData = new FormData();
+    formData.append("file", data.image1[0]);
+    formData.append("file", data.image2[0]);
+    formData.append("name", data.name);
+    formData.append("description", data.description);
+    formData.append("discount.applicable", true);
+    formData.append("discount.discountType", "percent");
+    formData.append("discount.discountValue", data.discountValue);
+    formData.append("price", data.price);
+    formData.append("quantity", data.quantity);
+    formData.append("sku", data.sku);
+    formData.append("category", data.category);
+    sendRequest("put", `product/${productId}`, formData, "formData")
+      .then((res) => {
+        console.log("updateProd", res);
+        if (res.status) {
+          successToast("Product updated successfully");
+          sendRequest("get", `products/listing?page=${productsByPage.page}`)
+            .then((res) => {
+              if (res.status) {
+                setProductsByPage(res.products);
+                setEditProductModalIsOpen(false);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          errorToast(res.error);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        errorToast(err.error);
+      });
+  };
+
   return (
     <div className="container">
       <h3>Products</h3>
@@ -202,6 +249,8 @@ function Products() {
                 discount={item.discount.discountValue}
                 images={item.images}
                 deleteProduct={deleteProduct}
+                setEditProductModalIsOpen={setEditProductModalIsOpen}
+                setProductId={setProductId}
               />
             ))}
         </tbody>
@@ -244,7 +293,7 @@ function Products() {
         </p>
       </div>
 
-      {/*new category modal*/}
+      {/*new product modal*/}
       <>
         <Modal
           size="lg"
@@ -257,7 +306,7 @@ function Products() {
           style={{ zIndex: "9999", padding: 0 }}
         >
           <Modal.Header style={{ border: "none" }} closeButton>
-            <h5>Add New Category</h5>
+            <h5>Add New Product</h5>
           </Modal.Header>
           <Modal.Body>
             <div className="container">
@@ -375,6 +424,144 @@ function Products() {
                   type="submit"
                 >
                   Add Product
+                </button>
+              </form>
+            </div>
+          </Modal.Body>
+        </Modal>
+      </>
+
+      {/*edit product modal*/}
+      <>
+        <Modal
+          size="lg"
+          className="category-modal"
+          centered
+          show={editProductModalIsOpen}
+          onHide={() => {
+            setEditProductModalIsOpen(false);
+          }}
+          style={{ zIndex: "9999", padding: 0 }}
+        >
+          <Modal.Header style={{ border: "none" }} closeButton>
+            <h5>Edit Product</h5>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="container">
+              <form onSubmit={handleEditProSubmit(onEditProductSubmit)}>
+                <div className="form-group">
+                  <label className="form-label">SKU</label>
+                  <input
+                    {...registerEdit("sku")}
+                    className="form-control"
+                    name="sku"
+                    type="text"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Name</label>
+                  <input
+                    {...registerEdit("name")}
+                    className="form-control"
+                    name="name"
+                    type="text"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Description</label>
+                  <input
+                    {...registerEdit("description")}
+                    className="form-control"
+                    name="description"
+                    type="text"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Category</label>
+                  <select
+                    {...registerEdit("category")}
+                    className="form-control"
+                    name="category"
+                    type="text"
+                  >
+                    {categories &&
+                      categories.map((item, i) => (
+                        <option key={i} value={item._id}>
+                          {item.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Quantity</label>
+                  <input
+                    {...registerEdit("quantity")}
+                    className="form-control"
+                    name="quantity"
+                    type="text"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Price</label>
+                  <input
+                    {...registerEdit("price")}
+                    className="form-control"
+                    name="price"
+                    type="text"
+                  />
+                </div>
+                {/* <div className="form-group">
+                  <label className="form-label">Discount Applicable</label>
+                  <input
+                    {...registerNew("applicable")}
+                    className="form-control"
+                    name="applicable"
+                    type="checkbox"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Discount Type</label>
+                  <select
+                    {...registerNew("discountType")}
+                    className="form-control"
+                    name="discountType"
+                    type="text"
+                  >
+                    <option value="%">%</option>
+                  </select>
+                </div> */}
+                <div className="form-group">
+                  <label className="form-label">Discount</label>
+                  <input
+                    {...registerEdit("discountValue")}
+                    className="form-control"
+                    name="discountValue"
+                    type="text"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Image</label>
+                  <input
+                    {...registerEdit("image1")}
+                    className="form-control"
+                    type="file"
+                    name="image1"
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Image</label>
+                  <input
+                    {...registerEdit("image2")}
+                    className="form-control"
+                    type="file"
+                    name="image2"
+                  />
+                </div>
+                <button
+                  className="btn btn-sm btn-heading btn-block hover-up"
+                  type="submit"
+                >
+                  Edit Product
                 </button>
               </form>
             </div>
