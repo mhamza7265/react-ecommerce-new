@@ -1,9 +1,11 @@
+import "./assets/css/custom-styles.css";
 import "./assets/css/main.css";
 import "./assets/css/carousel.css";
-import "./assets/css/custom-styles.css";
+
 import "animate.css/animate.min.css";
 import "../src/admin_panel/assets/libs/boxicons-2.1.1/css/boxicons.min.css";
 import "../src/admin_panel//scss/App.scss";
+
 import Home from "./components/Home/Home";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";

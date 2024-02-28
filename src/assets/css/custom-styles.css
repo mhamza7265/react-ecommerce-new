@@ -207,7 +207,7 @@ span[aria-label="Loading Spinner"] > span {
 }
 
 .cursor-pointer {
-  cursor: pointer !important;
+  cursor: pointer;
 }
 
 .status-select {
@@ -219,4 +219,43 @@ span[aria-label="Loading Spinner"] > span {
   width: 100px;
   object-fit: contain;
   border-radius: 10px;
+}
+
+.btn-danger {
+  color: #fff !important;
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+}
+
+.paginate {
+  border: 1px solid #000;
+  border-radius: 50%;
+  padding: 10px 20px;
+}
+
+.paginate.active {
+  background-color: #000;
+  color: white;
+}
+
+.paginate.disable {
+  pointer-events: none;
+}
+
+.pagination.disabled {
+  cursor: no-drop;
+}
+
+.paginate-arrow {
+  background-color: #000;
+  color: white;
+}
+
+.paginate-arrow.disable {
+  background-color: #bbb9b9;
+  color: rgb(102, 98, 98);
+}
+
+.pagination p {
+  margin-bottom: 0;
 }

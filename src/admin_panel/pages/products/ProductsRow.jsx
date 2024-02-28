@@ -11,7 +11,12 @@ function ProductsRow({
   price,
   discount,
   images,
+  deleteProduct,
 }) {
+  const handleDeleteClick = () => {
+    deleteProduct(id);
+  };
+
   return (
     <tr data={id}>
       <td>{serial + 1}</td>
@@ -29,9 +34,14 @@ function ProductsRow({
         <img className="category-img" src={BASE_URL + "/" + images[1]} />
       </td>
       <td>
-        <button className="btn btn-sm btn-success">
-          <i className="fa-solid fa-chevron-down"></i>
-        </button>
+        <div className="d-flex justify-content-between">
+          <button className="btn btn-sm btn-secondary me-1">
+            <i className="fa fa-pen"></i>
+          </button>
+          <button className="btn btn-sm btn-danger" onClick={handleDeleteClick}>
+            <i className="fa fa-trash"></i>
+          </button>
+        </div>
       </td>
     </tr>
   );
