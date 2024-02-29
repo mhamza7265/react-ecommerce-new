@@ -4,7 +4,6 @@ import "./assets/css/carousel.css";
 
 import "animate.css/animate.min.css";
 import "../src/admin_panel/assets/libs/boxicons-2.1.1/css/boxicons.min.css";
-import "../src/admin_panel//scss/App.scss";
 
 import Home from "./components/Home/Home";
 import "slick-carousel/slick/slick.css";
@@ -54,6 +53,7 @@ import Orders from "./admin_panel/pages/orders";
 import Categories from "./admin_panel/pages/categories/Categories";
 import Products from "./admin_panel/pages/products/Products";
 import Customers from "./admin_panel/pages/customers/Customers";
+import Admins from "./admin_panel/pages/admins/Admins";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -353,6 +353,7 @@ function App() {
             <Route path="categories" element={<Categories />} />
             <Route path="products" element={<Products />} />
             <Route path="customers" element={<Customers />} />
+            <Route path="admins" element={<Admins />} />
             <Route path="settings" element={<Blank />} />
             <Route path="stats" element={<Blank />} />
           </Route>

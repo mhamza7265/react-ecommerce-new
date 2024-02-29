@@ -259,3 +259,17 @@ span[aria-label="Loading Spinner"] > span {
 .pagination p {
   margin-bottom: 0;
 }
+
+.hotline img {
+  max-width: 35px;
+}
+
+.user-info__img img {
+  width: 100%;
+}
+
+@media only screen and (max-width: 1366px) {
+  .main {
+    width: 100% !important;
+  }
+}

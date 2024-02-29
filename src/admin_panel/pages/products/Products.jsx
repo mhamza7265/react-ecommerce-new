@@ -64,43 +64,32 @@ function Products() {
 
   const handlePaginateArrowsClick = (e) => {
     const arrowType = e.target.getAttribute("data");
-    if (arrowType == "decrease" && productsByPage?.hasPrevPage) {
-      setPaginateIsDisabled(true);
-      sendRequest("get", `products/listing?page=${productsByPage?.page - 1}`)
-        .then((res) => {
-          if (res.status) {
-            setPaginateIsDisabled(false);
-            setProductsByPage(res.products);
-            successToast("Products list updated");
-          } else {
-            setPaginateIsDisabled(false);
-            errorToast("Products list could not be updated");
-          }
-        })
-        .catch((err) => {
+    setPaginateIsDisabled(true);
+    sendRequest(
+      "get",
+      `${
+        arrowType == "decrease" && productsByPage?.hasPrevPage
+          ? `products/listing?page=${productsByPage?.page - 1}`
+          : arrowType == "increase" && productsByPage?.hasNextPage
+          ? `products/listing?page=${productsByPage?.page + 1}`
+          : null
+      }`
+    )
+      .then((res) => {
+        if (res.status) {
           setPaginateIsDisabled(false);
-          console.log(err);
-          errorToast("Internal server error");
-        });
-    } else if (arrowType == "increase" && productsByPage?.hasNextPage) {
-      setPaginateIsDisabled(true);
-      sendRequest("get", `products/listing?page=${productsByPage?.page + 1}`)
-        .then((res) => {
-          if (res.status) {
-            setPaginateIsDisabled(false);
-            setProductsByPage(res.products);
-            successToast("Products list updated");
-          } else {
-            setPaginateIsDisabled(false);
-            errorToast("Products list could not be updated");
-          }
-        })
-        .catch((err) => {
+          setProductsByPage(res.products);
+          successToast("Products list updated");
+        } else {
           setPaginateIsDisabled(false);
-          console.log(err);
-          errorToast("Internal server error");
-        });
-    }
+          errorToast("Products list could not be updated");
+        }
+      })
+      .catch((err) => {
+        setPaginateIsDisabled(false);
+        console.log(err);
+        errorToast("Internal server error");
+      });
   };
 
   const onNewProductSubmit = (data) => {

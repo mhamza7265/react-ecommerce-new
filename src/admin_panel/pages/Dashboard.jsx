@@ -19,7 +19,7 @@ import {
   Legend,
 } from "chart.js";
 import OverallList from "../components/overall-list/OverallList";
-import RevenueList from "../components/revenue-list/RevenueList";
+// import RevenueList from "../components/revenue-list/RevenueList";
 
 ChartJS.register(
   CategoryScale,
@@ -41,16 +41,16 @@ const Dashboard = () => {
               {data.summary.map((item, index) => (
                 <div
                   key={`summary-${index}`}
-                  className="col-6 col-md-6 col-sm-12 mb"
+                  className="col-6 col-md-6 col-sm-12 mb-3"
                 >
                   <SummaryBox item={item} />
                 </div>
               ))}
             </div>
           </div>
-          <div className="col-4 hide-md">
+          {/* <div className="col-4 hide-md">
             <SummaryBoxSpecial item={data.revenueSummary} />
-          </div>
+          </div> */}
         </div>
         {/* <div className="row">
           <div className="col-12">

@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 import sendRequest from "../../../utility-functions/apiManager";
 import { useState } from "react";
-import CustomerRow from "./CustomerRow";
+import AdminsRow from "./AdminsRow";
 
-function Customers() {
+function Admins() {
   const [users, setUsers] = useState(null);
 
   useEffect(() => {
-    sendRequest("get", "users?type=basic")
+    sendRequest("get", "users?type=admin")
       .then((res) => {
         if (res.status) {
           setUsers(res.users);
@@ -33,7 +33,7 @@ function Customers() {
         <tbody>
           {users &&
             users?.map((item, i) => (
-              <CustomerRow
+              <AdminsRow
                 key={i}
                 id={item._id}
                 firstName={item.firstName}
@@ -48,4 +48,4 @@ function Customers() {
   );
 }
 
-export default Customers;
+export default Admins;

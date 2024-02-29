@@ -13,10 +13,8 @@ function OrderRow({
   setOrderId,
   setOrderedCartItems,
   setCartModalIsOpen,
-  setAllDropdownsHidden,
-  allDropdownsHidden,
 }) {
-  const [dropdownHidden, setDropdownHidden] = useState(true);
+  // const [dropdownHidden, setDropdownHidden] = useState(true);
 
   //   useEffect(() => {
   //     setDropdownHidden(allDropdownsHidden);
@@ -43,7 +41,7 @@ function OrderRow({
       <td>{Object.keys(cartItems).length}</td>
       <td>{grandTotal}</td>
       <td className="position-relative">
-        <button
+        {/* <button
           className="btn btn-sm btn-success"
           onClick={() => {
             setAllDropdownsHidden(true);
@@ -73,7 +71,23 @@ function OrderRow({
               View cart
             </span>
           </div>
-        )}
+        )} */}
+        <div className="d-flex justify-content-between">
+          <button
+            className="btn btn-sm btn-secondary me-1"
+            data="statusModal"
+            onClick={handleModalClick}
+          >
+            <i className="fa fa-pen"></i>
+          </button>
+          <button
+            className="btn btn-sm btn-success"
+            data="cartModal"
+            onClick={handleModalClick}
+          >
+            <i className="fa fa-eye"></i>
+          </button>
+        </div>
       </td>
     </tr>
   );

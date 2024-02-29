@@ -1,17 +1,18 @@
-import { useSelector } from "react-redux";
+// import { useSelector } from "react-redux";
 import OrderRow from "./orders/OrderRow";
 import { Modal } from "react-bootstrap";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import sendRequest, {
   errorToast,
   successToast,
 } from "../../utility-functions/apiManager";
-import { useDispatch } from "react-redux";
-import { updateOrder } from "../../redux/reducers/admin_reducers/orderReducerAdmin";
+// import { useDispatch } from "react-redux";
+// import { updateOrder } from "../../redux/reducers/admin_reducers/orderReducerAdmin";
 import BASE_URL from "../../utility-functions/config";
 
 function Orders() {
-  const orders = useSelector((state) => state.adminOrder.orders);
+  // const orders = useSelector((state) => state.adminOrder.orders);
+  const [orders, setOrders] = useState([]);
   const [statusModalIsOpen, setStatusModalIsOpen] = useState(false);
   const [cartModalIsOpen, setCartModalIsOpen] = useState(false);
   const [orderId, setOrderId] = useState("");
@@ -21,7 +22,22 @@ function Orders() {
   const [typeOfOrders, setTypeOfOrders] = useState("all");
   const [allUsers, setAllUsers] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
-  const dispatch = useDispatch();
+  const [paginateIsDisabled, setPaginateIsDisabled] = useState(false);
+  // const dispatch = useDispatch();
+
+  useEffect(() => {
+    sendRequest("get", "orders/listing")
+      .then((res) => {
+        if (res.status) {
+          setOrders(res.orders);
+        } else {
+          console.log("Orders could not be fetched");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   const handleSelectChange = () => {
     sendRequest("put", "order/process", {
@@ -31,10 +47,10 @@ function Orders() {
       .then((res) => {
         if (res.status) {
           successToast("Status Updated!");
-          sendRequest("get", "orders")
+          sendRequest("get", "orders/listing")
             .then((res) => {
               if (res.status) {
-                dispatch(updateOrder(res.orders));
+                setOrders(res.orders);
                 setStatusModalIsOpen(false);
               }
             })
@@ -53,11 +69,11 @@ function Orders() {
   const handleRadioChange = (e) => {
     const type = e.target.getAttribute("data");
     if (type == "all") {
-      sendRequest("get", "orders")
+      sendRequest("get", "orders/listing")
         .then((res) => {
           if (res.status) {
             successToast("List updated");
-            dispatch(updateOrder(res.orders));
+            setOrders(res.orders);
           }
         })
         .catch((err) => {
@@ -65,7 +81,7 @@ function Orders() {
         });
       setTypeOfOrders("all");
     } else {
-      dispatch(updateOrder([]));
+      setOrders([]);
       setTypeOfOrders("specific");
       sendRequest("get", "users")
         .then((res) => {
@@ -78,11 +94,11 @@ function Orders() {
   };
 
   const handleUserSubmitClick = () => {
-    sendRequest("get", `customerorders/${selectedUser}`)
+    sendRequest("get", `customerorders/listing/${selectedUser}`)
       .then((res) => {
         if (res.status) {
           successToast("List Updated");
-          dispatch(updateOrder(res.orders));
+          setOrders(res.orders);
         }
       })
       .catch((err) => {
@@ -90,7 +106,80 @@ function Orders() {
       });
   };
 
+  const handlePaginateClick = (e) => {
+    const pageNumber = e.target.getAttribute("data");
+    setPaginateIsDisabled(true);
+    sendRequest(
+      "get",
+      `${
+        typeOfOrders == "all"
+          ? `orders/listing?page=${pageNumber}`
+          : `customerorders/listing/${selectedUser}?page=${pageNumber}`
+      }`
+    )
+      .then((res) => {
+        if (res.status) {
+          setPaginateIsDisabled(false);
+          setOrders(res.orders);
+          successToast("Orders list updated");
+        } else {
+          setPaginateIsDisabled(false);
+          errorToast("Orders list could not be updated");
+        }
+      })
+      .catch((err) => {
+        setPaginateIsDisabled(false);
+        console.log(err);
+        errorToast("Internal server error");
+      });
+  };
+
+  const handlePaginateArrowsClick = (e) => {
+    const arrowType = e.target.getAttribute("data");
+    setPaginateIsDisabled(true);
+    sendRequest(
+      "get",
+      `${
+        typeOfOrders == "all"
+          ? `${
+              arrowType == "decrease" && orders?.hasPrevPage
+                ? `orders/listing?page=${orders?.page - 1}`
+                : arrowType == "increase" && orders?.hasNextPage
+                ? `orders/listing?page=${orders?.page + 1}`
+                : null
+            }`
+          : `${
+              arrowType == "decrease" && orders?.hasPrevPage
+                ? `customerorders/listing/${selectedUser}?page=${
+                    orders?.page - 1
+                  }`
+                : arrowType == "increase" && orders?.hasNextPage
+                ? `customerorders/listing/${selectedUser}?page=${
+                    orders?.page + 1
+                  }`
+                : null
+            }`
+      }`
+    )
+      .then((res) => {
+        if (res.status) {
+          setPaginateIsDisabled(false);
+          setOrders(res.orders);
+          successToast("Orders list updated");
+        } else {
+          setPaginateIsDisabled(false);
+          errorToast("Orders list could not be updated");
+        }
+      })
+      .catch((err) => {
+        setPaginateIsDisabled(false);
+        console.log(err);
+        errorToast("Internal server error");
+      });
+  };
+
   console.log("orders", orders);
+  console.log("users", allUsers);
 
   return (
     <div className="container">
@@ -151,7 +240,7 @@ function Orders() {
           </button>
         </div>
       )}
-      <table className="bg-white">
+      <table className="bg-white mb-0">
         <thead>
           <tr>
             <th>Serial#</th>
@@ -165,11 +254,11 @@ function Orders() {
           </tr>
         </thead>
         <tbody>
-          {orders?.length > 0 ? (
-            orders?.map((item, i) => (
+          {orders?.docs?.length > 0 ? (
+            orders?.docs?.map((item, i) => (
               <OrderRow
                 key={i}
-                keyNum={i}
+                keyNum={orders?.pagingCounter - 1 + i}
                 id={item._id}
                 status={item.status}
                 orderDate={item.orderDate}
@@ -191,6 +280,44 @@ function Orders() {
           )}
         </tbody>
       </table>
+      <div
+        className={`pagination d-flex justify-content-end p-3 bg-white ${
+          paginateIsDisabled && "disabled"
+        }`}
+      >
+        <p
+          className={`me-1 paginate cursor-pointer paginate-arrow ${
+            !orders?.hasPrevPage && "disable"
+          }`}
+          data={"decrease"}
+          onClick={handlePaginateArrowsClick}
+        >
+          <i className="fas fa-caret-left" data={"decrease"}></i>
+        </p>
+        {orders &&
+          [...Array(orders?.totalPages)].map((item, i) => (
+            <p
+              className={`me-1 paginate cursor-pointer ${
+                orders?.page == i + 1 && "active"
+              } ${paginateIsDisabled && "disable"}`}
+              onClick={handlePaginateClick}
+              key={i}
+              data={i + 1}
+            >
+              {i + 1}
+            </p>
+          ))}
+        <p
+          className={`me-1 paginate cursor-pointer paginate-arrow ${
+            !orders?.hasNextPage && "disable"
+          }`}
+          data={"increase"}
+          onClick={handlePaginateArrowsClick}
+        >
+          <i className="fas fa-caret-right" data={"increase"}></i>
+        </p>
+      </div>
+
       {/*Status Modal*/}
       <>
         <Modal
