@@ -27,7 +27,7 @@ import Preloader from "./common/preloader/Preloader";
 import ScrollToTop from "./common/ScrollToTop";
 import HaveAuth from "./components/Auth/check-auth/HaveAuth";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import sendRequest from "./utility-functions/apiManager";
 import { addProduct } from "./redux/reducers/productReducer";
 import { addCategory } from "./redux/reducers/categoryReducer";
@@ -54,6 +54,7 @@ import Categories from "./admin_panel/pages/categories/Categories";
 import Products from "./admin_panel/pages/products/Products";
 import Customers from "./admin_panel/pages/customers/Customers";
 import Admins from "./admin_panel/pages/admins/Admins";
+import { addCurrentUser } from "./redux/reducers/currentUserReducer";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -61,9 +62,11 @@ const stripePromise = loadStripe(
 
 function App() {
   const dispatch = useDispatch();
+  const [userRole, setUserRole] = useState(null);
   const updateWishlist = useSelector(
     (state) => state.updateWishlistNavbar.number
   );
+  const currentUser = useSelector((state) => state.currentUser.user);
 
   const options = {
     mode: "payment",
@@ -166,6 +169,21 @@ function App() {
       })
       .catch((err) => console.log(err));
   }, [updateWishlist]);
+
+  useEffect(() => {
+    sendRequest("get", "user")
+      .then((res) => {
+        if (res.user) {
+          dispatch(addCurrentUser(res.user));
+        } else {
+          setUserRole(null);
+          console.log("userRoleError", res.error);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   const handleClick = (e) => {
     const targetElement = e.target.getAttribute("class");
@@ -338,7 +356,9 @@ function App() {
               </Preloader>
             }
           />
-          <Route path="/admin/login" element={<LoginPage />}></Route>
+
+          <Route path="/admin/login" element={<LoginPage />} />
+
           <Route
             path="/admin"
             element={

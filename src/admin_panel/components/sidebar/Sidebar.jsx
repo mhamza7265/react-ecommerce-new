@@ -4,11 +4,14 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { images } from "../../constants";
 import sidebarNav from "../../configs/sidebarNav";
 import { successToast } from "../../../utility-functions/apiManager";
+import { useDispatch } from "react-redux";
+import { addCurrentUser } from "../../../redux/reducers/currentUserReducer";
 
 const Sidebar = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const curPath = window.location.pathname.split("/")[1];
@@ -29,6 +32,7 @@ const Sidebar = () => {
   const handleLogoutClick = () => {
     localStorage.removeItem("current_user");
     localStorage.removeItem("admin");
+    dispatch(addCurrentUser(null));
     successToast("Logged out!");
     setTimeout(() => {
       navigate("/admin/login");

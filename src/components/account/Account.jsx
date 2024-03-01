@@ -18,6 +18,7 @@ import { BounceLoader } from "react-spinners";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
+import { addCurrentUser } from "../../redux/reducers/currentUserReducer";
 
 function Account() {
   const [currentUser, setCurrentUser] = useState("");
@@ -131,6 +132,7 @@ function Account() {
     localStorage.removeItem("current_user");
     localStorage.removeItem("cartId");
     localStorage.removeItem("cartItem");
+    dispatch(addCurrentUser(null));
     successToast("Logged out!");
     navigate("/");
   };

@@ -110,6 +110,9 @@ function NavbarHeaderTop() {
                         </li>
                       </ul>
                     </li>
+                    <li>
+                      <Link to="/admin">Admin Panel</Link>
+                    </li>
                   </ul>
                 </div>
               </div>

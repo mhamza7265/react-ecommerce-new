@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateOrder } from "../../redux/reducers/admin_reducers/orderReducerAdmin";
 import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
+import { addCurrentUser } from "../../redux/reducers/currentUserReducer";
 
 function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -54,6 +55,16 @@ function LoginPage() {
           sendRequest("get", "orders").then((res) => {
             dispatch(updateOrder(res.orders));
           });
+
+          sendRequest("get", "user")
+            .then((res) => {
+              if (res.status) {
+                dispatch(addCurrentUser(res.user));
+              }
+            })
+            .catch((err) => {
+              console.log("currentUser", err.error);
+            });
 
           setTimeout(() => {
             navigate("/admin");

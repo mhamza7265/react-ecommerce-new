@@ -178,9 +178,6 @@ function Orders() {
       });
   };
 
-  console.log("orders", orders);
-  console.log("users", allUsers);
-
   return (
     <div className="container">
       <h3 className="mb-4">Orders</h3>

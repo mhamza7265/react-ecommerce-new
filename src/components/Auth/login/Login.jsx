@@ -21,6 +21,7 @@ import {
   startSpinner,
   stopSpinner,
 } from "../../../redux/reducers/spinnerReducer";
+import { addCurrentUser } from "../../../redux/reducers/currentUserReducer";
 
 function Login() {
   const [loading, setLoading] = useState(false);
@@ -105,6 +106,16 @@ function Login() {
               dispatch(addWishlist(res.wishlist));
             })
             .catch((err) => console.log(err));
+
+          sendRequest("get", "user")
+            .then((res) => {
+              if (res.status) {
+                dispatch(addCurrentUser(res.user));
+              }
+            })
+            .catch((err) => {
+              console.log("currentUser", err.error);
+            });
 
           setTimeout(() => {
             navigate("/");

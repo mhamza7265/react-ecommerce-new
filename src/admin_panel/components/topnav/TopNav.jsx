@@ -23,8 +23,6 @@ const TopNav = () => {
       });
   }, []);
 
-  console.log("user", user);
-
   return (
     <div className="topnav">
       <UserInfo user={user} image={userImage} />

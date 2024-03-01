@@ -21,6 +21,7 @@ function Customers() {
   });
   return (
     <div className="container">
+      <h3 className="mb-4">Customers</h3>
       <table className="bg-white">
         <thead>
           <tr>
@@ -28,6 +29,7 @@ function Customers() {
             <th>Last Name</th>
             <th>Email</th>
             <th>Role</th>
+            {/* <th>Action</th> */}
           </tr>
         </thead>
         <tbody>

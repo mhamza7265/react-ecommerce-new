@@ -9,7 +9,7 @@ const UserInfo = ({ user, image }) => {
         {/* <i className="fa fa-user"></i> */}
       </div>
       <div className="user-info__name">
-        <span>{user.first_name + " " + user.last_name}</span>
+        <span>{user?.first_name + " " + user?.last_name}</span>
       </div>
     </div>
   );

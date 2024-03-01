@@ -21,6 +21,7 @@ import openCloseCategoryDdReducer from "../reducers/openCloseCategoryDdReducer";
 import bestsellingProductReducer from "../reducers/bestsellingProductReducer";
 import ProductsByPageReducer from "../reducers/productsByPageReducer";
 import orderReducerAdmin from "../reducers/admin_reducers/orderReducerAdmin";
+import currentUserReducer from "../reducers/currentUserReducer";
 
 const rootReducer = combineReducers({
   categories: categoryReducer,
@@ -42,6 +43,7 @@ const rootReducer = combineReducers({
   openCloseDdReducer: openCloseCategoryDdReducer,
   bestsellingProducts: bestsellingProductReducer,
   productsByPage: ProductsByPageReducer,
+  currentUser: currentUserReducer,
   //admin reducers,
   adminOrder: orderReducerAdmin,
 });
