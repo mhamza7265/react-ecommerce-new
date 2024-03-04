@@ -83,7 +83,7 @@ function LoginPage() {
       <div className="page-content pt-150 pb-150">
         <div className="container">
           <div className="d-flex justify-content-center">
-            <div className="login col-lg-6 col-md-4">
+            <div className="login col-lg-6 col-md-4 px-4 py-3">
               <div className="login_wrap widget-taber-content background-white">
                 <div className="padding_eight_all position-relative">
                   <div className="heading_s1">

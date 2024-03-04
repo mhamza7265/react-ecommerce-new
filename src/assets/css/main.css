@@ -3489,9 +3489,9 @@ table .product-thumbnail img {
   overflow: hidden;
   border: 0;
   margin: auto;
-  top: 50%;
+  /* top: 50%;
   -webkit-transform: translateY(-50%) !important;
-  transform: translateY(-50%) !important;
+  transform: translateY(-50%) !important; */
 }
 
 .custom-modal .modal-dialog .modal-content {

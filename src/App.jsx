@@ -380,7 +380,6 @@ function App() {
         </Routes>
         <ScrollToTop />
       </BrowserRouter>
-      =
     </div>
   );
 }

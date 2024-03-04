@@ -1,6 +1,5 @@
-import { useEffect } from "react";
-import sendRequest from "../../../utility-functions/apiManager";
-import { useState } from "react";
+import sendRequest, { errorToast } from "../../../utility-functions/apiManager";
+import { useState, useEffect } from "react";
 import CustomerRow from "./CustomerRow";
 
 function Customers() {
@@ -18,7 +17,32 @@ function Customers() {
       .catch((err) => {
         console.log(err);
       });
-  });
+  }, []);
+
+  const handleBlockUnblockClick = (e) => {
+    const btnType = e.currentTarget.getAttribute("data");
+    const userId = e.target.closest(".customer-row").getAttribute("data");
+    if (confirm(`Do you want to ${btnType} this user?`)) {
+      sendRequest("put", "user/lock", {
+        userId,
+        blocked: btnType == "block" ? true : false,
+        type: "basic",
+      })
+        .then((res) => {
+          if (res.status) {
+            setUsers(res.users);
+          } else {
+            errorToast(res.error);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      return;
+    }
+  };
+
   return (
     <div className="container">
       <h3 className="mb-4">Customers</h3>
@@ -29,7 +53,7 @@ function Customers() {
             <th>Last Name</th>
             <th>Email</th>
             <th>Role</th>
-            {/* <th>Action</th> */}
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>
@@ -42,6 +66,8 @@ function Customers() {
                 lastName={item.lastName}
                 email={item.email}
                 role={item.role}
+                status={item.blocked}
+                handleBlockUnblockClick={handleBlockUnblockClick}
               />
             ))}
         </tbody>

@@ -11,7 +11,6 @@ import sendRequest, {
 import BASE_URL from "../../utility-functions/config";
 
 function Orders() {
-  // const orders = useSelector((state) => state.adminOrder.orders);
   const [orders, setOrders] = useState([]);
   const [statusModalIsOpen, setStatusModalIsOpen] = useState(false);
   const [cartModalIsOpen, setCartModalIsOpen] = useState(false);
@@ -23,7 +22,6 @@ function Orders() {
   const [allUsers, setAllUsers] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [paginateIsDisabled, setPaginateIsDisabled] = useState(false);
-  // const dispatch = useDispatch();
 
   useEffect(() => {
     sendRequest("get", "orders/listing")
@@ -350,6 +348,7 @@ function Orders() {
       {/*Cart Modal*/}
       <>
         <Modal
+          size="lg"
           className="custom-modal"
           centered
           show={cartModalIsOpen}
@@ -358,38 +357,44 @@ function Orders() {
           }}
           style={{ zIndex: "9999", padding: 0 }}
         >
-          <Modal.Header style={{ border: "none" }} closeButton></Modal.Header>
-          <Modal.Body>
+          <Modal.Header style={{ border: "none" }} closeButton>
             <h5>Cart</h5>
-            <table>
-              <thead>
-                <tr>
-                  <th>Image</th>
-                  <th>Name</th>
-                  <th>Price</th>
-                  <th>Quantity</th>
-                  <th>Discount</th>
-                  <th>Sub Total</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderedCartItems &&
-                  Object.values(orderedCartItems).map((item, i) => (
-                    <tr key={i}>
-                      <td>
-                        <img src={`${BASE_URL}/${item.images[0][0]}`} />
-                      </td>
-                      <td>{item.name}</td>
-                      <td>{item.price}</td>
-                      <td>{item.quantity}</td>
-                      <td>{item.calculations.discount + "%"}</td>
-                      <td>{item.calculations.subTotal}</td>
-                      <td>{item.calculations.total}</td>
-                    </tr>
-                  ))}
-              </tbody>
-            </table>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Image</th>
+                    <th>Name</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Discount</th>
+                    <th>Sub Total</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {orderedCartItems &&
+                    Object.values(orderedCartItems).map((item, i) => (
+                      <tr key={i}>
+                        <td>
+                          <img
+                            className="prod-img"
+                            src={`${BASE_URL}/${item.images[0][0]}`}
+                          />
+                        </td>
+                        <td>{item.name}</td>
+                        <td>{item.price}</td>
+                        <td>{item.quantity}</td>
+                        <td>{item.calculations.discount + "%"}</td>
+                        <td>{item.calculations.total}</td>
+                        <td>{item.calculations.subTotal}</td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            </div>
           </Modal.Body>
         </Modal>
       </>

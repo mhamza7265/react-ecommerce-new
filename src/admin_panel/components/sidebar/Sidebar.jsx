@@ -31,6 +31,7 @@ const Sidebar = () => {
 
   const handleLogoutClick = () => {
     localStorage.removeItem("current_user");
+    localStorage.removeItem("admin_user");
     localStorage.removeItem("admin");
     dispatch(addCurrentUser(null));
     successToast("Logged out!");

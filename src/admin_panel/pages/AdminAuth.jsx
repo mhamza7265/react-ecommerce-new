@@ -1,12 +1,18 @@
 import { Navigate } from "react-router-dom";
-import sendRequest, { errorToast } from "../../utility-functions/apiManager";
-import { useSelector } from "react-redux";
+import { errorToast } from "../../utility-functions/apiManager";
+import { jwtDecode } from "jwt-decode";
 
 function AdminAuth({ children }) {
-  const currentUser = useSelector((state) => state.currentUser.user);
   var flag = false;
-  if (currentUser?.role == "admin") {
-    flag = true;
+  const storedData = localStorage.getItem("current_user");
+  const storedToken = JSON.parse(storedData)?.token;
+  if (storedToken) {
+    const userRole = jwtDecode(storedToken);
+    if (userRole.role == "admin") {
+      flag = true;
+    } else {
+      flag = false;
+    }
   } else {
     flag = false;
   }

@@ -1,26 +1,40 @@
-function CustomerRow({ id, firstName, lastName, email, role }) {
+function CustomerRow({
+  id,
+  firstName,
+  lastName,
+  email,
+  role,
+  status,
+  handleBlockUnblockClick,
+}) {
+  // console.log("status", status);
   return (
-    <tr data={id}>
+    <tr className="customer-row" data={id}>
       <td>{firstName}</td>
       <td>{lastName}</td>
       <td>{email}</td>
       <td>{role}</td>
-      {/* <td>
+      <td>
         <div className="d-flex justify-content-start">
-          <button
-            className="btn btn-sm btn-secondary me-1"
-            // onClick={handleEditClick}
-          >
-            <i className="fa fa-pen"></i>
-          </button>
-          <button
-            className="btn btn-sm btn-danger"
-            // onClick={handleDeleteClick}
-          >
-            <i className="fa fa-trash"></i>
-          </button>
+          {status ? (
+            <button
+              className="btn btn-sm btn-success me-1"
+              data="unblock"
+              onClick={handleBlockUnblockClick}
+            >
+              <i className="fa fa-unlock"></i> Unblock
+            </button>
+          ) : (
+            <button
+              className="btn btn-sm btn-danger"
+              data="block"
+              onClick={handleBlockUnblockClick}
+            >
+              <i className="fa fa-lock"></i> Block
+            </button>
+          )}
         </div>
-      </td> */}
+      </td>
     </tr>
   );
 }
