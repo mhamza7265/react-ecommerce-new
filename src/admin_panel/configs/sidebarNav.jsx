@@ -2,37 +2,37 @@ const sidebarNav = [
   {
     link: "/admin",
     section: "home",
-    icon: <i className="bx bx-home-alt"></i>,
+    icon: <i className="fa-solid fa-house"></i>,
     text: "Home",
   },
   {
     link: "orders",
     section: "orders",
-    icon: <i className="bx bx-receipt"></i>,
+    icon: <i className="fa-solid fa-receipt"></i>,
     text: "Orders",
   },
   {
     link: "categories",
     section: "categories",
-    icon: <i className="bx bx-cube"></i>,
+    icon: <i className="fa-solid fa-layer-group"></i>,
     text: "Categories",
   },
   {
     link: "products",
     section: "products",
-    icon: <i className="bx bx-cube"></i>,
+    icon: <i className="fa-solid fa-icons"></i>,
     text: "Products",
   },
   {
     link: "customers",
     section: "customers",
-    icon: <i className="bx bx-user"></i>,
+    icon: <i className="fa-solid fa-users"></i>,
     text: "Customers",
   },
   {
     link: "admins",
     section: "admins",
-    icon: <i className="bx bx-user"></i>,
+    icon: <i className="fa-solid fa-user-tie"></i>,
     text: "Admins",
   },
   // {

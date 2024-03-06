@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./sidebar.scss";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { images } from "../../constants";
 import sidebarNav from "../../configs/sidebarNav";
 import { successToast } from "../../../utility-functions/apiManager";
@@ -50,21 +50,19 @@ const Sidebar = () => {
       </div>
       <div className="sidebar__menu">
         {sidebarNav.map((nav, index) => (
-          <Link
+          <NavLink
             to={nav.link}
             key={`nav-${index}`}
-            className={`sidebar__menu__item ${
-              activeIndex === index && "active"
-            }`}
+            className={`sidebar__menu__item`}
             onClick={closeSidebar}
           >
             <div className="sidebar__menu__item__icon">{nav.icon}</div>
             <div className="sidebar__menu__item__txt">{nav.text}</div>
-          </Link>
+          </NavLink>
         ))}
         <div className="sidebar__menu__item" onClick={handleLogoutClick}>
           <div className="sidebar__menu__item__icon">
-            <i className="bx bx-log-out"></i>
+            <i className="fa-solid fa-right-from-bracket"></i>
           </div>
           <div className="sidebar__menu__item__txt">Logout</div>
         </div>

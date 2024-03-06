@@ -14,6 +14,11 @@ function CustomerRow({
       <td>{lastName}</td>
       <td>{email}</td>
       <td>{role}</td>
+      <td className={``}>
+        <span className={`badge ${status ? "bg-danger" : "bg-success"}`}>
+          {status ? "Deactivated" : "Active"}
+        </span>
+      </td>
       <td>
         <div className="d-flex justify-content-start">
           {status ? (
@@ -22,7 +27,7 @@ function CustomerRow({
               data="unblock"
               onClick={handleBlockUnblockClick}
             >
-              <i className="fa fa-unlock"></i> Unblock
+              <i className="fa fa-unlock"></i> Activate
             </button>
           ) : (
             <button
@@ -30,7 +35,7 @@ function CustomerRow({
               data="block"
               onClick={handleBlockUnblockClick}
             >
-              <i className="fa fa-lock"></i> Block
+              <i className="fa fa-lock"></i> Deactivate
             </button>
           )}
         </div>

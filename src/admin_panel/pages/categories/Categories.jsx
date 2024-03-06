@@ -25,7 +25,7 @@ function Categories() {
   const {
     register: registerEdit,
     handleSubmit: handleEditCatSubmit,
-    formState: { errors: errorsEdit },
+    // formState: { errors: errorsEdit },
   } = useForm();
 
   const onSubmit = (data) => {
@@ -140,30 +140,39 @@ function Categories() {
                 <div className="form-group">
                   <label className="form-label">Category Name</label>
                   <input
-                    {...registerNew("name")}
+                    {...registerNew("name", {
+                      required: "This field is required",
+                    })}
                     className="form-control"
                     name="name"
                     type="text"
                   />
                 </div>
+                <p className="text-danger">{errorsNew?.name?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Category Description</label>
                   <input
-                    {...registerNew("desc")}
+                    {...registerNew("desc", {
+                      required: "This field is required",
+                    })}
                     className="form-control"
                     name="desc"
                     type="text"
                   />
                 </div>
+                <p className="text-danger">{errorsNew?.desc?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Image</label>
                   <input
-                    {...registerNew("image")}
+                    {...registerNew("image", {
+                      required: "This field is required",
+                    })}
                     className="form-control"
                     type="file"
                     name="image"
                   />
                 </div>
+                <p className="text-danger">{errorsNew?.image?.message}</p>
                 <button
                   className="btn btn-sm btn-heading btn-block hover-up"
                   type="submit"

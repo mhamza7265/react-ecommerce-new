@@ -18,13 +18,13 @@ function Products() {
   const {
     register: registerNew,
     handleSubmit: handleNewProSubmit,
-    // formState: { errors: errorsNew },
+    formState: { errors: errorsNew },
   } = useForm();
 
   const {
     register: registerEdit,
     handleSubmit: handleEditProSubmit,
-    // formState: { errors: errorsNew },
+    formState: { errors: errorsEdit },
   } = useForm();
 
   useEffect(() => {
@@ -102,6 +102,7 @@ function Products() {
     formData.append("discount.discountType", "percent");
     formData.append("discount.discountValue", data.discountValue);
     formData.append("price", data.price);
+    formData.append("cost", data.cost);
     formData.append("quantity", data.quantity);
     formData.append("sku", data.sku);
     formData.append("category", data.category);
@@ -167,6 +168,7 @@ function Products() {
     formData.append("discount.discountType", "percent");
     formData.append("discount.discountValue", data.discountValue);
     formData.append("price", data.price);
+    formData.append("cost", data.cost);
     formData.append("quantity", data.quantity);
     formData.append("sku", data.sku);
     formData.append("category", data.category);
@@ -303,38 +305,52 @@ function Products() {
                 <div className="form-group">
                   <label className="form-label">SKU</label>
                   <input
-                    {...registerNew("sku")}
+                    {...registerNew("sku", {
+                      required: "This field is required",
+                    })}
                     className="form-control"
                     name="sku"
                     type="text"
                   />
                 </div>
+                <p className="text-danger">{errorsNew?.sku?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Name</label>
                   <input
-                    {...registerNew("name")}
+                    {...registerNew("name", {
+                      required: "This field is required",
+                    })}
                     className="form-control"
                     name="name"
                     type="text"
                   />
                 </div>
+                <p className="text-danger">{errorsNew?.name?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Description</label>
                   <input
-                    {...registerNew("description")}
+                    {...registerNew("description", {
+                      required: "This field is required",
+                    })}
                     className="form-control"
                     name="description"
                     type="text"
                   />
                 </div>
+                <p className="text-danger">{errorsNew?.description?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Category</label>
                   <select
-                    {...registerNew("category")}
+                    {...registerNew("category", {
+                      required: "This field is required",
+                    })}
                     className="form-control"
                     name="category"
                     type="text"
                   >
+                    <option value="" placeholder="Select an option">
+                      Select an option
+                    </option>
                     {categories &&
                       categories.map((item, i) => (
                         <option key={i} value={item._id}>
@@ -343,24 +359,43 @@ function Products() {
                       ))}
                   </select>
                 </div>
+                <p className="text-danger">{errorsNew?.category?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Quantity</label>
                   <input
-                    {...registerNew("quantity")}
+                    {...registerNew("quantity", {
+                      required: "This field is required",
+                    })}
                     className="form-control"
                     name="quantity"
                     type="text"
                   />
                 </div>
+                <p className="text-danger">{errorsNew?.quantity?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Price</label>
                   <input
-                    {...registerNew("price")}
+                    {...registerNew("price", {
+                      required: "This field is required",
+                    })}
                     className="form-control"
                     name="price"
                     type="text"
                   />
                 </div>
+                <p className="text-danger">{errorsNew?.price?.message}</p>
+                <div className="form-group">
+                  <label className="form-label">Cost</label>
+                  <input
+                    {...registerNew("cost", {
+                      required: "This field is required",
+                    })}
+                    className="form-control"
+                    name="cost"
+                    type="text"
+                  />
+                </div>
+                <p className="text-danger">{errorsNew?.cost?.message}</p>
                 {/* <div className="form-group">
                   <label className="form-label">Discount Applicable</label>
                   <input
@@ -384,30 +419,41 @@ function Products() {
                 <div className="form-group">
                   <label className="form-label">Discount</label>
                   <input
-                    {...registerNew("discountValue")}
+                    {...registerNew("discountValue", {
+                      required: "This field is required",
+                    })}
                     className="form-control"
                     name="discountValue"
                     type="text"
                   />
                 </div>
+                <p className="text-danger">
+                  {errorsNew?.discountValue?.message}
+                </p>
                 <div className="form-group">
                   <label className="form-label">Image</label>
                   <input
-                    {...registerNew("image1")}
+                    {...registerNew("image1", {
+                      required: "This field is required",
+                    })}
                     className="form-control"
                     type="file"
                     name="image1"
                   />
                 </div>
+                <p className="text-danger">{errorsNew?.image1?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Image</label>
                   <input
-                    {...registerNew("image2")}
+                    {...registerNew("image2", {
+                      required: "This field is required",
+                    })}
                     className="form-control"
                     type="file"
                     name="image2"
                   />
                 </div>
+                <p className="text-danger">{errorsNew?.image2?.message}</p>
                 <button
                   className="btn btn-sm btn-heading btn-block hover-up"
                   type="submit"
@@ -447,6 +493,7 @@ function Products() {
                     type="text"
                   />
                 </div>
+                <p className="text-danger">{errorsEdit?.sku?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Name</label>
                   <input
@@ -456,6 +503,7 @@ function Products() {
                     type="text"
                   />
                 </div>
+                <p className="text-danger">{errorsEdit?.name?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Description</label>
                   <input
@@ -465,6 +513,9 @@ function Products() {
                     type="text"
                   />
                 </div>
+                <p className="text-danger">
+                  {errorsEdit?.description?.message}
+                </p>
                 <div className="form-group">
                   <label className="form-label">Category</label>
                   <select
@@ -473,6 +524,9 @@ function Products() {
                     name="category"
                     type="text"
                   >
+                    <option value="" placeholder="Select an option">
+                      Select an option
+                    </option>
                     {categories &&
                       categories.map((item, i) => (
                         <option key={i} value={item._id}>
@@ -481,6 +535,7 @@ function Products() {
                       ))}
                   </select>
                 </div>
+                <p className="text-danger">{errorsEdit?.category?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Quantity</label>
                   <input
@@ -490,6 +545,7 @@ function Products() {
                     type="text"
                   />
                 </div>
+                <p className="text-danger">{errorsEdit?.quantity?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Price</label>
                   <input
@@ -499,10 +555,21 @@ function Products() {
                     type="text"
                   />
                 </div>
+                <p className="text-danger">{errorsEdit?.price?.message}</p>
+                <div className="form-group">
+                  <label className="form-label">Cost</label>
+                  <input
+                    {...registerEdit("cost")}
+                    className="form-control"
+                    name="cost"
+                    type="text"
+                  />
+                </div>
+                <p className="text-danger">{errorsEdit?.cost?.message}</p>
                 {/* <div className="form-group">
                   <label className="form-label">Discount Applicable</label>
                   <input
-                    {...registerNew("applicable")}
+                    {...registerEdit("applicable")}
                     className="form-control"
                     name="applicable"
                     type="checkbox"
@@ -511,7 +578,7 @@ function Products() {
                 <div className="form-group">
                   <label className="form-label">Discount Type</label>
                   <select
-                    {...registerNew("discountType")}
+                    {...registerEdit("discountType")}
                     className="form-control"
                     name="discountType"
                     type="text"
@@ -528,6 +595,9 @@ function Products() {
                     type="text"
                   />
                 </div>
+                <p className="text-danger">
+                  {errorsEdit?.discountValue?.message}
+                </p>
                 <div className="form-group">
                   <label className="form-label">Image</label>
                   <input
@@ -537,6 +607,7 @@ function Products() {
                     name="image1"
                   />
                 </div>
+                <p className="text-danger">{errorsEdit?.image1?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Image</label>
                   <input
@@ -546,6 +617,7 @@ function Products() {
                     name="image2"
                   />
                 </div>
+                <p className="text-danger">{errorsEdit?.image2?.message}</p>
                 <button
                   className="btn btn-sm btn-heading btn-block hover-up"
                   type="submit"

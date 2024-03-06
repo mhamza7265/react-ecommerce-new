@@ -9,6 +9,7 @@ import sendRequest, {
 // import { useDispatch } from "react-redux";
 // import { updateOrder } from "../../redux/reducers/admin_reducers/orderReducerAdmin";
 import BASE_URL from "../../utility-functions/config";
+import { useForm } from "react-hook-form";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
@@ -22,6 +23,12 @@ function Orders() {
   const [allUsers, setAllUsers] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [paginateIsDisabled, setPaginateIsDisabled] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
     sendRequest("get", "orders/listing")
@@ -37,10 +44,10 @@ function Orders() {
       });
   }, []);
 
-  const handleSelectChange = () => {
+  const onSubmit = (data) => {
     sendRequest("put", "order/process", {
       orderId: orderId.id,
-      orderStatus: selectValue,
+      orderStatus: data.orderStatus,
     })
       .then((res) => {
         if (res.status) {
@@ -119,6 +126,7 @@ function Orders() {
         if (res.status) {
           setPaginateIsDisabled(false);
           setOrders(res.orders);
+          console.log("orders", res.orders);
           successToast("Orders list updated");
         } else {
           setPaginateIsDisabled(false);
@@ -324,24 +332,33 @@ function Orders() {
           }}
           style={{ zIndex: "9999", padding: 0 }}
         >
-          <Modal.Header style={{ border: "none" }} closeButton></Modal.Header>
-          <Modal.Body>
+          <Modal.Header style={{ border: "none" }} closeButton>
             <h5>Order ID: {orderId.id}</h5>
-            <select
-              className="status-select my-5"
-              onChange={(e) => setSelectValue(e.target.value)}
-              defaultValue={orderId.status}
-            >
-              <option value="Processing">Processing</option>
-              <option value="Canceled">Canceled</option>
-              <option value="Shipped">Shipped</option>
-            </select>
-            <button
-              className="btn btn-sm btn-heading btn-block hover-up"
-              onClick={handleSelectChange}
-            >
-              Update Status
-            </button>
+          </Modal.Header>
+          <Modal.Body>
+            <form onSubmit={handleSubmit(onSubmit)} className="mb-5 mt-3">
+              <label>Select an option</label>
+              <select
+                {...register("orderStatus", {
+                  required: "This field is required",
+                })}
+                className="status-select"
+                defaultValue=""
+                name="orderStatus"
+              >
+                <option value="">Select an option</option>
+                <option value="Processing">Processing</option>
+                <option value="Canceled">Canceled</option>
+                <option value="Shipped">Shipped</option>
+              </select>
+              <p className="text-danger mb-4">{errors?.orderStatus?.message}</p>
+              <button
+                className="btn btn-sm btn-heading btn-block hover-up"
+                type="submit"
+              >
+                Update Status
+              </button>
+            </form>
           </Modal.Body>
         </Modal>
       </>

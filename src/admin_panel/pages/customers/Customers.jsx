@@ -53,6 +53,7 @@ function Customers() {
             <th>Last Name</th>
             <th>Email</th>
             <th>Role</th>
+            <th>Account Status</th>
             <th>Action</th>
           </tr>
         </thead>
