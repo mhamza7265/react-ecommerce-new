@@ -8,7 +8,7 @@ function AdminAuth({ children }) {
   const storedToken = JSON.parse(storedData)?.token;
   if (storedToken) {
     const userRole = jwtDecode(storedToken);
-    if (userRole.role == "admin") {
+    if (userRole.role == "admin" || userRole.role == "superAdmin") {
       flag = true;
     } else {
       flag = false;

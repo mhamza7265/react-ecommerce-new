@@ -1,4 +1,5 @@
 function CustomerRow({
+  serial,
   id,
   firstName,
   lastName,
@@ -6,10 +7,12 @@ function CustomerRow({
   role,
   status,
   handleBlockUnblockClick,
+  handleDeleteClick,
 }) {
   // console.log("status", status);
   return (
     <tr className="customer-row" data={id}>
+      <td>{serial + 1}</td>
       <td>{firstName}</td>
       <td>{lastName}</td>
       <td>{email}</td>
@@ -38,6 +41,12 @@ function CustomerRow({
               <i className="fa fa-lock"></i> Deactivate
             </button>
           )}
+          <button
+            className="btn btn-sm btn-danger ms-2"
+            onClick={handleDeleteClick}
+          >
+            <i className="fa fa-trash"></i>
+          </button>
         </div>
       </td>
     </tr>

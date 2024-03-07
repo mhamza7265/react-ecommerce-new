@@ -126,8 +126,6 @@ function Orders() {
         if (res.status) {
           setPaginateIsDisabled(false);
           setOrders(res.orders);
-          console.log("orders", res.orders);
-          successToast("Orders list updated");
         } else {
           setPaginateIsDisabled(false);
           errorToast("Orders list could not be updated");
@@ -278,48 +276,54 @@ function Orders() {
             ))
           ) : (
             <tr>
-              <td>No order(s) found</td>
+              <td colSpan={8} className="text-center">
+                No order(s) found
+              </td>
             </tr>
           )}
+          <tr>
+            <td colSpan={8}>
+              <div
+                className={`pagination d-flex justify-content-end p-3 bg-white ${
+                  paginateIsDisabled && "disabled"
+                }`}
+              >
+                <p
+                  className={`me-1 paginate cursor-pointer paginate-arrow ${
+                    !orders?.hasPrevPage && "disable"
+                  }`}
+                  data={"decrease"}
+                  onClick={handlePaginateArrowsClick}
+                >
+                  <i className="fas fa-caret-left" data={"decrease"}></i>
+                </p>
+                {orders &&
+                  [...Array(orders?.totalPages)].map((item, i) => (
+                    <p
+                      className={`me-1 paginate cursor-pointer ${
+                        orders?.page == i + 1 && "active"
+                      } ${paginateIsDisabled && "disable"}`}
+                      onClick={handlePaginateClick}
+                      key={i}
+                      data={i + 1}
+                    >
+                      {i + 1}
+                    </p>
+                  ))}
+                <p
+                  className={`me-1 paginate cursor-pointer paginate-arrow ${
+                    !orders?.hasNextPage && "disable"
+                  }`}
+                  data={"increase"}
+                  onClick={handlePaginateArrowsClick}
+                >
+                  <i className="fas fa-caret-right" data={"increase"}></i>
+                </p>
+              </div>
+            </td>
+          </tr>
         </tbody>
       </table>
-      <div
-        className={`pagination d-flex justify-content-end p-3 bg-white ${
-          paginateIsDisabled && "disabled"
-        }`}
-      >
-        <p
-          className={`me-1 paginate cursor-pointer paginate-arrow ${
-            !orders?.hasPrevPage && "disable"
-          }`}
-          data={"decrease"}
-          onClick={handlePaginateArrowsClick}
-        >
-          <i className="fas fa-caret-left" data={"decrease"}></i>
-        </p>
-        {orders &&
-          [...Array(orders?.totalPages)].map((item, i) => (
-            <p
-              className={`me-1 paginate cursor-pointer ${
-                orders?.page == i + 1 && "active"
-              } ${paginateIsDisabled && "disable"}`}
-              onClick={handlePaginateClick}
-              key={i}
-              data={i + 1}
-            >
-              {i + 1}
-            </p>
-          ))}
-        <p
-          className={`me-1 paginate cursor-pointer paginate-arrow ${
-            !orders?.hasNextPage && "disable"
-          }`}
-          data={"increase"}
-          onClick={handlePaginateArrowsClick}
-        >
-          <i className="fas fa-caret-right" data={"increase"}></i>
-        </p>
-      </div>
 
       {/*Status Modal*/}
       <>

@@ -35,6 +35,12 @@ const sidebarNav = [
     icon: <i className="fa-solid fa-user-tie"></i>,
     text: "Admins",
   },
+  {
+    link: "profile",
+    section: "profile",
+    icon: <i className="fa-solid fa-user"></i>,
+    text: "Profile",
+  },
   // {
   //   link: "stats",
   //   section: "stats",

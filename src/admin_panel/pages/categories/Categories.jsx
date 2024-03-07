@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import CategoryRow from "./CategoryRow";
 import { Modal } from "react-bootstrap";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import sendRequest, {
   errorToast,
@@ -9,9 +9,10 @@ import sendRequest, {
 } from "../../../utility-functions/apiManager";
 import { useDispatch } from "react-redux";
 import { addCategory } from "../../../redux/reducers/categoryReducer";
+import Paginate from "../../components/paginate/Paginate";
 
 function Categories() {
-  const categories = useSelector((state) => state.categories.categories);
+  const [categoriesList, setCategoriesList] = useState(null);
   const [newCategoryModalIsOpen, setNewCategoryModalIsOpen] = useState(false);
   const [editCategoryModalIsOpen, setEditCategoryModalIsOpen] = useState(false);
   const [categoryId, setCategoryId] = useState(null);
@@ -27,6 +28,20 @@ function Categories() {
     handleSubmit: handleEditCatSubmit,
     // formState: { errors: errorsEdit },
   } = useForm();
+
+  useEffect(() => {
+    sendRequest("get", "categories/listing")
+      .then((res) => {
+        if (res.status) {
+          setCategoriesList(res.categories);
+        } else {
+          console.log(res.error);
+        }
+      })
+      .catch((err) => {
+        console.log(err.error);
+      });
+  }, []);
 
   const onSubmit = (data) => {
     const formData = new FormData();
@@ -80,6 +95,29 @@ function Categories() {
       .catch((err) => console.log(err));
   };
 
+  const handleDeleteClick = () => {
+    if (confirm("Do you want to remove this category?")) {
+      sendRequest("delete", `category/${categoryId.id}`).then((res) => {
+        if (res.status) {
+          successToast("Category removed");
+          sendRequest("get", `categories/listing?page=${categoriesList?.page}`)
+            .then((res) => {
+              if (res.status) {
+                setCategoriesList(res.categories);
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          errorToast("Category could not be removed");
+        }
+      });
+    } else {
+      return;
+    }
+  };
+
   return (
     <div className="container">
       <h3>Categories</h3>
@@ -103,19 +141,38 @@ function Categories() {
           </tr>
         </thead>
         <tbody>
-          {categories?.map((item, i) => (
-            <CategoryRow
-              key={i}
-              serial={i}
-              id={item._id}
-              name={item.name}
-              description={item.description}
-              image={item.image}
-              created={item.created}
-              setCategoryId={setCategoryId}
-              setEditCategoryModalIsOpen={setEditCategoryModalIsOpen}
-            />
-          ))}
+          {categoriesList?.docs?.length > 0 ? (
+            categoriesList?.docs?.map((item, i) => (
+              <CategoryRow
+                key={i}
+                serial={categoriesList?.pagingCounter - 1 + i}
+                id={item._id}
+                name={item.name}
+                description={item.description}
+                image={item.image}
+                created={item.created}
+                setCategoryId={setCategoryId}
+                setEditCategoryModalIsOpen={setEditCategoryModalIsOpen}
+                deleteCategory={handleDeleteClick}
+              />
+            ))
+          ) : (
+            <tr>
+              <td colSpan={6} className="text-center">
+                No categories found
+              </td>
+            </tr>
+          )}
+          <tr>
+            <td colSpan={6} className="p-0">
+              <Paginate
+                endPoint={"categories/listing"}
+                state={categoriesList}
+                setState={setCategoriesList}
+                formType={"res.categories"}
+              />
+            </td>
+          </tr>
         </tbody>
       </table>
 

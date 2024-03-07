@@ -55,6 +55,7 @@ import Products from "./admin_panel/pages/products/Products";
 import Customers from "./admin_panel/pages/customers/Customers";
 import Admins from "./admin_panel/pages/admins/Admins";
 import { addCurrentUser } from "./redux/reducers/currentUserReducer";
+import Profile from "./admin_panel/pages/profile/Profile";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -374,7 +375,7 @@ function App() {
             <Route path="products" element={<Products />} />
             <Route path="customers" element={<Customers />} />
             <Route path="admins" element={<Admins />} />
-            <Route path="settings" element={<Blank />} />
+            <Route path="profile" element={<Profile />} />
             <Route path="stats" element={<Blank />} />
           </Route>
         </Routes>

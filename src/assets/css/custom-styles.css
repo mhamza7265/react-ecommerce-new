@@ -282,6 +282,26 @@ span[aria-label="Loading Spinner"] > span {
   cursor: pointer;
 }
 
+.modal-backdrop {
+  z-index: 5300 !important;
+}
+
+.modal {
+  z-index: 5400 !important;
+}
+
+.action-buttons.disabled {
+  pointer-events: none;
+}
+
+.action-btns.disabled {
+  cursor: no-drop;
+}
+
+.chakra-portal > div {
+  /* z-index: 99999 !important; */
+}
+
 @media only screen and (max-width: 1366px) {
   .main {
     width: 100% !important;

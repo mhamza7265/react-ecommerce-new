@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import "./sidebar.scss";
-import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
 import { images } from "../../constants";
 import sidebarNav from "../../configs/sidebarNav";
 import { successToast } from "../../../utility-functions/apiManager";
 import { useDispatch } from "react-redux";
 import { addCurrentUser } from "../../../redux/reducers/currentUserReducer";
 
-const Sidebar = () => {
+const Sidebar = ({ setRegistrationModalIsOpen }) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const location = useLocation();
   const navigate = useNavigate();
@@ -40,6 +40,10 @@ const Sidebar = () => {
     }, 1000);
   };
 
+  const handleRegisterModalClick = () => {
+    setRegistrationModalIsOpen(true);
+  };
+
   return (
     <div className="sidebar">
       <div className="sidebar__logo">
@@ -60,6 +64,15 @@ const Sidebar = () => {
             <div className="sidebar__menu__item__txt">{nav.text}</div>
           </NavLink>
         ))}
+        <div
+          className="sidebar__menu__item cursor-pointer"
+          onClick={handleRegisterModalClick}
+        >
+          <div className="sidebar__menu__item__icon">
+            <i className="fa-solid fa-user-plus"></i>
+          </div>
+          <div className="sidebar__menu__item__txt">Register</div>
+        </div>
         <div className="sidebar__menu__item" onClick={handleLogoutClick}>
           <div className="sidebar__menu__item__icon">
             <i className="fa-solid fa-right-from-bracket"></i>

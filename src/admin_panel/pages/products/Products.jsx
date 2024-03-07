@@ -7,6 +7,7 @@ import sendRequest, {
 import { Modal } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
+import Paginate from "../../components/paginate/Paginate";
 
 function Products() {
   const categories = useSelector((state) => state.categories.categories);
@@ -41,61 +42,10 @@ function Products() {
       });
   }, []);
 
-  const handlePaginateClick = (e) => {
-    const pageNumber = e.target.getAttribute("data");
-    setPaginateIsDisabled(true);
-    sendRequest("get", `products/listing?page=${pageNumber}`)
-      .then((res) => {
-        if (res.status) {
-          setPaginateIsDisabled(false);
-          setProductsByPage(res.products);
-          successToast("Products list updated");
-        } else {
-          setPaginateIsDisabled(false);
-          errorToast("Products list could not be updated");
-        }
-      })
-      .catch((err) => {
-        setPaginateIsDisabled(false);
-        console.log(err);
-        errorToast("Internal server error");
-      });
-  };
-
-  const handlePaginateArrowsClick = (e) => {
-    const arrowType = e.target.getAttribute("data");
-    setPaginateIsDisabled(true);
-    sendRequest(
-      "get",
-      `${
-        arrowType == "decrease" && productsByPage?.hasPrevPage
-          ? `products/listing?page=${productsByPage?.page - 1}`
-          : arrowType == "increase" && productsByPage?.hasNextPage
-          ? `products/listing?page=${productsByPage?.page + 1}`
-          : null
-      }`
-    )
-      .then((res) => {
-        if (res.status) {
-          setPaginateIsDisabled(false);
-          setProductsByPage(res.products);
-          successToast("Products list updated");
-        } else {
-          setPaginateIsDisabled(false);
-          errorToast("Products list could not be updated");
-        }
-      })
-      .catch((err) => {
-        setPaginateIsDisabled(false);
-        console.log(err);
-        errorToast("Internal server error");
-      });
-  };
-
   const onNewProductSubmit = (data) => {
     const formData = new FormData();
     formData.append("file", data.image1[0]);
-    formData.append("file", data.image2[0]);
+    formData.append("file", data.image1[1]);
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("discount.applicable", true);
@@ -111,7 +61,7 @@ function Products() {
         console.log("prodAdd", res);
         if (res.status) {
           successToast("Product added successfully");
-          sendRequest("get", `products/listing?page=${productsByPage.page}`)
+          sendRequest("get", `products/listing?page=${productsByPage?.page}`)
             .then((res) => {
               if (res.status) {
                 setProductsByPage(res.products);
@@ -137,7 +87,7 @@ function Products() {
         .then((res) => {
           if (res.status) {
             successToast("Product removed successfully!");
-            sendRequest("get", `products/listing?page=${productsByPage.page}`)
+            sendRequest("get", `products/listing?page=${productsByPage?.page}`)
               .then((res) => {
                 if (res.status) {
                   setProductsByPage(res.products);
@@ -161,7 +111,7 @@ function Products() {
     console.log("formData", data);
     const formData = new FormData();
     formData.append("file", data.image1[0]);
-    formData.append("file", data.image2[0]);
+    formData.append("file", data.image1[1]);
     formData.append("name", data.name);
     formData.append("description", data.description);
     formData.append("discount.applicable", true);
@@ -225,7 +175,7 @@ function Products() {
           </tr>
         </thead>
         <tbody>
-          {productsByPage &&
+          {productsByPage?.docs?.length > 0 ? (
             productsByPage?.docs?.map((item, i) => (
               <ProductsRow
                 key={i}
@@ -243,46 +193,26 @@ function Products() {
                 setEditProductModalIsOpen={setEditProductModalIsOpen}
                 setProductId={setProductId}
               />
-            ))}
+            ))
+          ) : (
+            <tr>
+              <td colSpan={11} className="text-center">
+                No products(s) found
+              </td>
+            </tr>
+          )}
+          <tr>
+            <td colSpan={11} className="p-0">
+              <Paginate
+                endPoint={"products/listing"}
+                state={productsByPage}
+                setState={setProductsByPage}
+                formType={"res.products"}
+              />
+            </td>
+          </tr>
         </tbody>
       </table>
-      <div
-        className={`pagination d-flex justify-content-end p-3 bg-white ${
-          paginateIsDisabled && "disabled"
-        }`}
-      >
-        <p
-          className={`me-1 paginate cursor-pointer paginate-arrow ${
-            !productsByPage?.hasPrevPage && "disable"
-          }`}
-          data={"decrease"}
-          onClick={handlePaginateArrowsClick}
-        >
-          <i className="fas fa-caret-left" data={"decrease"}></i>
-        </p>
-        {productsByPage &&
-          [...Array(productsByPage?.totalPages)].map((item, i) => (
-            <p
-              className={`me-1 paginate cursor-pointer ${
-                productsByPage.page == i + 1 && "active"
-              } ${paginateIsDisabled && "disable"}`}
-              onClick={handlePaginateClick}
-              key={i}
-              data={i + 1}
-            >
-              {i + 1}
-            </p>
-          ))}
-        <p
-          className={`me-1 paginate cursor-pointer paginate-arrow ${
-            !productsByPage?.hasNextPage && "disable"
-          }`}
-          data={"increase"}
-          onClick={handlePaginateArrowsClick}
-        >
-          <i className="fas fa-caret-right" data={"increase"}></i>
-        </p>
-      </div>
 
       {/*new product modal*/}
       <>
@@ -439,21 +369,10 @@ function Products() {
                     className="form-control"
                     type="file"
                     name="image1"
+                    multiple
                   />
                 </div>
                 <p className="text-danger">{errorsNew?.image1?.message}</p>
-                <div className="form-group">
-                  <label className="form-label">Image</label>
-                  <input
-                    {...registerNew("image2", {
-                      required: "This field is required",
-                    })}
-                    className="form-control"
-                    type="file"
-                    name="image2"
-                  />
-                </div>
-                <p className="text-danger">{errorsNew?.image2?.message}</p>
                 <button
                   className="btn btn-sm btn-heading btn-block hover-up"
                   type="submit"
@@ -608,16 +527,6 @@ function Products() {
                   />
                 </div>
                 <p className="text-danger">{errorsEdit?.image1?.message}</p>
-                <div className="form-group">
-                  <label className="form-label">Image</label>
-                  <input
-                    {...registerEdit("image2")}
-                    className="form-control"
-                    type="file"
-                    name="image2"
-                  />
-                </div>
-                <p className="text-danger">{errorsEdit?.image2?.message}</p>
                 <button
                   className="btn btn-sm btn-heading btn-block hover-up"
                   type="submit"

@@ -15,30 +15,13 @@ function CategoryRow({
   created,
   setCategoryId,
   setEditCategoryModalIsOpen,
+  deleteCategory,
 }) {
   const dispatch = useDispatch();
 
   const handleDeleteClick = () => {
-    if (confirm("Do you want to remove this category?")) {
-      sendRequest("delete", `category/${id}`).then((res) => {
-        if (res.status) {
-          successToast("Category removed");
-          sendRequest("get", "category")
-            .then((res) => {
-              if (res.status) {
-                dispatch(addCategory(res.categories));
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        } else {
-          errorToast("Category could not be removed");
-        }
-      });
-    } else {
-      return;
-    }
+    setCategoryId({ id, name, description, image });
+    deleteCategory();
   };
 
   const handleEditClick = () => {

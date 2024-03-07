@@ -277,7 +277,9 @@ const RevenueByMonthsChart = () => {
     <>
       <div className="title mb">
         Revenue by months :{" "}
-        <span style={{ fontWeight: "bold" }}>{salesByMonth[0].year}</span>
+        <span style={{ fontWeight: "bold" }}>
+          {salesByMonth && salesByMonth[0]?.year}
+        </span>
       </div>
       <div>
         <Bar options={chartOptions} data={chartData} height={`300px`} />
