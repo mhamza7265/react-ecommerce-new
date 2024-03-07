@@ -70,12 +70,12 @@ function LoginPage() {
             navigate("/admin");
           }, 3000);
         } else {
-          errorToast(res.login);
+          errorToast(res.error);
         }
       })
       .catch((err) => {
         dispatch(stopSpinner());
-        errorToast(err.login);
+        errorToast(err);
       });
   };
   return (

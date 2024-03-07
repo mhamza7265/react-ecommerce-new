@@ -122,12 +122,12 @@ function Login() {
           }, 3000);
         } else {
           dispatch(stopSpinner());
-          errorToast(res.login);
+          errorToast(res.error);
         }
       })
       .catch((err) => {
         dispatch(stopSpinner());
-        errorToast(err.login);
+        errorToast(err);
       });
   };
   return (
