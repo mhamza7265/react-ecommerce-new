@@ -298,6 +298,11 @@ span[aria-label="Loading Spinner"] > span {
   cursor: no-drop;
 }
 
+.orders-search {
+  width: 30% !important;
+  height: 50px !important;
+}
+
 .chakra-portal > div {
   /* z-index: 99999 !important; */
 }

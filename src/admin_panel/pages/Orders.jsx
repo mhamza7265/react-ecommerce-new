@@ -6,23 +6,23 @@ import sendRequest, {
   errorToast,
   successToast,
 } from "../../utility-functions/apiManager";
-// import { useDispatch } from "react-redux";
-// import { updateOrder } from "../../redux/reducers/admin_reducers/orderReducerAdmin";
 import BASE_URL from "../../utility-functions/config";
 import { useForm } from "react-hook-form";
+import Select from "react-select";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
   const [statusModalIsOpen, setStatusModalIsOpen] = useState(false);
   const [cartModalIsOpen, setCartModalIsOpen] = useState(false);
   const [orderId, setOrderId] = useState("");
-  const [selectValue, setSelectValue] = useState("");
+  const [searchOrderError, setSearchOrderError] = useState(false);
   const [orderedCartItems, setOrderedCartItems] = useState(null);
   const [allDropdownsHidden, setAllDropdownsHidden] = useState(false);
   const [typeOfOrders, setTypeOfOrders] = useState("all");
   const [allUsers, setAllUsers] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null);
   const [paginateIsDisabled, setPaginateIsDisabled] = useState(false);
+  const [options, setOptions] = useState([]);
 
   const {
     register,
@@ -91,6 +91,21 @@ function Orders() {
       sendRequest("get", "users")
         .then((res) => {
           setAllUsers(res.users);
+          console.log("users", res.users);
+
+          let user = res.users.map((item) => {
+            const obj = {
+              value: item?._id,
+              label:
+                item?.firstName +
+                " " +
+                item?.lastName +
+                " " +
+                `(${item?.email})`,
+            };
+            return obj;
+          });
+          setOptions(user);
         })
         .catch((err) => {
           console.log(err);
@@ -99,7 +114,7 @@ function Orders() {
   };
 
   const handleUserSubmitClick = () => {
-    sendRequest("get", `customerorders/listing/${selectedUser}`)
+    sendRequest("get", `customerorders/listing/${selectedUser.value}`)
       .then((res) => {
         if (res.status) {
           successToast("List Updated");
@@ -119,7 +134,7 @@ function Orders() {
       `${
         typeOfOrders == "all"
           ? `orders/listing?page=${pageNumber}`
-          : `customerorders/listing/${selectedUser}?page=${pageNumber}`
+          : `customerorders/listing/${selectedUser.value}?page=${pageNumber}`
       }`
     )
       .then((res) => {
@@ -154,11 +169,11 @@ function Orders() {
             }`
           : `${
               arrowType == "decrease" && orders?.hasPrevPage
-                ? `customerorders/listing/${selectedUser}?page=${
+                ? `customerorders/listing/${selectedUser.value}?page=${
                     orders?.page - 1
                   }`
                 : arrowType == "increase" && orders?.hasNextPage
-                ? `customerorders/listing/${selectedUser}?page=${
+                ? `customerorders/listing/${selectedUser.value}?page=${
                     orders?.page + 1
                   }`
                 : null
@@ -179,6 +194,31 @@ function Orders() {
         setPaginateIsDisabled(false);
         console.log(err);
         errorToast("Internal server error");
+      });
+  };
+
+  const handleSearchValue = (e) => {
+    const value = e.target.value;
+    sendRequest(
+      "get",
+      value
+        ? `orders/listing?search=true&orderId=${value}`
+        : typeOfOrders == "all"
+        ? "orders/listing"
+        : `customerorders/listing/${selectedUser.value}`
+    )
+      .then((res) => {
+        if (res.status) {
+          setOrders(res.orders);
+          setSearchOrderError(false);
+        } else {
+          console.log("Orders could not be fetched");
+          setSearchOrderError(true);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        setSearchOrderError(true);
       });
   };
 
@@ -218,7 +258,20 @@ function Orders() {
         <div className="my-4">
           <div className="form-group col-4 ps-0">
             <label className="form-label">Customer</label>
-            <select
+            <Select
+              options={options}
+              onChange={(value) => setSelectedUser(value)}
+              value={selectedUser}
+              // styles={{
+              //   control: (baseStyles, state) => ({
+              //     ...baseStyles,
+              //     borderColor: state.isFocused ? "grey" : "red",
+              //     height: "30px",
+              //     padding: "30px 0",
+              //   }),
+              // }}
+            />
+            {/* <select
               className="form-control bg-white"
               onChange={(e) => setSelectedUser(e.target.value)}
             >
@@ -231,7 +284,7 @@ function Orders() {
                     `(${item.email})`}
                 </option>
               ))}
-            </select>
+            </select> */}
           </div>
           <button
             className="btn btn-sm btn-fill-out btn-block"
@@ -241,8 +294,21 @@ function Orders() {
           </button>
         </div>
       )}
+
       <table className="bg-white mb-0">
         <thead>
+          <tr>
+            <th colSpan={"100%"}>
+              <div className="form-group mb-0">
+                <input
+                  type="text"
+                  className="form-control orders-search me-auto"
+                  placeholder="Search order"
+                  onChange={handleSearchValue}
+                />
+              </div>
+            </th>
+          </tr>
           <tr>
             <th>Serial#</th>
             <th>Order ID</th>
@@ -255,7 +321,7 @@ function Orders() {
           </tr>
         </thead>
         <tbody>
-          {orders?.docs?.length > 0 ? (
+          {orders?.docs?.length > 0 && !searchOrderError ? (
             orders?.docs?.map((item, i) => (
               <OrderRow
                 key={i}
