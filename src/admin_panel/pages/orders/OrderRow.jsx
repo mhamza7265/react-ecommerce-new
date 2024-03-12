@@ -4,6 +4,7 @@ import { useState } from "react";
 function OrderRow({
   keyNum,
   id,
+  orderId,
   status,
   orderDate,
   userId,
@@ -34,7 +35,7 @@ function OrderRow({
   return (
     <tr className="order-row" key={keyNum} data={id}>
       <td>{keyNum + 1}</td>
-      <td>{id}</td>
+      <td>{orderId}</td>
       <td>{status}</td>
       <td>{orderDate}</td>
       <td>{userId}</td>

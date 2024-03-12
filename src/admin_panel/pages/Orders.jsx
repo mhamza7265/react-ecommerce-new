@@ -11,7 +11,7 @@ import { useForm } from "react-hook-form";
 import Select from "react-select";
 
 function Orders() {
-  const [orders, setOrders] = useState([]);
+  const [orders, setOrders] = useState(null);
   const [statusModalIsOpen, setStatusModalIsOpen] = useState(false);
   const [cartModalIsOpen, setCartModalIsOpen] = useState(false);
   const [orderId, setOrderId] = useState("");
@@ -31,7 +31,12 @@ function Orders() {
   } = useForm();
 
   useEffect(() => {
-    sendRequest("get", "orders/listing")
+    sendRequest(
+      "get",
+      typeOfOrders == "all"
+        ? `orders/listing?page=${orders?.page}`
+        : `customerorders/listing/${selectedUser.value}?page=${orders?.page}`
+    )
       .then((res) => {
         if (res.status) {
           setOrders(res.orders);
@@ -52,7 +57,12 @@ function Orders() {
       .then((res) => {
         if (res.status) {
           successToast("Status Updated!");
-          sendRequest("get", "orders/listing")
+          sendRequest(
+            "get",
+            typeOfOrders == "all"
+              ? `orders/listing?page=${orders?.page}`
+              : `customerorders/listing/${selectedUser.value}?page=${orders?.page}`
+          )
             .then((res) => {
               if (res.status) {
                 setOrders(res.orders);
@@ -327,6 +337,7 @@ function Orders() {
                 key={i}
                 keyNum={orders?.pagingCounter - 1 + i}
                 id={item._id}
+                orderId={item.orderId}
                 status={item.status}
                 orderDate={item.orderDate}
                 userId={item.userId}
