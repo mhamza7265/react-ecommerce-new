@@ -19,12 +19,14 @@ function Products() {
   const {
     register: registerNew,
     handleSubmit: handleNewProSubmit,
+    reset: resetNew,
     formState: { errors: errorsNew },
   } = useForm();
 
   const {
     register: registerEdit,
     handleSubmit: handleEditProSubmit,
+    reset: resetEdit,
     formState: { errors: errorsEdit },
   } = useForm();
 
@@ -222,6 +224,7 @@ function Products() {
           centered
           show={newProductModalIsOpen}
           onHide={() => {
+            resetNew();
             setNewProductModalIsOpen(false);
           }}
           style={{ zIndex: "9999", padding: 0 }}
@@ -393,6 +396,7 @@ function Products() {
           centered
           show={editProductModalIsOpen}
           onHide={() => {
+            resetEdit();
             setEditProductModalIsOpen(false);
           }}
           style={{ zIndex: "9999", padding: 0 }}

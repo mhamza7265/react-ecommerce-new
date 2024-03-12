@@ -21,6 +21,7 @@ const MainLayout = () => {
     register,
     handleSubmit,
     watch,
+    reset,
     formState: { errors },
   } = useForm();
 
@@ -87,6 +88,7 @@ const MainLayout = () => {
           centered
           show={registrationModalIsOpen}
           onHide={() => {
+            reset();
             setRegistrationModalIsOpen(false);
           }}
           style={{ zIndex: "9999", padding: 0 }}

@@ -7,7 +7,7 @@ import sendRequest, {
   successToast,
 } from "../../utility-functions/apiManager";
 import BASE_URL from "../../utility-functions/config";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import Select from "react-select";
 
 function Orders() {
@@ -23,9 +23,12 @@ function Orders() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [paginateIsDisabled, setPaginateIsDisabled] = useState(false);
   const [options, setOptions] = useState([]);
+  const [status, setStatus] = useState("");
 
   const {
     register,
+    control,
+    reset,
     handleSubmit,
     formState: { errors },
   } = useForm();
@@ -409,6 +412,7 @@ function Orders() {
           centered
           show={statusModalIsOpen}
           onHide={() => {
+            reset();
             setStatusModalIsOpen(false);
           }}
           style={{ zIndex: "9999", padding: 0 }}
@@ -419,12 +423,27 @@ function Orders() {
           <Modal.Body>
             <form onSubmit={handleSubmit(onSubmit)} className="mb-5 mt-3">
               <label>Select an option</label>
+              {/* <Controller
+                name="orderStatus"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Please select an option" }}
+                render={({ field }) => (
+                  <>
+                    <select className="status-select" {...field}>
+                      <option value="">Select an option</option>
+                      <option value="Processing">Processing</option>
+                      <option value="Canceled">Canceled</option>
+                      <option value="Shipped">Shipped</option>
+                    </select>
+                  </>
+                )}
+              /> */}
               <select
                 {...register("orderStatus", {
                   required: "This field is required",
                 })}
                 className="status-select"
-                defaultValue=""
                 name="orderStatus"
               >
                 <option value="">Select an option</option>

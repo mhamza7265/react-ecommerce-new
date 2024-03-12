@@ -20,12 +20,14 @@ function Categories() {
   const {
     register: registerNew,
     handleSubmit: handleNewCatSubmit,
+    reset: resetNew,
     formState: { errors: errorsNew },
   } = useForm();
 
   const {
     register: registerEdit,
     handleSubmit: handleEditCatSubmit,
+    reset: resetEdit,
     // formState: { errors: errorsEdit },
   } = useForm();
 
@@ -184,6 +186,7 @@ function Categories() {
           centered
           show={newCategoryModalIsOpen}
           onHide={() => {
+            resetNew();
             setNewCategoryModalIsOpen(false);
           }}
           style={{ zIndex: "9999", padding: 0 }}
@@ -249,6 +252,7 @@ function Categories() {
           centered
           show={editCategoryModalIsOpen}
           onHide={() => {
+            resetEdit();
             setEditCategoryModalIsOpen(false);
           }}
           style={{ zIndex: "9999", padding: 0 }}
