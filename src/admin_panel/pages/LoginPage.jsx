@@ -49,14 +49,15 @@ function LoginPage() {
           const userObj = {
             token: res.token,
           };
-          localStorage.setItem("current_user", JSON.stringify(userObj));
-          localStorage.setItem("admin", true);
+          localStorage.setItem("admin_user", JSON.stringify(userObj));
 
-          sendRequest("get", "orders").then((res) => {
-            dispatch(updateOrder(res.orders));
-          });
+          sendRequest("get", "orders", undefined, undefined, "admin").then(
+            (res) => {
+              dispatch(updateOrder(res.orders));
+            }
+          );
 
-          sendRequest("get", "user")
+          sendRequest("get", "user", undefined, undefined, "admin")
             .then((res) => {
               if (res.status) {
                 dispatch(addCurrentUser(res.user));
@@ -79,68 +80,71 @@ function LoginPage() {
       });
   };
   return (
-    <div className="admin-login">
-      <div className="page-content pt-150 pb-150">
-        <div className="container">
-          <div className="d-flex justify-content-center">
-            <div className="login col-lg-6 col-md-4 px-4 py-3">
-              <div className="login_wrap widget-taber-content background-white">
-                <div className="padding_eight_all position-relative">
-                  <div className="heading_s1">
-                    <h1 className="text-white mb-5">Login</h1>
-                  </div>
-                  <form onSubmit={handleSubmit(onSubmit)}>
-                    <div className="form-group">
-                      <input
-                        {...register("email", {
-                          required: "This field is required",
-                        })}
-                        type="text"
-                        name="email"
-                        placeholder="Username or Email *"
-                        className="admin-login-input"
-                      />
+    <div className="admin-login h-100">
+      <div className="page-content pt-5 pb-5 h-100">
+        <div className="container h-100">
+          <div className="row h-100">
+            <div className="col-lg-6 bg-img-login h-100"></div>
+            <div className="col-lg-6 h-100 position-relative">
+              <div className="login px-4 py-3 mx-4">
+                <div className="login_wrap widget-taber-content background-white">
+                  <div className="padding_eight_all position-relative">
+                    <div className="heading_s1">
+                      <h1 className="text-white mb-5">Login</h1>
                     </div>
-                    <p className="text-danger">{errors.email?.message}</p>
-                    <div className="form-group position-relative">
-                      <a
-                        href={void 0}
-                        id="pw-toggle"
-                        className="pw-toggle-eye"
-                        onClick={handleEyeClick}
-                      >
-                        <i
-                          className={`fa-solid ${
-                            pwVisible ? "fa-eye" : "fa-eye-slash"
-                          }`}
-                        ></i>
-                      </a>
-                      <input
-                        {...register("password", {
-                          required: "This field is required",
-                        })}
-                        type={`${pwVisible ? "text" : "password"}`}
-                        name="password"
-                        placeholder="Your password *"
-                        className="admin-login-input"
-                      />
-                    </div>
-                    <p className="text-danger">{errors.password?.message}</p>
+                    <form onSubmit={handleSubmit(onSubmit)}>
+                      <div className="form-group">
+                        <input
+                          {...register("email", {
+                            required: "This field is required",
+                          })}
+                          type="text"
+                          name="email"
+                          placeholder="Username or Email *"
+                          className="admin-login-input"
+                        />
+                      </div>
+                      <p className="text-danger">{errors.email?.message}</p>
+                      <div className="form-group position-relative">
+                        <a
+                          href={void 0}
+                          id="pw-toggle"
+                          className="pw-toggle-eye"
+                          onClick={handleEyeClick}
+                        >
+                          <i
+                            className={`fa-solid ${
+                              pwVisible ? "fa-eye" : "fa-eye-slash"
+                            }`}
+                          ></i>
+                        </a>
+                        <input
+                          {...register("password", {
+                            required: "This field is required",
+                          })}
+                          type={`${pwVisible ? "text" : "password"}`}
+                          name="password"
+                          placeholder="Your password *"
+                          className="admin-login-input"
+                        />
+                      </div>
+                      <p className="text-danger">{errors.password?.message}</p>
 
-                    <div className="form-group position-relative">
-                      <button className="btn btn-heading btn-block hover-up">
-                        Log in
-                      </button>
-                      <BounceLoader
-                        color={"#3bb77e"}
-                        loading={loading}
-                        cssOverride={override}
-                        size={150}
-                        aria-label="Loading Spinner"
-                        data-testid="loader"
-                      />
-                    </div>
-                  </form>
+                      <div className="form-group position-relative">
+                        <button className="btn btn-heading btn-block hover-up">
+                          Log in
+                        </button>
+                        <BounceLoader
+                          color={"#3bb77e"}
+                          loading={loading}
+                          cssOverride={override}
+                          size={150}
+                          aria-label="Loading Spinner"
+                          data-testid="loader"
+                        />
+                      </div>
+                    </form>
+                  </div>
                 </div>
               </div>
             </div>

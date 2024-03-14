@@ -200,7 +200,7 @@ function App() {
   };
 
   return (
-    <div className="app" onClick={handleClick}>
+    <div className="app h-100" onClick={handleClick}>
       <BrowserRouter>
         <Routes>
           <Route

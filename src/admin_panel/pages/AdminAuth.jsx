@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 
 function AdminAuth({ children }) {
   var flag = false;
-  const storedData = localStorage.getItem("current_user");
+  const storedData = localStorage.getItem("admin_user");
   const storedToken = JSON.parse(storedData)?.token;
   if (storedToken) {
     const userRole = jwtDecode(storedToken);

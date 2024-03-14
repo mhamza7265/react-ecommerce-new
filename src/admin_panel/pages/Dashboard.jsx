@@ -36,7 +36,7 @@ ChartJS.register(
 const Dashboard = () => {
   const [dashboardData, setDashboardData] = useState(null);
   useEffect(() => {
-    sendRequest("post", "dashboard")
+    sendRequest("post", "dashboard", undefined, undefined, "admin")
       .then((res) => {
         if (res.status) {
           setDashboardData(res.data);
@@ -168,7 +168,7 @@ export default Dashboard;
 const RevenueByMonthsChart = () => {
   const [salesByMonth, setSalesByMonth] = useState(null);
   useEffect(() => {
-    sendRequest("post", "dashboard")
+    sendRequest("post", "dashboard", undefined, undefined, "admin")
       .then((res) => {
         if (res.status) {
           setSalesByMonth(res.data.salesByMonths);

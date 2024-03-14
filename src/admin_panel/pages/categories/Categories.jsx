@@ -32,7 +32,7 @@ function Categories() {
   } = useForm();
 
   useEffect(() => {
-    sendRequest("get", "categories/listing")
+    sendRequest("get", "categories/listing", undefined, undefined, "admin")
       .then((res) => {
         if (res.status) {
           setCategoriesList(res.categories);
@@ -50,11 +50,11 @@ function Categories() {
     formData.append("file", data.image[0]);
     formData.append("name", data.name);
     formData.append("description", data.desc);
-    sendRequest("post", "category/add", formData, "formData")
+    sendRequest("post", "category/add", formData, "formData", "admin")
       .then((res) => {
         if (res.status) {
           successToast("Category added");
-          sendRequest("get", "category")
+          sendRequest("get", "category", undefined, undefined, "admin")
             .then((res) => {
               if (res.status) {
                 dispatch(addCategory(res.categories));
@@ -76,11 +76,17 @@ function Categories() {
     formData.append("file", data.image[0]);
     formData.append("name", data.name);
     formData.append("description", data.desc);
-    sendRequest("put", `category/${categoryId.id}`, formData, "formData")
+    sendRequest(
+      "put",
+      `category/${categoryId.id}`,
+      formData,
+      "formData",
+      "admin"
+    )
       .then((res) => {
         if (res.status) {
           successToast("Category updated");
-          sendRequest("get", "category")
+          sendRequest("get", "category", undefined, undefined, "admin")
             .then((res) => {
               if (res.status) {
                 dispatch(addCategory(res.categories));
@@ -99,10 +105,22 @@ function Categories() {
 
   const handleDeleteClick = () => {
     if (confirm("Do you want to remove this category?")) {
-      sendRequest("delete", `category/${categoryId.id}`).then((res) => {
+      sendRequest(
+        "delete",
+        `category/${categoryId.id}`,
+        undefined,
+        undefined,
+        "admin"
+      ).then((res) => {
         if (res.status) {
           successToast("Category removed");
-          sendRequest("get", `categories/listing?page=${categoriesList?.page}`)
+          sendRequest(
+            "get",
+            `categories/listing?page=${categoriesList?.page}`,
+            undefined,
+            undefined,
+            "admin"
+          )
             .then((res) => {
               if (res.status) {
                 setCategoriesList(res.categories);

@@ -31,7 +31,7 @@ function Products() {
   } = useForm();
 
   useEffect(() => {
-    sendRequest("get", "products/listing")
+    sendRequest("get", "products/listing", undefined, undefined, "admin")
       .then((res) => {
         if (res.status) {
           setProductsByPage(res.products);
@@ -58,12 +58,18 @@ function Products() {
     formData.append("quantity", data.quantity);
     formData.append("sku", data.sku);
     formData.append("category", data.category);
-    sendRequest("post", "product/add", formData, "formData")
+    sendRequest("post", "product/add", formData, "formData", "admin")
       .then((res) => {
         console.log("prodAdd", res);
         if (res.status) {
           successToast("Product added successfully");
-          sendRequest("get", `products/listing?page=${productsByPage?.page}`)
+          sendRequest(
+            "get",
+            `products/listing?page=${productsByPage?.page}`,
+            undefined,
+            undefined,
+            "admin"
+          )
             .then((res) => {
               if (res.status) {
                 setProductsByPage(res.products);
@@ -85,11 +91,17 @@ function Products() {
 
   const deleteProduct = (prodId) => {
     if (confirm("Do you want to remove this product?")) {
-      sendRequest("delete", `product/${prodId}`)
+      sendRequest("delete", `product/${prodId}`, undefined, undefined, "admin")
         .then((res) => {
           if (res.status) {
             successToast("Product removed successfully!");
-            sendRequest("get", `products/listing?page=${productsByPage?.page}`)
+            sendRequest(
+              "get",
+              `products/listing?page=${productsByPage?.page}`,
+              undefined,
+              undefined,
+              "admin"
+            )
               .then((res) => {
                 if (res.status) {
                   setProductsByPage(res.products);
@@ -124,12 +136,18 @@ function Products() {
     formData.append("quantity", data.quantity);
     formData.append("sku", data.sku);
     formData.append("category", data.category);
-    sendRequest("put", `product/${productId}`, formData, "formData")
+    sendRequest("put", `product/${productId}`, formData, "formData", "admin")
       .then((res) => {
         console.log("updateProd", res);
         if (res.status) {
           successToast("Product updated successfully");
-          sendRequest("get", `products/listing?page=${productsByPage.page}`)
+          sendRequest(
+            "get",
+            `products/listing?page=${productsByPage.page}`,
+            undefined,
+            undefined,
+            "admin"
+          )
             .then((res) => {
               if (res.status) {
                 setProductsByPage(res.products);
@@ -169,6 +187,7 @@ function Products() {
             <th>Description</th>
             <th>Category</th>
             <th>Available Quantity</th>
+            <th>Cost</th>
             <th>Price</th>
             <th>Discount</th>
             <th>Image</th>
@@ -190,6 +209,7 @@ function Products() {
                 quantity={item.quantity}
                 price={item.price}
                 discount={item.discount.discountValue}
+                cost={item.cost}
                 images={item.images}
                 deleteProduct={deleteProduct}
                 setEditProductModalIsOpen={setEditProductModalIsOpen}

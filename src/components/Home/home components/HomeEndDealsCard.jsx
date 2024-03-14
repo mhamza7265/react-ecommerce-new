@@ -71,7 +71,7 @@ function HomeEndDealsCard({
             </div>
             <div className="product-card-bottom">
               <div className="product-price">
-                <span>${(price / 100) * discount}</span>
+                <span>${(price / 100) * 100 - discount}</span>
                 <span className="old-price">${price}</span>
               </div>
               <div className="add-cart">

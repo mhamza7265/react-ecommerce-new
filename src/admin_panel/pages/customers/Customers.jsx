@@ -10,7 +10,13 @@ function Customers() {
   const [users, setUsers] = useState(null);
 
   useEffect(() => {
-    sendRequest("get", "users/listing?type=basic")
+    sendRequest(
+      "get",
+      "users/listing?type=basic",
+      undefined,
+      undefined,
+      "admin"
+    )
       .then((res) => {
         if (res.status) {
           setUsers(res.users);
@@ -27,14 +33,26 @@ function Customers() {
     const btnType = e.currentTarget.getAttribute("data");
     const userId = e.target.closest(".customer-row").getAttribute("data");
     if (confirm(`Do you want to ${btnType} this user?`)) {
-      sendRequest("put", "user/lock", {
-        userId,
-        blocked: btnType == "block" ? true : false,
-        type: "basic",
-      })
+      sendRequest(
+        "put",
+        "user/lock",
+        {
+          userId,
+          blocked: btnType == "block" ? true : false,
+          type: "basic",
+        },
+        undefined,
+        "admin"
+      )
         .then((res) => {
           if (res.status) {
-            sendRequest("get", `users/listing?type=basic&page=${users?.page}`)
+            sendRequest(
+              "get",
+              `users/listing?type=basic&page=${users?.page}`,
+              undefined,
+              undefined,
+              "admin"
+            )
               .then((res) => {
                 if (res.status) {
                   setUsers(res.users);
@@ -62,11 +80,17 @@ function Customers() {
       .closest(".customer-row")
       .getAttribute("data");
     if (confirm("Do you want to remove this user?")) {
-      sendRequest("delete", "user", { userId })
+      sendRequest("delete", "user", { userId }, undefined, "admin")
         .then((res) => {
           if (res.status) {
             successToast(res.message);
-            sendRequest("get", `users/listing?page=${users?.page}&type=basic`)
+            sendRequest(
+              "get",
+              `users/listing?page=${users?.page}&type=basic`,
+              undefined,
+              undefined,
+              "admin"
+            )
               .then((res) => {
                 if (res.status) {
                   setUsers(res.users);

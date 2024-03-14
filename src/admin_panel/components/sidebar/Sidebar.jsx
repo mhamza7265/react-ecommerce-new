@@ -6,6 +6,7 @@ import sidebarNav from "../../configs/sidebarNav";
 import { successToast } from "../../../utility-functions/apiManager";
 import { useDispatch } from "react-redux";
 import { addCurrentUser } from "../../../redux/reducers/currentUserReducer";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const Sidebar = ({ setRegistrationModalIsOpen }) => {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -47,7 +48,7 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
   return (
     <div className="sidebar">
       <div className="sidebar__logo">
-        <img src={images.logo} alt="" />
+        <LazyLoadImage src={images.logo} alt="" />
         <div className="sidebar-close" onClick={closeSidebar}>
           <i className="bx bx-x"></i>
         </div>

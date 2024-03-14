@@ -46,7 +46,7 @@ function HomeEndSection({ image, name, price, discount }) {
           <Skeleton style={{ width: "40%" }} />
         ) : (
           <div className="product-price">
-            <span>${(price / 100) * discount}</span>
+            <span>${(price / 100) * 100 - discount}</span>
             <span className="old-price">${price}</span>
           </div>
         )}

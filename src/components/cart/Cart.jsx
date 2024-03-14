@@ -227,7 +227,7 @@ function Cart() {
                             total={item.calculations.subTotal}
                             subTotal={item.calculations.total}
                             quantity={item.quantity}
-                            discount={50}
+                            discount={item.calculations.discount}
                             setCartItems={setCartItems}
                             refresh={setRefresh}
                             setTotal={setTotal}

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "./topnav.scss";
 import UserInfo from "../user-info/UserInfo";
-import { data } from "../../constants";
 import sendRequest from "../../../utility-functions/apiManager";
 import userImage from "../../assets/images/user.svg";
 
@@ -12,7 +11,7 @@ const TopNav = () => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    sendRequest("get", "user")
+    sendRequest("get", "user", undefined, undefined, "admin")
       .then((res) => {
         if (res.status) {
           setUser(res.user);

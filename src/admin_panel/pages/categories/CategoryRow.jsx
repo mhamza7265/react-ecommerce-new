@@ -1,10 +1,5 @@
-import { addCategory } from "../../../redux/reducers/categoryReducer";
-import sendRequest, {
-  errorToast,
-  successToast,
-} from "../../../utility-functions/apiManager";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 import BASE_URL from "../../../utility-functions/config";
-import { useDispatch } from "react-redux";
 
 function CategoryRow({
   serial,
@@ -17,8 +12,6 @@ function CategoryRow({
   setEditCategoryModalIsOpen,
   deleteCategory,
 }) {
-  const dispatch = useDispatch();
-
   const handleDeleteClick = () => {
     setCategoryId({ id, name, description, image });
     deleteCategory();
@@ -35,7 +28,7 @@ function CategoryRow({
       <td>{name}</td>
       <td>{description}</td>
       <td>
-        <img className="category-img" src={BASE_URL + "/" + image} />
+        <LazyLoadImage className="category-img" src={BASE_URL + "/" + image} />
       </td>
       <td>{created}</td>
       <td className="position-relative">

@@ -13,7 +13,13 @@ function Admins() {
   const currentUser = useSelector((state) => state?.currentUser?.user);
 
   useEffect(() => {
-    sendRequest("get", "users/listing?type=admin")
+    sendRequest(
+      "get",
+      "users/listing?type=admin",
+      undefined,
+      undefined,
+      "admin"
+    )
       .then((res) => {
         if (res.status) {
           setUsers(res.users);
@@ -30,14 +36,26 @@ function Admins() {
     const btnType = e.currentTarget.getAttribute("data");
     const userId = e.target.closest(".admin-row").getAttribute("data");
     if (confirm(`Do you want to ${btnType} this user?`)) {
-      sendRequest("put", "user/lock", {
-        userId,
-        blocked: btnType == "block" ? true : false,
-        type: "admin",
-      })
+      sendRequest(
+        "put",
+        "user/lock",
+        {
+          userId,
+          blocked: btnType == "block" ? true : false,
+          type: "admin",
+        },
+        undefined,
+        "admin"
+      )
         .then((res) => {
           if (res.status) {
-            sendRequest("get", `users/listing?type=admin&page=${users?.page}`)
+            sendRequest(
+              "get",
+              `users/listing?type=admin&page=${users?.page}`,
+              undefined,
+              undefined,
+              "admin"
+            )
               .then((res) => {
                 if (res.status) {
                   setUsers(res.users);
@@ -64,11 +82,17 @@ function Admins() {
   const handleDeleteClick = (e) => {
     const userId = e.currentTarget.closest(".admin-row").getAttribute("data");
     if (confirm("Do you want to remove this user?")) {
-      sendRequest("delete", "user", { userId })
+      sendRequest("delete", "user", { userId }, undefined, "admin")
         .then((res) => {
           if (res.status) {
             successToast(res.message);
-            sendRequest("get", `users/listing?page=${users?.page}&type=admin`)
+            sendRequest(
+              "get",
+              `users/listing?page=${users?.page}&type=admin`,
+              undefined,
+              undefined,
+              "admin"
+            )
               .then((res) => {
                 if (res.status) {
                   setUsers(res.users);

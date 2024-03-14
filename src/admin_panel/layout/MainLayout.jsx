@@ -46,7 +46,7 @@ const MainLayout = () => {
       role: data.role,
     };
     setLoading(true);
-    sendRequest("post", "register", reqData)
+    sendRequest("post", "register", reqData, undefined, "admin")
       .then((res) => {
         setLoading(false);
         console.log(res);

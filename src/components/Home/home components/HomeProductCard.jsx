@@ -250,7 +250,7 @@ function HomeProductCard({
             </div>
             <div className="product-card-bottom">
               <div className="product-price">
-                <span>${(price / 100) * discountVal}</span>
+                <span>${(price / 100) * 100 - discountVal}</span>
                 <span className="old-price">${price}</span>
               </div>
 

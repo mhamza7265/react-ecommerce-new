@@ -1,6 +1,5 @@
 import { useState } from "react";
 import sendRequest, { errorToast } from "../../../utility-functions/apiManager";
-import { BounceLoader } from "react-spinners";
 import { BarLoader } from "react-spinners";
 
 function Paginate({ endPoint, state, setState, formType, query }) {
@@ -30,7 +29,10 @@ function Paginate({ endPoint, state, setState, formType, query }) {
           : arrowType == "increase" && state?.hasNextPage
           ? `${endPoint}?page=${state?.page + 1}&type=${query}`
           : null
-      }`
+      }`,
+      undefined,
+      undefined,
+      "admin"
     )
       .then((res) => {
         setLoading(false);
@@ -54,7 +56,13 @@ function Paginate({ endPoint, state, setState, formType, query }) {
     const pageNumber = e.target.getAttribute("data");
     setPaginateIsDisabled(true);
     setLoading(true);
-    sendRequest("get", `${endPoint}?page=${pageNumber}&type=${query}`)
+    sendRequest(
+      "get",
+      `${endPoint}?page=${pageNumber}&type=${query}`,
+      undefined,
+      undefined,
+      "admin"
+    )
       .then((res) => {
         setLoading(false);
         if (res.status) {

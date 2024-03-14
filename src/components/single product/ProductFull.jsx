@@ -314,7 +314,7 @@ function ProductFull() {
                       <div className="product-price primary-color float-left">
                         <span className="current-price text-brand">
                           $
-                          {(singleProduct?.price / 100) *
+                          {(singleProduct?.price / 100) * 100 -
                             singleProduct?.discount.discountValue}
                         </span>
                         <span>

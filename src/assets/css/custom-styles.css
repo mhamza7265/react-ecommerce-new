@@ -54,7 +54,7 @@ span[aria-label="Loading Spinner"] > span {
 
 .countdown {
   background-color: white;
-  width: 65px;
+  width: 65px !important;
   padding: 10px 0 !important;
   border-radius: 4px;
 }
@@ -169,7 +169,7 @@ span[aria-label="Loading Spinner"] > span {
   color: #000;
 }
 
-.admin-login {
+.bg-img-login {
   background-image: url("../../admin_panel/assets/images/login_vector_art.svg");
   background-position: center center;
   background-repeat: no-repeat;
@@ -179,6 +179,11 @@ span[aria-label="Loading Spinner"] > span {
 .admin-login .login {
   background-color: #5c5a5a;
   border-radius: 15px;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
 }
 
 .form-group .admin-login-input:focus {

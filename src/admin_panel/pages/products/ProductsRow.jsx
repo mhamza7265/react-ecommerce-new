@@ -1,4 +1,5 @@
 import BASE_URL from "../../../utility-functions/config";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 
 function ProductsRow({
   id,
@@ -10,6 +11,7 @@ function ProductsRow({
   quantity,
   price,
   discount,
+  cost,
   images,
   deleteProduct,
   setEditProductModalIsOpen,
@@ -32,13 +34,20 @@ function ProductsRow({
       <td>{description}</td>
       <td>{category}</td>
       <td>{quantity}</td>
+      <td>{cost}</td>
       <td>{price}</td>
       <td>{discount}%</td>
       <td>
-        <img className="category-img" src={BASE_URL + "/" + images[0]} />
+        <LazyLoadImage
+          className="category-img"
+          src={BASE_URL + "/" + images[0]}
+        />
       </td>
       <td>
-        <img className="category-img" src={BASE_URL + "/" + images[1]} />
+        <LazyLoadImage
+          className="category-img"
+          src={BASE_URL + "/" + images[1]}
+        />
       </td>
       <td>
         <div className="d-flex justify-content-between">
