@@ -27,7 +27,7 @@ import Preloader from "./common/preloader/Preloader";
 import ScrollToTop from "./common/ScrollToTop";
 import HaveAuth from "./components/Auth/check-auth/HaveAuth";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import sendRequest from "./utility-functions/apiManager";
 import { addProduct } from "./redux/reducers/productReducer";
 import { addCategory } from "./redux/reducers/categoryReducer";
@@ -63,11 +63,10 @@ const stripePromise = loadStripe(
 
 function App() {
   const dispatch = useDispatch();
-  const [userRole, setUserRole] = useState(null);
   const updateWishlist = useSelector(
     (state) => state.updateWishlistNavbar.number
   );
-  const currentUser = useSelector((state) => state.currentUser.user);
+  // const currentUser = useSelector((state) => state.currentUser.user);
 
   const options = {
     mode: "payment",
@@ -80,7 +79,7 @@ function App() {
     },
   };
 
-  const user = localStorage.getItem("current_user");
+  // const user = localStorage.getItem("current_user");
   // const currentUser = JSON.parse(user);
 
   useEffect(() => {
@@ -177,7 +176,6 @@ function App() {
         if (res.user) {
           dispatch(addCurrentUser(res.user));
         } else {
-          setUserRole(null);
           console.log("userRoleError", res.error);
         }
       })
@@ -362,6 +360,7 @@ function App() {
 
           <Route
             path="/admin"
+            exact
             element={
               <AdminAuth>
                 <MainLayout />

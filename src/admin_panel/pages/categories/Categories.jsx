@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import CategoryRow from "./CategoryRow";
 import { Modal } from "react-bootstrap";
 import { useEffect, useState } from "react";
@@ -146,7 +145,7 @@ function Categories() {
           className="btn btn-sm btn-fill-out btn-block"
           onClick={() => setNewCategoryModalIsOpen(true)}
         >
-          Add New Category
+          <i className="fa fa-plus"></i> Add New Category
         </button>
       </div>
       <table className="bg-white">
@@ -183,16 +182,12 @@ function Categories() {
               </td>
             </tr>
           )}
-          <tr>
-            <td colSpan={6} className="p-0">
-              <Paginate
-                endPoint={"categories/listing"}
-                state={categoriesList}
-                setState={setCategoriesList}
-                formType={"res.categories"}
-              />
-            </td>
-          </tr>
+          <Paginate
+            endPoint={"categories/listing"}
+            state={categoriesList}
+            setState={setCategoriesList}
+            formType={"res.categories"}
+          />
         </tbody>
       </table>
 
@@ -240,12 +235,12 @@ function Categories() {
                 </div>
                 <p className="text-danger">{errorsNew?.desc?.message}</p>
                 <div className="form-group">
-                  <label className="form-label">Image</label>
+                  <label className="form-label w-100">Image</label>
                   <input
                     {...registerNew("image", {
                       required: "This field is required",
                     })}
-                    className="form-control"
+                    className="form-control image-input"
                     type="file"
                     name="image"
                   />
@@ -303,7 +298,7 @@ function Categories() {
                   <label className="form-label">Image</label>
                   <input
                     {...registerEdit("image")}
-                    className="form-control"
+                    className="form-control image-input"
                     type="file"
                     name="image"
                   />

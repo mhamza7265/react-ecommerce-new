@@ -1,5 +1,4 @@
 import "./overall-list.scss";
-import { data } from "../../constants";
 import { useState, useEffect } from "react";
 import sendRequest from "../../../utility-functions/apiManager";
 

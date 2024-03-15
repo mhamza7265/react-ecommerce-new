@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateOrder } from "../../redux/reducers/admin_reducers/orderReducerAdmin";
-import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
+import { stopSpinner } from "../../redux/reducers/spinnerReducer";
 import { addCurrentUser } from "../../redux/reducers/currentUserReducer";
 
 function LoginPage() {
@@ -33,17 +33,19 @@ function LoginPage() {
     height: "55px",
   };
 
-  const handleEyeClick = (e) => {
+  const handleEyeClick = () => {
     setPwVisible(!pwVisible);
   };
 
   const onSubmit = (data) => {
+    setLoading(true);
     sendRequest("post", "login", {
       email: data.email,
       password: data.password,
       userRole: "admin",
     })
       .then((res) => {
+        setLoading(false);
         if (res.status) {
           successToast(res.login);
           const userObj = {
@@ -71,10 +73,12 @@ function LoginPage() {
             navigate("/admin");
           }, 3000);
         } else {
+          setLoading(false);
           errorToast(res.error);
         }
       })
       .catch((err) => {
+        setLoading(false);
         dispatch(stopSpinner());
         errorToast(err);
       });

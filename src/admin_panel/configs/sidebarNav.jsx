@@ -1,10 +1,10 @@
 const sidebarNav = [
-  {
-    link: "/admin",
-    section: "home",
-    icon: <i className="fa-solid fa-house"></i>,
-    text: "Home",
-  },
+  // {
+  //   link: "/admin",
+  //   section: "home",
+  //   icon: <i className="fa-solid fa-house"></i>,
+  //   text: "Home",
+  // },
   {
     link: "orders",
     section: "orders",

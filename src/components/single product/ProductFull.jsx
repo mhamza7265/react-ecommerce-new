@@ -25,9 +25,9 @@ import sendRequest, {
   errorToast,
 } from "../../utility-functions/apiManager";
 import { addWishlist } from "../../redux/reducers/wishlistReducer";
-import { updateCartNavbar } from "../../redux/reducers/navbarUpdateReducers/cartUpdateReducer";
+// import { updateCartNavbar } from "../../redux/reducers/navbarUpdateReducers/cartUpdateReducer";
 import { useNavigate } from "react-router-dom";
-import { addCompareProduct } from "../../redux/reducers/compareProductsReducer";
+// import { addCompareProduct } from "../../redux/reducers/compareProductsReducer";
 import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
 import BASE_URL from "../../utility-functions/config";
 import { updateCartQuantity } from "../../redux/reducers/cartQuantityReducer";
@@ -41,9 +41,9 @@ function ProductFull() {
   const [slider2, setSlider2] = useState(null);
   const [count, setCount] = useState(1);
   const [wishlist, setWishlist] = useState(null);
-  const products = useSelector((state) => state.products.products);
+  // const products = useSelector((state) => state.products.products);
   const singleProduct = useSelector((state) => state.singleProduct.product);
-  const compared = useSelector((state) => state.compare.productsToCompare);
+  // const compared = useSelector((state) => state.compare.productsToCompare);
   const dispatch = useDispatch();
   const navigate = useNavigate();
 

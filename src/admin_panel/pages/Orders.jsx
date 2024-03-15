@@ -21,7 +21,6 @@ function Orders() {
   const [orderedCartItems, setOrderedCartItems] = useState(null);
   const [allDropdownsHidden, setAllDropdownsHidden] = useState(false);
   const [typeOfOrders, setTypeOfOrders] = useState("all");
-  const [allUsers, setAllUsers] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [paginateIsDisabled, setPaginateIsDisabled] = useState(false);
@@ -127,8 +126,6 @@ function Orders() {
       setTypeOfOrders("specific");
       sendRequest("get", "users", undefined, undefined, "admin")
         .then((res) => {
-          setAllUsers(res.users);
-
           let user = res.users.map((item) => {
             const obj = {
               value: item?._id,
@@ -399,13 +396,13 @@ function Orders() {
             ))
           ) : (
             <tr>
-              <td colSpan={8} className="text-center">
+              <td colSpan={"100%"} className="text-center">
                 No order(s) found
               </td>
             </tr>
           )}
           <tr>
-            <td colSpan={8} className="p-0">
+            <td colSpan={"100%"} className="p-0">
               <div
                 className={`pagination position-relative d-flex justify-content-end p-3 bg-white ${
                   paginateIsDisabled && "disabled"

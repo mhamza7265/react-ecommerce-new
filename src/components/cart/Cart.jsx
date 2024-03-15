@@ -126,9 +126,9 @@ function Cart() {
   //     });
   // };
 
-  const handleTotalSum = (data) => {};
+  // const handleTotalSum = (data) => {};
 
-  const handleTotalDiff = (data, value) => {};
+  // const handleTotalDiff = (data, value) => {};
 
   return (
     <div>
@@ -221,8 +221,8 @@ function Cart() {
                             image={item.images[0][0]}
                             price={item.price}
                             del={handleDeleteClick}
-                            setIncrementTotal={handleTotalSum}
-                            setDecrementTotal={handleTotalDiff}
+                            // setIncrementTotal={handleTotalSum}
+                            // setDecrementTotal={handleTotalDiff}
                             cartItems={cartItems}
                             total={item.calculations.subTotal}
                             subTotal={item.calculations.total}

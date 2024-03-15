@@ -233,13 +233,13 @@ span[aria-label="Loading Spinner"] > span {
 }
 
 .paginate {
-  border: 1px solid #000;
+  border: 1px solid #3bb77e;
   border-radius: 50%;
-  padding: 10px 20px;
+  padding: 12px 20px;
 }
 
 .paginate.active {
-  background-color: #000;
+  background-color: #3bb77e;
   color: white;
 }
 
@@ -252,12 +252,14 @@ span[aria-label="Loading Spinner"] > span {
 }
 
 .paginate-arrow {
-  background-color: #000;
+  background-color: #24d180;
+  border-color: #24d180;
   color: white;
 }
 
 .paginate-arrow.disable {
-  background-color: #bbb9b9;
+  background-color: #7f948a;
+  border-color: #7f948a !important;
   color: rgb(102, 98, 98);
 }
 
@@ -310,6 +312,19 @@ span[aria-label="Loading Spinner"] > span {
 
 .chakra-portal > div {
   /* z-index: 99999 !important; */
+}
+
+.file-input-label {
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+.image-input {
+  padding: 14px 20px !important;
+  height: unset !important;
+  width: unset !important;
 }
 
 @media only screen and (max-width: 1366px) {

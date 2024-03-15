@@ -12,7 +12,6 @@ import Paginate from "../../components/paginate/Paginate";
 function Products() {
   const categories = useSelector((state) => state.categories.categories);
   const [productsByPage, setProductsByPage] = useState(null);
-  const [paginateIsDisabled, setPaginateIsDisabled] = useState(false);
   const [newProductModalIsOpen, setNewProductModalIsOpen] = useState(false);
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
   const [productId, setProductId] = useState(null);
@@ -175,7 +174,7 @@ function Products() {
           className="btn btn-sm btn-fill-out btn-block"
           onClick={() => setNewProductModalIsOpen(true)}
         >
-          Add New Products
+          <i className="fa fa-plus"></i> Add New Products
         </button>
       </div>
       <table className="bg-white mb-0">
@@ -218,21 +217,17 @@ function Products() {
             ))
           ) : (
             <tr>
-              <td colSpan={11} className="text-center">
+              <td colSpan={"100%"} className="text-center">
                 No products(s) found
               </td>
             </tr>
           )}
-          <tr>
-            <td colSpan={11} className="p-0">
-              <Paginate
-                endPoint={"products/listing"}
-                state={productsByPage}
-                setState={setProductsByPage}
-                formType={"res.products"}
-              />
-            </td>
-          </tr>
+          <Paginate
+            endPoint={"products/listing"}
+            state={productsByPage}
+            setState={setProductsByPage}
+            formType={"res.products"}
+          />
         </tbody>
       </table>
 
@@ -384,12 +379,14 @@ function Products() {
                   {errorsNew?.discountValue?.message}
                 </p>
                 <div className="form-group">
-                  <label className="form-label">Image</label>
+                  <label className="form-label">
+                    Image <span className="text-muted">(select two)</span>
+                  </label>
                   <input
                     {...registerNew("image1", {
                       required: "This field is required",
                     })}
-                    className="form-control"
+                    className="form-control image-input"
                     type="file"
                     name="image1"
                     multiple
@@ -542,10 +539,12 @@ function Products() {
                   {errorsEdit?.discountValue?.message}
                 </p>
                 <div className="form-group">
-                  <label className="form-label">Image</label>
+                  <label className="form-label">
+                    Image <span className="text-muted">(select two)</span>
+                  </label>
                   <input
                     {...registerEdit("image1")}
-                    className="form-control"
+                    className="form-control image-input"
                     type="file"
                     name="image1"
                   />

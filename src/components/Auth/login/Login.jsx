@@ -8,7 +8,7 @@ import sendRequest, {
   errorToast,
   successToast,
 } from "../../../utility-functions/apiManager";
-import { BounceLoader } from "react-spinners";
+// import { BounceLoader } from "react-spinners";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -24,7 +24,7 @@ import {
 import { addCurrentUser } from "../../../redux/reducers/currentUserReducer";
 
 function Login() {
-  const [loading, setLoading] = useState(false);
+  // const [loading, setLoading] = useState(false);
   const [pwVisible, setPwVisible] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -34,18 +34,18 @@ function Login() {
     formState: { errors },
   } = useForm();
 
-  const override = {
-    display: "block",
-    position: "absolute",
-    top: 0,
-    left: "90%",
-    margin: "0 auto",
-    borderColor: "red",
-    width: "10px",
-    height: "55px",
-  };
+  // const override = {
+  //   display: "block",
+  //   position: "absolute",
+  //   top: 0,
+  //   left: "90%",
+  //   margin: "0 auto",
+  //   borderColor: "red",
+  //   width: "10px",
+  //   height: "55px",
+  // };
 
-  const handleEyeClick = (e) => {
+  const handleEyeClick = () => {
     setPwVisible(!pwVisible);
   };
 
@@ -161,7 +161,7 @@ function Login() {
                       <div className="heading_s1">
                         <h1 className="mb-5">Login</h1>
                         <p className="mb-30">
-                          Don't have an account?{" "}
+                          {"Don't have an account?"}{" "}
                           <Link to="/register">Create here</Link>
                         </p>
                       </div>
@@ -242,14 +242,14 @@ function Login() {
                           <button className="btn btn-heading btn-block hover-up">
                             Log in
                           </button>
-                          <BounceLoader
+                          {/* <BounceLoader
                             color={"#3bb77e"}
                             loading={loading}
                             cssOverride={override}
                             size={150}
                             aria-label="Loading Spinner"
                             data-testid="loader"
-                          />
+                          /> */}
                         </div>
                       </form>
                     </div>

@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
 import "./sidebar.scss";
-import { NavLink, Link, useLocation, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { images } from "../../constants";
 import sidebarNav from "../../configs/sidebarNav";
 import { successToast } from "../../../utility-functions/apiManager";
@@ -9,17 +8,17 @@ import { addCurrentUser } from "../../../redux/reducers/currentUserReducer";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 
 const Sidebar = ({ setRegistrationModalIsOpen }) => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const location = useLocation();
+  // const [activeIndex, setActiveIndex] = useState(0);
+  // const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const curPath = window.location.pathname.split("/")[1];
-    const activeItem = sidebarNav.findIndex((item) => item.section === curPath);
+  // useEffect(() => {
+  //   const curPath = window.location.pathname.split("/")[1];
+  //   const activeItem = sidebarNav.findIndex((item) => item.section === curPath);
 
-    setActiveIndex(curPath.length === 0 ? 0 : activeItem);
-  }, [location]);
+  //   setActiveIndex(curPath.length === 0 ? 0 : activeItem);
+  // }, [location]);
 
   const closeSidebar = () => {
     document.querySelector(".main__content").style.transform =
@@ -43,6 +42,7 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
 
   const handleRegisterModalClick = () => {
     setRegistrationModalIsOpen(true);
+    closeSidebar();
   };
 
   return (
@@ -54,6 +54,17 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
         </div>
       </div>
       <div className="sidebar__menu">
+        <NavLink
+          to={"/admin"}
+          className={`sidebar__menu__item`}
+          onClick={closeSidebar}
+          end
+        >
+          <div className="sidebar__menu__item__icon">
+            <i className="fa fa-dashboard"></i>
+          </div>
+          <div className="sidebar__menu__item__txt">Dashboard</div>
+        </NavLink>
         {sidebarNav.map((nav, index) => (
           <NavLink
             to={nav.link}
