@@ -56,6 +56,7 @@ import Customers from "./admin_panel/pages/customers/Customers";
 import Admins from "./admin_panel/pages/admins/Admins";
 import { addCurrentUser } from "./redux/reducers/currentUserReducer";
 import Profile from "./admin_panel/pages/profile/Profile";
+import Verify from "./components/Auth/verification/verify";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -264,6 +265,14 @@ function App() {
             element={
               <Preloader>
                 <Login />
+              </Preloader>
+            }
+          />
+          <Route
+            path="/verify"
+            element={
+              <Preloader>
+                <Verify />
               </Preloader>
             }
           />

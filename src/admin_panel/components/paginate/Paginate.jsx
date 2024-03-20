@@ -38,10 +38,10 @@ function Paginate({ endPoint, state, setState, formType, query }) {
         setLoading(false);
         if (res.status) {
           setPaginateIsDisabled(false);
-          setState(eval(formType));
+          setState(res[formType]);
         } else {
           setPaginateIsDisabled(false);
-          errorToast(`${formType.split(".")[1]} list could not be updated`);
+          errorToast(`${formType} list could not be updated`);
         }
       })
       .catch((err) => {
@@ -67,10 +67,10 @@ function Paginate({ endPoint, state, setState, formType, query }) {
         setLoading(false);
         if (res.status) {
           setPaginateIsDisabled(false);
-          setState(eval(formType));
+          setState(res[formType]);
         } else {
           setPaginateIsDisabled(false);
-          errorToast(`${formType.split(".")[1]} list could not be updated`);
+          errorToast(`${formType} list could not be updated`);
         }
       })
       .catch((err) => {

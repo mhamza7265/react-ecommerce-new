@@ -22,6 +22,7 @@ import bestsellingProductReducer from "../reducers/bestsellingProductReducer";
 import ProductsByPageReducer from "../reducers/productsByPageReducer";
 import orderReducerAdmin from "../reducers/admin_reducers/orderReducerAdmin";
 import currentUserReducer from "../reducers/currentUserReducer";
+import logInUserReducer from "../reducers/logingInUserReducer";
 
 const rootReducer = combineReducers({
   categories: categoryReducer,
@@ -44,6 +45,7 @@ const rootReducer = combineReducers({
   bestsellingProducts: bestsellingProductReducer,
   productsByPage: ProductsByPageReducer,
   currentUser: currentUserReducer,
+  logInUser: logInUserReducer,
   //admin reducers,
   adminOrder: orderReducerAdmin,
 });

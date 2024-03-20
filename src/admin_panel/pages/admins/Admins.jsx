@@ -151,23 +151,18 @@ function Admins() {
             ))
           ) : (
             <tr>
-              <td colSpan={7} className="text-center">
+              <td colSpan={"100%"} className="text-center">
                 No admin(s) found
               </td>
             </tr>
           )}
-
-          <tr>
-            <td colSpan={7} className="p-0">
-              <Paginate
-                endPoint={"users/listing"}
-                state={users}
-                setState={setUsers}
-                formType={"res.users"}
-                query={"admin"}
-              />
-            </td>
-          </tr>
+          <Paginate
+            endPoint={"users/listing"}
+            state={users}
+            setState={setUsers}
+            formType={"users"}
+            query={"admin"}
+          />
         </tbody>
       </table>
     </div>

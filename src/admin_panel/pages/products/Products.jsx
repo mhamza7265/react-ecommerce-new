@@ -226,7 +226,7 @@ function Products() {
             endPoint={"products/listing"}
             state={productsByPage}
             setState={setProductsByPage}
-            formType={"res.products"}
+            formType={"products"}
           />
         </tbody>
       </table>

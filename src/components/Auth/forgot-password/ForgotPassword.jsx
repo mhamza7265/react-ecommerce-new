@@ -3,8 +3,50 @@ import Footer from "../../footer/footer";
 import Navbar from "../../navbar/Navbar";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import sendRequest, {
+  errorToast,
+  successToast,
+} from "../../../utility-functions/apiManager";
+import {
+  startSpinner,
+  stopSpinner,
+} from "../../../redux/reducers/spinnerReducer";
+import { addLogInUser } from "../../../redux/reducers/logingInUserReducer";
 
 function ForgotPassword() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = (data) => {
+    dispatch(startSpinner());
+    dispatch(addLogInUser(data.email));
+    sendRequest("post", "sendEmail", { email: data.email })
+      .then((res) => {
+        dispatch(stopSpinner());
+        if (res.status) {
+          successToast(res.message);
+          setTimeout(() => {
+            navigate("/resetPw");
+          }, 3000);
+        } else {
+          errorToast(res.error);
+        }
+      })
+      .catch((err) => {
+        dispatch(stopSpinner());
+        errorToast(err);
+      });
+  };
+
   return (
     <div>
       <Navbar />
@@ -18,7 +60,7 @@ function ForgotPassword() {
           </div>
         </div>
       </div>
-      <div className="page-content pt-150 pb-150">
+      <div className="page-content pt-50 pb-50">
         <div className="container">
           <div className="row">
             <div className="col-xl-4 col-lg-6 col-md-12 m-auto">
@@ -36,16 +78,19 @@ function ForgotPassword() {
                       Please enter your email address or your Username.
                     </p>
                   </div>
-                  <form method="post">
+                  <form onSubmit={handleSubmit(onSubmit)}>
                     <div className="form-group">
                       <input
+                        {...register("email", {
+                          required: "This field is regquired",
+                        })}
                         type="text"
-                        required=""
                         name="email"
-                        placeholder="Username or Email *"
+                        placeholder="Enter your email *"
                       />
                     </div>
-                    <div className="login_footer form-group">
+                    <p className="text-danger">{errors?.email?.message}</p>
+                    {/* <div className="login_footer form-group">
                       <div className="chek-form">
                         <input
                           type="text"
@@ -60,8 +105,8 @@ function ForgotPassword() {
                         <b className="text-sale">7</b>
                         <b className="text-best">5</b>
                       </span>
-                    </div>
-                    <div className="login_footer form-group mb-50">
+                    </div> */}
+                    {/* <div className="login_footer form-group mb-50">
                       <div className="chek-form">
                         <div className="custome-checkbox">
                           <input
@@ -80,14 +125,14 @@ function ForgotPassword() {
                         </div>
                       </div>
                       <a className="text-muted">Learn more</a>
-                    </div>
+                    </div> */}
                     <div className="form-group">
                       <button
                         type="submit"
                         className="btn btn-heading btn-block hover-up"
                         name="login"
                       >
-                        Reset password
+                        Next
                       </button>
                     </div>
                   </form>

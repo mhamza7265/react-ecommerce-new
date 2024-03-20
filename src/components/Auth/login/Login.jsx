@@ -22,6 +22,7 @@ import {
   stopSpinner,
 } from "../../../redux/reducers/spinnerReducer";
 import { addCurrentUser } from "../../../redux/reducers/currentUserReducer";
+import { addLogInUser } from "../../../redux/reducers/logingInUserReducer";
 
 function Login() {
   // const [loading, setLoading] = useState(false);
@@ -51,6 +52,7 @@ function Login() {
 
   const onSubmit = (data) => {
     dispatch(startSpinner());
+    dispatch(addLogInUser(data.email));
     sendRequest("post", "login", {
       email: data.email,
       password: data.password,
@@ -123,6 +125,11 @@ function Login() {
         } else {
           dispatch(stopSpinner());
           errorToast(res.error);
+          if (res.verify) {
+            setTimeout(() => {
+              navigate("/verify");
+            }, 3000);
+          }
         }
       })
       .catch((err) => {
@@ -238,18 +245,13 @@ function Login() {
                           </div>
                           <a className="text-muted">Forgot password?</a>
                         </div> */}
-                        <div className="form-group position-relative">
+                        <div className="d-flex justify-content-between position-relative">
                           <button className="btn btn-heading btn-block hover-up">
                             Log in
                           </button>
-                          {/* <BounceLoader
-                            color={"#3bb77e"}
-                            loading={loading}
-                            cssOverride={override}
-                            size={150}
-                            aria-label="Loading Spinner"
-                            data-testid="loader"
-                          /> */}
+                          <p className="mb-30">
+                            <Link to="/forgotPw">Forgot password?</Link>
+                          </p>
                         </div>
                       </form>
                     </div>

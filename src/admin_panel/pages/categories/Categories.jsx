@@ -177,7 +177,7 @@ function Categories() {
             ))
           ) : (
             <tr>
-              <td colSpan={6} className="text-center">
+              <td colSpan={"100%"} className="text-center">
                 No categories found
               </td>
             </tr>
@@ -186,7 +186,7 @@ function Categories() {
             endPoint={"categories/listing"}
             state={categoriesList}
             setState={setCategoriesList}
-            formType={"res.categories"}
+            formType={"categories"}
           />
         </tbody>
       </table>

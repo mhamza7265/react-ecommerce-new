@@ -244,7 +244,7 @@ function Checkout() {
           </div>
         </div>
       </div>
-      <div className="container mb-80 mt-50">
+      <div className="container mb-140 mt-50">
         <div className="row">
           <div className="col-lg-8 mb-40">
             <h1 className="heading-2 mb-10">Checkout</h1>

@@ -327,6 +327,16 @@ span[aria-label="Loading Spinner"] > span {
   width: unset !important;
 }
 
+.readonly[readonly] {
+  background-color: rgb(221, 218, 218) !important;
+  color: #6b6969;
+}
+
+.readonly[disabled] {
+  background-color: rgb(221, 218, 218) !important;
+  color: #6b6969;
+}
+
 @media only screen and (max-width: 1366px) {
   .main {
     width: 100% !important;
