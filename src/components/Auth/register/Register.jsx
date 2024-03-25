@@ -6,7 +6,6 @@ import sendRequest, {
   successToast,
   warningToast,
 } from "../../../utility-functions/apiManager";
-import { useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { BounceLoader } from "react-spinners";
 import { Link } from "react-router-dom";
@@ -18,7 +17,7 @@ function Register() {
   const [loading, setLoading] = useState(false);
   const [pwVisible, setPwVisible] = useState(false);
   const [rptPwVisible, setRptPwVisible] = useState(false);
-  const toast = useToast();
+  const [imageFile, setImageFile] = useState(null);
   const navigate = useNavigate();
   const {
     register,
@@ -47,36 +46,25 @@ function Register() {
   };
 
   const onSubmit = (data) => {
+    const formData = new FormData();
+    formData.append("email", data.email);
+    formData.append("firstName", data.first_name);
+    formData.append("lastName", data.last_name);
+    formData.append("password", data.password);
+    formData.append("file", data.image[0]);
+    formData.append("role", "basic");
     setLoading(true);
-    const reqData = {
-      email: data.email,
-      firstName: data.first_name,
-      lastName: data.last_name,
-      password: data.password,
-      role: "basic",
-    };
-    sendRequest("post", "register", reqData)
+
+    sendRequest("post", "register", formData, "formData")
       .then((res) => {
         setLoading(false);
         if (res.status) {
-          toast({
-            title: res.message,
-            position: "top-right",
-            isClosable: true,
-            duration: 3000,
-            status: "success",
-          });
+          successToast(res.message);
           setTimeout(() => {
             navigate("/login");
           }, 3000);
         } else {
-          toast({
-            title: res.error,
-            position: "top-right",
-            isClosable: true,
-            duration: 3000,
-            status: "error",
-          });
+          errorToast(res.error);
           setTimeout(() => {
             navigate("/login");
           }, 3000);
@@ -84,13 +72,7 @@ function Register() {
       })
       .catch((err) => {
         setLoading(false);
-        toast({
-          title: err.error,
-          position: "top-right",
-          isClosable: true,
-          duration: 3000,
-          status: "error",
-        });
+        errorToast(err.error);
         console.log(err);
       });
   };
@@ -167,6 +149,10 @@ function Register() {
   //   flow: "auth-code",
   // });
 
+  const handleFileChange = (e) => {
+    setImageFile(URL.createObjectURL(e.target.files[0]));
+  };
+
   return (
     <div>
       <Navbar />
@@ -234,6 +220,23 @@ function Register() {
                           />
                         </div>
                         <p className="text-danger">{errors.email?.message}</p>
+                        <div className="form-group d-flex align-items-end">
+                          <input
+                            {...register("image", {
+                              required: "This field is required",
+                            })}
+                            type="file"
+                            name="image"
+                            className="form-control image-input"
+                            onChange={handleFileChange}
+                          />
+                          <img
+                            className="prof-pic ms-3"
+                            style={{ borderRadius: "50%" }}
+                            src={imageFile}
+                          />
+                        </div>
+                        <p className="text-danger">{errors.image?.message}</p>
                         <div className="form-group position-relative">
                           <a
                             href={void 0}

@@ -49,7 +49,7 @@ import Dashboard from "./admin_panel/pages/Dashboard";
 import Blank from "./admin_panel/pages/Blank";
 import LoginPage from "./admin_panel/pages/LoginPage";
 import AdminAuth from "./admin_panel/pages/AdminAuth";
-import Orders from "./admin_panel/pages/orders";
+import Orders from "./admin_panel/pages/Orders";
 import Categories from "./admin_panel/pages/categories/Categories";
 import Products from "./admin_panel/pages/products/Products";
 import Customers from "./admin_panel/pages/customers/Customers";

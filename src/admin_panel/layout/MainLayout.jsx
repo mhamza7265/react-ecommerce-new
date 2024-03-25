@@ -16,6 +16,7 @@ const MainLayout = () => {
   const [pwVisible, setPwVisible] = useState(false);
   const [rptPwVisible, setRptPwVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
 
   const {
     register,
@@ -37,19 +38,21 @@ const MainLayout = () => {
   };
 
   const onSubmit = (data) => {
-    const reqData = {
-      email: data.email,
-      firstName: data.firstName,
-      middleName: data.middleName,
-      lastName: data.lastName,
-      password: data.password,
-      role: data.role,
-    };
+    const formData = new FormData();
+    formData.append("email", data.email);
+    formData.append("firstName", data.firstName);
+    formData.append("middleName", data.middleName);
+    formData.append("lastName", data.lastName);
+    formData.append("password", data.password);
+    formData.append("role", data.role);
+    formData.append("file", data.image[0]);
+
     setLoading(true);
-    sendRequest("post", "register", reqData, undefined, "admin")
+    sendRequest("post", "register", formData, "formData", "admin")
       .then((res) => {
         setLoading(false);
         console.log(res);
+        setRegistrationModalIsOpen(false);
         if (res.status) {
           successToast(res.message);
         } else {
@@ -71,6 +74,10 @@ const MainLayout = () => {
     }
   };
 
+  const handleFileChange = (e) => {
+    setImageFile(URL.createObjectURL(e.target.files[0]));
+  };
+
   return (
     <>
       <Sidebar setRegistrationModalIsOpen={setRegistrationModalIsOpen} />
@@ -90,6 +97,7 @@ const MainLayout = () => {
           onHide={() => {
             reset();
             setRegistrationModalIsOpen(false);
+            setImageFile(null);
           }}
           style={{ zIndex: "9999", padding: 0 }}
         >
@@ -154,6 +162,28 @@ const MainLayout = () => {
                   />
                 </div>
                 <p className="text-danger">{errors?.lastName?.message}</p>
+                <div className="form-group">
+                  <label className="form-label">Profile Picture*</label>
+                  <div className="d-flex align-items-end">
+                    <input
+                      {...register("image", {
+                        required: "This field is required",
+                      })}
+                      className="form-control image-input"
+                      name="image"
+                      type="file"
+                      onChange={handleFileChange}
+                    />
+                    {imageFile && (
+                      <img
+                        className="prof-pic ms-3"
+                        style={{ borderRadius: "50%" }}
+                        src={imageFile}
+                      />
+                    )}
+                  </div>
+                </div>
+                <p className="text-danger">{errors?.image?.message}</p>
                 <div className="form-group">
                   <label className="form-label">Role*</label>
                   <select

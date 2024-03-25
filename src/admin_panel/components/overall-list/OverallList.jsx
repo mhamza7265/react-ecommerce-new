@@ -13,7 +13,7 @@ const icons = [
 const OverallList = () => {
   const [dashboardData, setDashboardData] = useState(null);
   useEffect(() => {
-    sendRequest("post", "dashboard")
+    sendRequest("post", "dashboard", undefined, undefined, "admin")
       .then((res) => {
         if (res.status) {
           setDashboardData(res.data);

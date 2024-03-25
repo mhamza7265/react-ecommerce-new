@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { startSpinner, stopSpinner } from "../../redux/reducers/spinnerReducer";
 import { addCurrentUser } from "../../redux/reducers/currentUserReducer";
+import BASE_URL from "../../utility-functions/config";
 
 function Account() {
   const [currentUser, setCurrentUser] = useState("");
@@ -30,6 +31,7 @@ function Account() {
   const [orderStatus, setOrderStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingUser, setLoadingUser] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -186,9 +188,17 @@ function Account() {
   };
 
   const onSubmitUser = (data) => {
+    const formData = new FormData();
+    formData.append("first_name", data.first_name);
+    formData.append("middle_name", data.middle_name);
+    formData.append("last_name", data.last_name);
+    formData.append("image", data.image[0]);
+    formData.append("current_pw", data.current_pw);
+    formData.append("new_pw", data.new_pw);
     setLoadingUser(true);
     dispatch(startSpinner());
-    sendRequest("put", "user", data)
+
+    sendRequest("put", "user", formData, "formData")
       .then((res) => {
         dispatch(stopSpinner());
         if (res.status) {
@@ -215,6 +225,10 @@ function Account() {
         setLoadingUser(false);
         errorToast(err);
       });
+  };
+
+  const handleFileChange = (e) => {
+    setImageFile(URL.createObjectURL(e.target.files[0]));
   };
 
   return (
@@ -315,9 +329,16 @@ function Account() {
                             role="tabpanel"
                             aria-labelledby="dashboard-tab"
                           >
-                            <div className="card">
-                              <div className="card-header">
-                                <h3 className="mb-0">
+                            <div className="card border">
+                              <div className="card-header d-flex">
+                                <img
+                                  className="prof-pic-2"
+                                  src={BASE_URL + "/" + currentUser?.image}
+                                />
+                                <h3
+                                  className="mb-0 ms-4 u-line"
+                                  style={{ paddingTop: "25px" }}
+                                >
                                   {currentUser.first_name?.concat(
                                     " " + currentUser.last_name
                                   )}
@@ -559,6 +580,26 @@ function Account() {
                                         }
                                         disabled
                                       />
+                                    </div>
+                                    <div className="form-group col-md-6">
+                                      <label>Profile Picture</label>
+                                      <div className="d-flex align-items-end">
+                                        <input
+                                          {...registerUser("image", {
+                                            required: "This field is required!",
+                                          })}
+                                          className="form-control image-input"
+                                          name="image"
+                                          type="file"
+                                          onChange={handleFileChange}
+                                        />
+                                        <img
+                                          className="prof-pic ms-3"
+                                          style={{ borderRadius: "50%" }}
+                                          src={imageFile}
+                                        />
+                                      </div>
+                                      <p>{errors3?.last_name?.message}</p>
                                     </div>
                                     <div className="form-group col-md-12">
                                       <label>

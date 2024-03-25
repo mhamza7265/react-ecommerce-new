@@ -57,6 +57,7 @@ function Products() {
     formData.append("quantity", data.quantity);
     formData.append("sku", data.sku);
     formData.append("category", data.category);
+
     sendRequest("post", "product/add", formData, "formData", "admin")
       .then((res) => {
         console.log("prodAdd", res);
@@ -121,7 +122,6 @@ function Products() {
   };
 
   const onEditProductSubmit = (data) => {
-    console.log("formData", data);
     const formData = new FormData();
     formData.append("file", data.image1[0]);
     formData.append("file", data.image1[1]);
@@ -547,6 +547,7 @@ function Products() {
                     className="form-control image-input"
                     type="file"
                     name="image1"
+                    multiple
                   />
                 </div>
                 <p className="text-danger">{errorsEdit?.image1?.message}</p>

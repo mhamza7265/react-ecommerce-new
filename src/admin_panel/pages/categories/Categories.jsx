@@ -6,8 +6,6 @@ import sendRequest, {
   errorToast,
   successToast,
 } from "../../../utility-functions/apiManager";
-import { useDispatch } from "react-redux";
-import { addCategory } from "../../../redux/reducers/categoryReducer";
 import Paginate from "../../components/paginate/Paginate";
 
 function Categories() {
@@ -15,7 +13,6 @@ function Categories() {
   const [newCategoryModalIsOpen, setNewCategoryModalIsOpen] = useState(false);
   const [editCategoryModalIsOpen, setEditCategoryModalIsOpen] = useState(false);
   const [categoryId, setCategoryId] = useState(null);
-  const dispatch = useDispatch();
   const {
     register: registerNew,
     handleSubmit: handleNewCatSubmit,
@@ -49,14 +46,22 @@ function Categories() {
     formData.append("file", data.image[0]);
     formData.append("name", data.name);
     formData.append("description", data.desc);
+
     sendRequest("post", "category/add", formData, "formData", "admin")
       .then((res) => {
         if (res.status) {
           successToast("Category added");
-          sendRequest("get", "category", undefined, undefined, "admin")
+          sendRequest(
+            "get",
+            `categories/listing?page=${categoriesList?.page}`,
+            undefined,
+            undefined,
+            "admin"
+          )
             .then((res) => {
+              setNewCategoryModalIsOpen(false);
               if (res.status) {
-                dispatch(addCategory(res.categories));
+                setCategoriesList(res.categories);
                 setNewCategoryModalIsOpen(false);
               }
             })
@@ -85,18 +90,25 @@ function Categories() {
       .then((res) => {
         if (res.status) {
           successToast("Category updated");
-          sendRequest("get", "category", undefined, undefined, "admin")
+          sendRequest(
+            "get",
+            `categories/listing?page=${categoriesList?.page}`,
+            undefined,
+            undefined,
+            "admin"
+          )
             .then((res) => {
+              setEditCategoryModalIsOpen(false);
               if (res.status) {
-                dispatch(addCategory(res.categories));
-                setEditCategoryModalIsOpen(false);
+                setCategoriesList(res.categories);
+                setNewCategoryModalIsOpen(false);
               }
             })
             .catch((err) => {
               console.log(err);
             });
         } else {
-          errorToast("Category could not be updated");
+          errorToast(res.error);
         }
       })
       .catch((err) => console.log(err));

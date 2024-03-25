@@ -1,6 +1,9 @@
+import BASE_URL from "../../../utility-functions/config";
+
 function CustomerRow({
   serial,
   id,
+  image,
   firstName,
   lastName,
   email,
@@ -13,6 +16,7 @@ function CustomerRow({
   return (
     <tr className="customer-row" data={id}>
       <td>{serial + 1}</td>
+      <td>{<img className="prof-pic" src={`${BASE_URL + "/" + image}`} />}</td>
       <td>{firstName}</td>
       <td>{lastName}</td>
       <td>{email}</td>

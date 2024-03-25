@@ -22,6 +22,7 @@ function Orders() {
   const [allDropdownsHidden, setAllDropdownsHidden] = useState(false);
   const [typeOfOrders, setTypeOfOrders] = useState("all");
   const [loading, setLoading] = useState(false);
+  const [statusbarLoading, setStatusbarLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
   const [paginateIsDisabled, setPaginateIsDisabled] = useState(false);
   const [options, setOptions] = useState([]);
@@ -67,6 +68,7 @@ function Orders() {
   }, []);
 
   const onSubmit = (data) => {
+    setStatusbarLoading(true);
     sendRequest(
       "put",
       "order/process",
@@ -78,6 +80,7 @@ function Orders() {
       "admin"
     )
       .then((res) => {
+        setStatusbarLoading(false);
         if (res.status) {
           successToast("Status Updated!");
           sendRequest(
@@ -103,6 +106,7 @@ function Orders() {
         }
       })
       .catch((err) => {
+        setStatusbarLoading(false);
         console.log(err);
       });
   };
@@ -469,7 +473,18 @@ function Orders() {
             <h5>Order ID: {orderId.id}</h5>
           </Modal.Header>
           <Modal.Body>
-            <form onSubmit={handleSubmit(onSubmit)} className="mb-5 mt-3">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="mb-5 mt-3 position-relative"
+            >
+              <BarLoader
+                color={"#ffffff"}
+                loading={statusbarLoading}
+                cssOverride={override}
+                size={150}
+                aria-label="Loading Spinner"
+                data-testid="loader"
+              />
               <label>Select an option</label>
               {/* <Controller
                 name="orderStatus"

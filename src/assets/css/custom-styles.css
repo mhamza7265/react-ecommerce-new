@@ -273,6 +273,8 @@ span[aria-label="Loading Spinner"] > span {
 
 .user-info__img img {
   width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .sidebar__menu__item {
@@ -335,6 +337,23 @@ span[aria-label="Loading Spinner"] > span {
 .readonly[disabled] {
   background-color: rgb(221, 218, 218) !important;
   color: #6b6969;
+}
+
+.prof-pic {
+  width: 65px;
+  height: 65px;
+  object-fit: cover;
+}
+
+.prof-pic-2 {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.u-line {
+  text-decoration: underline;
 }
 
 @media only screen and (max-width: 1366px) {

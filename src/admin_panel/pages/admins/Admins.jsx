@@ -124,6 +124,7 @@ function Admins() {
         <thead>
           <tr>
             <th>Serial#</th>
+            <th>Image</th>
             <th>First Name</th>
             <th>Last Name</th>
             <th>Email</th>
@@ -141,6 +142,7 @@ function Admins() {
                 id={item._id}
                 firstName={item.firstName}
                 lastName={item.lastName}
+                image={item.image}
                 email={item.email}
                 status={item.blocked}
                 role={item.role}

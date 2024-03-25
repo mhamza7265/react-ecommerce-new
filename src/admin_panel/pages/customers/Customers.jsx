@@ -122,6 +122,7 @@ function Customers() {
         <thead>
           <tr>
             <th>Serial#</th>
+            <th>Photo</th>
             <th>First Name</th>
             <th>Last Name</th>
             <th>Email</th>
@@ -135,6 +136,7 @@ function Customers() {
             users?.docs?.map((item, i) => (
               <CustomerRow
                 key={i}
+                image={item.image}
                 serial={users?.pagingCounter - 1 + i}
                 id={item._id}
                 firstName={item.firstName}

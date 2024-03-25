@@ -9,6 +9,7 @@ import sendRequest, {
 function Profile() {
   const [currentUser, setCurrentUser] = useState(null);
   const [loadingUser, setLoadingUser] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
 
   const {
     register,
@@ -30,7 +31,7 @@ function Profile() {
   };
 
   useEffect(() => {
-    sendRequest("get", "user")
+    sendRequest("get", "user", undefined, undefined, "admin")
       .then((res) => {
         if (res.status) {
           setCurrentUser(res.user);
@@ -42,8 +43,14 @@ function Profile() {
   }, []);
 
   const onSubmit = (data) => {
+    const formData = new FormData();
+    formData.append("first_name", data.first_name);
+    formData.append("last_name", data.last_name);
+    formData.append("file", data.image[0]);
+    formData.append("current_pw", data.current_pw);
+    formData.append("new_pw", data.new_pw);
     setLoadingUser(true);
-    sendRequest("put", "user", data)
+    sendRequest("put", "user", formData, "formData", "admin")
       .then((res) => {
         setLoadingUser(false);
         if (res.status) {
@@ -57,6 +64,10 @@ function Profile() {
         setLoadingUser(false);
         errorToast(err);
       });
+  };
+
+  const handleFileChange = (e) => {
+    setImageFile(URL.createObjectURL(e.target.files[0]));
   };
 
   return (
@@ -99,6 +110,28 @@ function Profile() {
                   type="text"
                 />
                 <p className="text-danger">{errors?.last_name?.message}</p>
+              </div>
+              <div className="form-group col-md-6">
+                <label>Profile Picture</label>
+                <div className="d-flex align-items-end">
+                  <input
+                    {...register("image", {
+                      required: "This field is required!",
+                    })}
+                    className="form-control image-input"
+                    name="image"
+                    type="file"
+                    onClick={handleFileChange}
+                  />
+                  {imageFile && (
+                    <img
+                      className="prof-pic ms-3"
+                      style={{ borderRadius: "50%" }}
+                      src={imageFile}
+                    />
+                  )}
+                </div>
+                <p className="text-danger">{errors?.image?.message}</p>
               </div>
               <div className="form-group col-md-12">
                 <label>
