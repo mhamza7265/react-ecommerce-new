@@ -6,7 +6,6 @@ const openApis = ["auth/login", "auth/register"];
 const { toast } = createStandaloneToast();
 
 const setRequestOptions = (method, url, payload, contentType, userType) => {
-  // console.log("payload", payload);
   const storedItem =
     userType == "admin"
       ? localStorage.getItem("admin_user")

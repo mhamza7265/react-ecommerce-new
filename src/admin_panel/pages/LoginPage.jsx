@@ -10,6 +10,7 @@ import { useDispatch } from "react-redux";
 import { updateOrder } from "../../redux/reducers/admin_reducers/orderReducerAdmin";
 import { stopSpinner } from "../../redux/reducers/spinnerReducer";
 import { addCurrentUser } from "../../redux/reducers/currentUserReducer";
+import requestPermission from "../../utility-functions/notifications";
 
 function LoginPage() {
   const [loading, setLoading] = useState(false);
@@ -52,6 +53,8 @@ function LoginPage() {
             token: res.token,
           };
           localStorage.setItem("admin_user", JSON.stringify(userObj));
+
+          requestPermission("admin");
 
           sendRequest("get", "orders", undefined, undefined, "admin").then(
             (res) => {

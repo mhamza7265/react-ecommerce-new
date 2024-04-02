@@ -28,7 +28,7 @@ import ScrollToTop from "./common/ScrollToTop";
 import HaveAuth from "./components/Auth/check-auth/HaveAuth";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import sendRequest from "./utility-functions/apiManager";
+import sendRequest, { successToast } from "./utility-functions/apiManager";
 import { addProduct } from "./redux/reducers/productReducer";
 import { addCategory } from "./redux/reducers/categoryReducer";
 import { addWishlist } from "./redux/reducers/wishlistReducer";
@@ -57,6 +57,10 @@ import Admins from "./admin_panel/pages/admins/Admins";
 import { addCurrentUser } from "./redux/reducers/currentUserReducer";
 import Profile from "./admin_panel/pages/profile/Profile";
 import Verify from "./components/Auth/verification/verify";
+import { getToken, onMessage } from "firebase/messaging";
+import { messaging } from "./firebase/firebaseConfig";
+import { ToastContainer, toast } from "react-toastify";
+import Message from "./common/Message";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -79,9 +83,6 @@ function App() {
       /*...*/
     },
   };
-
-  // const user = localStorage.getItem("current_user");
-  // const currentUser = JSON.parse(user);
 
   useEffect(() => {
     sendRequest("get", "product")
@@ -197,6 +198,11 @@ function App() {
       dispatch(dropdownIsOpen(false));
     }
   };
+
+  onMessage(messaging, (payload) => {
+    console.log("message", payload);
+    successToast(<Message notification={payload.notification} />);
+  });
 
   return (
     <div className="app h-100" onClick={handleClick}>
@@ -389,6 +395,7 @@ function App() {
         </Routes>
         <ScrollToTop />
       </BrowserRouter>
+      <ToastContainer />
     </div>
   );
 }

@@ -23,6 +23,7 @@ import {
 } from "../../../redux/reducers/spinnerReducer";
 import { addCurrentUser } from "../../../redux/reducers/currentUserReducer";
 import { addLogInUser } from "../../../redux/reducers/logingInUserReducer";
+import requestPermission from "../../../utility-functions/notifications";
 
 function Login() {
   // const [loading, setLoading] = useState(false);
@@ -56,6 +57,7 @@ function Login() {
     sendRequest("post", "login", {
       email: data.email,
       password: data.password,
+      userRole: "basic",
     })
       .then((res) => {
         if (res.status) {
@@ -65,6 +67,8 @@ function Login() {
             token: res.token,
           };
           localStorage.setItem("current_user", JSON.stringify(userObj));
+
+          requestPermission(null);
 
           // dispatch(updateWishlistNavbar());
           sendRequest("get", "cart/qty")

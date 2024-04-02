@@ -143,20 +143,6 @@ function CartItems({
 
   return (
     <tr className="cart-item position-relative" data={prodId}>
-      {/* <td className="custome-checkbox pl-30">
-        <>
-          <input
-            className="form-check-input"
-            type="checkbox"
-            name="checkbox"
-            id={`exampleCheckbox${id}`}
-          />
-          <label
-            className="form-check-label"
-            htmlFor={`exampleCheckbox${id}`}
-          ></label>
-        </>
-      </td> */}
       <td className="image product-thumbnail pl-30">
         <LazyLoadImage src={BASE_URL + "/" + image} alt="#" />
       </td>
