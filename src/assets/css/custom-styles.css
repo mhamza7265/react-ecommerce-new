@@ -234,8 +234,8 @@ span[aria-label="Loading Spinner"] > span {
 
 .paginate {
   border: 1px solid #3bb77e;
-  border-radius: 50%;
-  padding: 12px 20px;
+  border-right: none !important;
+  padding: 6px 14px;
 }
 
 .paginate.active {
@@ -374,6 +374,69 @@ span[aria-label="Loading Spinner"] > span {
   align-items: center;
   height: 100px;
   object-fit: contain;
+}
+
+.bell-icon {
+  font-size: 25px;
+}
+
+.hotline .header-action-icon-2 > .pro-count {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  color: #ffffff;
+  height: 20px;
+  width: 20px;
+  border-radius: 100%;
+  font-weight: 500;
+  font-size: 12px;
+  text-align: center;
+  line-height: 20px;
+}
+
+.hotline .header-action-icon-2 > .pro-count {
+  background-color: #3bb77e;
+}
+
+.notification-dropdown {
+  list-style-type: none;
+  position: absolute;
+  top: 177%;
+  right: 0;
+  z-index: 99;
+  margin: 0;
+  padding: 12px;
+  background: #fff;
+  border: 1px solid #bce3c9;
+  border-radius: 10px;
+  font-size: 16px;
+  min-width: 270px;
+  -webkit-transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+  transition: all 0.25s cubic-bezier(0.645, 0.045, 0.355, 1);
+  opacity: 0;
+  visibility: hidden;
+  margin-top: 26px;
+  top: 72%;
+  -webkit-box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.05);
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.05);
+  min-width: 300px !important;
+}
+
+.notification-dropdown.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.notification.component {
+  box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid #bce3c9;
+  border-radius: 10px;
+  padding: 5px;
+  background-color: #4dcc91;
+}
+
+.notification.component.read {
+  background-color: #acb4b0;
 }
 
 @media only screen and (max-width: 1366px) {

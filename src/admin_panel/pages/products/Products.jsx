@@ -8,6 +8,10 @@ import { Modal } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
 import Paginate from "../../components/paginate/Paginate";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
+import { LazyLoadImage } from "react-lazy-load-image-component";
+import BASE_URL from "../../../utility-functions/config";
 
 function Products() {
   const categories = useSelector((state) => state.categories.categories);
@@ -15,6 +19,9 @@ function Products() {
   const [newProductModalIsOpen, setNewProductModalIsOpen] = useState(false);
   const [editProductModalIsOpen, setEditProductModalIsOpen] = useState(false);
   const [productId, setProductId] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
+  const [imageLengthError, setImageLengthError] = useState(false);
+  const [open, setOpen] = useState(false);
   const {
     register: registerNew,
     handleSubmit: handleNewProSubmit,
@@ -44,6 +51,7 @@ function Products() {
   }, []);
 
   const onNewProductSubmit = (data) => {
+    if (data.image1.length < 2) return setImageLengthError(true);
     const formData = new FormData();
     formData.append("file", data.image1[0]);
     formData.append("file", data.image1[1]);
@@ -74,6 +82,7 @@ function Products() {
               if (res.status) {
                 setProductsByPage(res.products);
                 setNewProductModalIsOpen(false);
+                setImageFile(null);
               }
             })
             .catch((err) => {
@@ -122,6 +131,8 @@ function Products() {
   };
 
   const onEditProductSubmit = (data) => {
+    if (data.image1.length > 0 && data.image1.length < 2)
+      return setImageLengthError(true);
     const formData = new FormData();
     formData.append("file", data.image1[0]);
     formData.append("file", data.image1[1]);
@@ -151,6 +162,8 @@ function Products() {
               if (res.status) {
                 setProductsByPage(res.products);
                 setEditProductModalIsOpen(false);
+                setImageFile(null);
+                setImageLengthError(false);
               }
             })
             .catch((err) => {
@@ -164,6 +177,37 @@ function Products() {
         console.log(err);
         errorToast(err.error);
       });
+  };
+
+  const handleFileChange = (e) => {
+    setImageFile(
+      e.target.files.length > 1
+        ? {
+            image1: URL.createObjectURL(e.target.files[0]),
+            image2: URL.createObjectURL(e.target.files[1]),
+          }
+        : {
+            image1: URL.createObjectURL(e.target.files[0]),
+          }
+    );
+    setProductId(
+      e.target.files.length > 1
+        ? {
+            ...productId,
+            images: {
+              image1: URL.createObjectURL(e.target.files[0]),
+              image2: URL.createObjectURL(e.target.files[1]),
+            },
+          }
+        : {
+            ...productId,
+            images: {
+              image1: URL.createObjectURL(e.target.files[0]),
+              image2: null,
+            },
+          }
+    );
+    setImageLengthError(false);
   };
 
   return (
@@ -189,7 +233,6 @@ function Products() {
             <th>Cost</th>
             <th>Price</th>
             <th>Discount</th>
-            <th>Image</th>
             <th>Image</th>
             <th>Action</th>
           </tr>
@@ -241,6 +284,8 @@ function Products() {
           onHide={() => {
             resetNew();
             setNewProductModalIsOpen(false);
+            setImageFile(null);
+            setImageLengthError(false);
           }}
           style={{ zIndex: "9999", padding: 0 }}
         >
@@ -382,17 +427,40 @@ function Products() {
                   <label className="form-label">
                     Image <span className="text-muted">(select two)</span>
                   </label>
-                  <input
-                    {...registerNew("image1", {
-                      required: "This field is required",
-                    })}
-                    className="form-control image-input"
-                    type="file"
-                    name="image1"
-                    multiple
-                  />
+                  <div className="d-flex align-items-end">
+                    <input
+                      {...registerNew("image1", {
+                        required: "This field is required",
+                      })}
+                      className="form-control image-input"
+                      type="file"
+                      name="image1"
+                      multiple
+                      onChange={handleFileChange}
+                    />
+                    {imageFile && (
+                      <div className="d-flex align-items-end">
+                        <img
+                          className="prof-pic ms-3"
+                          style={{ borderRadius: "50%" }}
+                          src={imageFile.image1}
+                        />
+                        {imageFile?.image2 && (
+                          <img
+                            className="prof-pic ms-3"
+                            style={{ borderRadius: "50%" }}
+                            src={imageFile.image2}
+                          />
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <p className="text-danger">{errorsNew?.image1?.message}</p>
+                  {imageLengthError && (
+                    <p className="text-danger">Please select two images</p>
+                  )}
                 </div>
-                <p className="text-danger">{errorsNew?.image1?.message}</p>
+
                 <button
                   className="btn btn-sm btn-heading btn-block hover-up"
                   type="submit"
@@ -415,6 +483,8 @@ function Products() {
           onHide={() => {
             resetEdit();
             setEditProductModalIsOpen(false);
+            setImageFile(null);
+            setImageLengthError(false);
           }}
           style={{ zIndex: "9999", padding: 0 }}
         >
@@ -431,6 +501,10 @@ function Products() {
                     className="form-control"
                     name="sku"
                     type="text"
+                    value={productId?.sku}
+                    onChange={(e) =>
+                      setProductId({ ...productId, sku: e.target.value })
+                    }
                   />
                 </div>
                 <p className="text-danger">{errorsEdit?.sku?.message}</p>
@@ -441,6 +515,10 @@ function Products() {
                     className="form-control"
                     name="name"
                     type="text"
+                    value={productId?.name}
+                    onChange={(e) =>
+                      setProductId({ ...productId, name: e.target.value })
+                    }
                   />
                 </div>
                 <p className="text-danger">{errorsEdit?.name?.message}</p>
@@ -451,6 +529,13 @@ function Products() {
                     className="form-control"
                     name="description"
                     type="text"
+                    value={productId?.description}
+                    onChange={(e) =>
+                      setProductId({
+                        ...productId,
+                        description: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <p className="text-danger">
@@ -463,6 +548,10 @@ function Products() {
                     className="form-control"
                     name="category"
                     type="text"
+                    value={productId?.category}
+                    onChange={(e) =>
+                      setProductId({ ...productId, category: e.target.value })
+                    }
                   >
                     <option value="" placeholder="Select an option">
                       Select an option
@@ -483,6 +572,10 @@ function Products() {
                     className="form-control"
                     name="quantity"
                     type="text"
+                    value={productId?.quantity}
+                    onChange={(e) =>
+                      setProductId({ ...productId, quantity: e.target.value })
+                    }
                   />
                 </div>
                 <p className="text-danger">{errorsEdit?.quantity?.message}</p>
@@ -493,6 +586,10 @@ function Products() {
                     className="form-control"
                     name="price"
                     type="text"
+                    value={productId?.price}
+                    onChange={(e) =>
+                      setProductId({ ...productId, price: e.target.value })
+                    }
                   />
                 </div>
                 <p className="text-danger">{errorsEdit?.price?.message}</p>
@@ -503,6 +600,10 @@ function Products() {
                     className="form-control"
                     name="cost"
                     type="text"
+                    value={productId?.cost}
+                    onChange={(e) =>
+                      setProductId({ ...productId, cost: e.target.value })
+                    }
                   />
                 </div>
                 <p className="text-danger">{errorsEdit?.cost?.message}</p>
@@ -533,6 +634,10 @@ function Products() {
                     className="form-control"
                     name="discountValue"
                     type="text"
+                    value={productId?.discount}
+                    onChange={(e) =>
+                      setProductId({ ...productId, discount: e.target.value })
+                    }
                   />
                 </div>
                 <p className="text-danger">
@@ -542,15 +647,42 @@ function Products() {
                   <label className="form-label">
                     Image <span className="text-muted">(select two)</span>
                   </label>
-                  <input
-                    {...registerEdit("image1")}
-                    className="form-control image-input"
-                    type="file"
-                    name="image1"
-                    multiple
-                  />
+                  <div className="d-flex align-items-end">
+                    <input
+                      {...registerEdit("image1")}
+                      className="form-control image-input"
+                      type="file"
+                      name="image1"
+                      multiple
+                      onChange={handleFileChange}
+                    />
+                    {productId?.images && (
+                      <div className="d-flex align-items-end">
+                        <LazyLoadImage
+                          className="prof-pic ms-3 cursor-pointer"
+                          style={{ borderRadius: "50%" }}
+                          src={`${productId?.images?.image1}`}
+                          onClick={() => setOpen(true)}
+                        />
+
+                        <Lightbox
+                          open={open}
+                          close={() => setOpen(false)}
+                          slides={Object.values(productId?.images).map(
+                            (image) => {
+                              return { src: `${image}` };
+                            }
+                          )}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  {imageLengthError && (
+                    <p className="text-danger">Please select two images</p>
+                  )}
                 </div>
                 <p className="text-danger">{errorsEdit?.image1?.message}</p>
+
                 <button
                   className="btn btn-sm btn-heading btn-block hover-up"
                   type="submit"

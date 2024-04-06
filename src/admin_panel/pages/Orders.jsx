@@ -421,7 +421,7 @@ function Orders() {
                   data-testid="loader"
                 />
                 <p
-                  className={`me-1 paginate cursor-pointer paginate-arrow ${
+                  className={`paginate cursor-pointer paginate-arrow ${
                     !orders?.hasPrevPage && "disable"
                   }`}
                   data={"decrease"}
@@ -432,7 +432,7 @@ function Orders() {
                 {orders &&
                   [...Array(orders?.totalPages)].map((item, i) => (
                     <p
-                      className={`me-1 paginate cursor-pointer ${
+                      className={`paginate cursor-pointer ${
                         orders?.page == i + 1 && "active"
                       } ${paginateIsDisabled && "disable"}`}
                       onClick={handlePaginateClick}
@@ -442,8 +442,33 @@ function Orders() {
                       {i + 1}
                     </p>
                   ))}
+
+                {/* {orders &&
+                  [...Array(orders?.totalPages)].map((item, i) => {
+                    if (
+                      orders?.totalPages <= 7 ||
+                      i < 4 ||
+                      i > orders?.totalPages - 2
+                    ) {
+                      return (
+                        <p
+                          className={`me-1 paginate cursor-pointer ${
+                            orders?.page == i + 1 && "active"
+                          } ${paginateIsDisabled && "disable"}`}
+                          onClick={handlePaginateClick}
+                          key={i}
+                          data={i + 1}
+                        >
+                          {i + 1}
+                        </p>
+                      );
+                    } else if (i === 3 || i === orders?.totalPages - 4) {
+                      return <p key={i}>...</p>;
+                    }
+                    return null;
+                  })} */}
                 <p
-                  className={`me-1 paginate cursor-pointer paginate-arrow ${
+                  className={`paginate cursor-pointer paginate-arrow ${
                     !orders?.hasNextPage && "disable"
                   }`}
                   data={"increase"}
@@ -470,7 +495,7 @@ function Orders() {
           style={{ zIndex: "9999", padding: 0 }}
         >
           <Modal.Header style={{ border: "none" }} closeButton>
-            <h5>Order ID: {orderId.id}</h5>
+            <h5>Order ID: {orderId.orderId}</h5>
           </Modal.Header>
           <Modal.Body>
             <form

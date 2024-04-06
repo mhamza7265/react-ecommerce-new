@@ -115,6 +115,34 @@ function Customers() {
     }
   };
 
+  const changeRole = (id, role) => {
+    sendRequest("post", "changeRole", { id, role }, undefined, "admin")
+      .then((res) => {
+        if (res.status) {
+          sendRequest(
+            "get",
+            `users/listing?page=${users?.page}&type=basic`,
+            undefined,
+            undefined,
+            "admin"
+          )
+            .then((res) => {
+              if (res.status) {
+                setUsers(res.users);
+              } else {
+                console.log("error fetching users list");
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
     <div className="container">
       <h3 className="mb-4">Customers</h3>
@@ -127,6 +155,7 @@ function Customers() {
             <th>Last Name</th>
             <th>Email</th>
             <th>Role</th>
+            <th>Change Role</th>
             <th>Account Status</th>
             <th>Action</th>
           </tr>
@@ -146,6 +175,7 @@ function Customers() {
                 status={item.blocked}
                 handleBlockUnblockClick={handleBlockUnblockClick}
                 handleDeleteClick={handleDeleteClick}
+                changeRole={changeRole}
               />
             ))
           ) : (

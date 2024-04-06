@@ -12,7 +12,11 @@ import { BarLoader } from "react-spinners";
 function NavbarHeaderBottom({ setactive, isactive }) {
   const products = useSelector((state) => state.products.products);
   const [sticky, setSticky] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const spinnerStatus = useSelector((state) => state.spinner.status);
+  const notifications = useSelector(
+    (state) => state.notifications.notifications
+  );
 
   const navbarOffset = useRef();
 
@@ -79,6 +83,39 @@ function NavbarHeaderBottom({ setactive, isactive }) {
                   <NavbarMainMenu />
                 </div>
                 <div className="hotline d-none d-lg-flex ms-auto">
+                  <div className="position-relative">
+                    <div
+                      className="me-4 p-2 header-action-icon-2 position-relative cursor-pointer"
+                      onClick={() => setNotificationsOpen(!notificationsOpen)}
+                    >
+                      <i className="fa fa-bell bell-icon"></i>
+                      <span className="pro-count blue">
+                        {notifications ? notifications?.length : 0}
+                      </span>
+                    </div>
+                    <div
+                      className={` ${
+                        notificationsOpen
+                          ? "notification-dropdown open"
+                          : "notification-dropdown"
+                      }`}
+                    >
+                      {notifications &&
+                        notifications.map((notification, i) => (
+                          <div
+                            key={i}
+                            className={` ${
+                              notification?.read
+                                ? "notification component mb-2 read"
+                                : "notification component mb-2"
+                            }`}
+                          >
+                            <h5>{notification.title}</h5>
+                            <span>{notification.description}</span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
                   <LazyLoadImage src={icnhp} alt="hotline" />
                   <p>
                     1900 - 888<span>24/7 Support Center</span>

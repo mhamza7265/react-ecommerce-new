@@ -61,6 +61,7 @@ import { getToken, onMessage } from "firebase/messaging";
 import { messaging } from "./firebase/firebaseConfig";
 import { ToastContainer, toast } from "react-toastify";
 import Message from "./common/Message";
+import { addNotifications } from "./redux/reducers/notificatonsReducer";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -186,6 +187,15 @@ function App() {
       });
   }, []);
 
+  useEffect(() => {
+    sendRequest("get", "notifications").then((res) => {
+      console.log("notificationss", res.notifications);
+      if (res.status) {
+        dispatch(addNotifications(res.notifications));
+      }
+    });
+  }, []);
+
   const handleClick = (e) => {
     const targetElement = e.target.getAttribute("class");
     if (
@@ -201,7 +211,12 @@ function App() {
 
   onMessage(messaging, (payload) => {
     console.log("message", payload);
-    successToast(<Message notification={payload.notification} />);
+    sendRequest("post", "saveNotification", {
+      title: payload.data.title,
+      description: payload.data.body,
+      read: false,
+    });
+    successToast(<Message notification={payload.data} />);
   });
 
   return (

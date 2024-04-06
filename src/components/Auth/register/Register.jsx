@@ -12,6 +12,8 @@ import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { GoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { addLogInUser } from "../../../redux/reducers/logingInUserReducer";
 
 function Register() {
   const [loading, setLoading] = useState(false);
@@ -19,6 +21,7 @@ function Register() {
   const [rptPwVisible, setRptPwVisible] = useState(false);
   const [imageFile, setImageFile] = useState(null);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const {
     register,
     handleSubmit,
@@ -46,6 +49,7 @@ function Register() {
   };
 
   const onSubmit = (data) => {
+    dispatch(addLogInUser(data.email));
     const formData = new FormData();
     formData.append("email", data.email);
     formData.append("firstName", data.first_name);
@@ -61,12 +65,12 @@ function Register() {
         if (res.status) {
           successToast(res.message);
           setTimeout(() => {
-            navigate("/login");
+            navigate("/verify");
           }, 3000);
         } else {
           errorToast(res.error);
           setTimeout(() => {
-            navigate("/login");
+            navigate("/verify");
           }, 3000);
         }
       })

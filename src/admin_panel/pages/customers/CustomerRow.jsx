@@ -1,4 +1,6 @@
 import BASE_URL from "../../../utility-functions/config";
+import profilePlaceholder from "../../../assets/imgs/profile_placeholder_img.jpg";
+import sendRequest from "../../../utility-functions/apiManager";
 
 function CustomerRow({
   serial,
@@ -11,16 +13,32 @@ function CustomerRow({
   status,
   handleBlockUnblockClick,
   handleDeleteClick,
+  changeRole,
 }) {
   // console.log("status", status);
+  const handleRoleChange = () => {
+    changeRole(id, "admin");
+  };
   return (
     <tr className="customer-row" data={id}>
       <td>{serial + 1}</td>
-      <td>{<img className="prof-pic" src={`${BASE_URL + "/" + image}`} />}</td>
+      <td>
+        {
+          <img
+            className="prof-pic"
+            src={image ? `${BASE_URL + "/" + image}` : profilePlaceholder}
+          />
+        }
+      </td>
       <td>{firstName}</td>
       <td>{lastName}</td>
       <td>{email}</td>
-      <td>{role}</td>
+      <td>{role == "basic" ? "User" : role}</td>
+      <td>
+        <button className="btn btn-sm btn-secondary" onClick={handleRoleChange}>
+          Make Admin
+        </button>
+      </td>
       <td className={``}>
         <span className={`badge ${status ? "bg-danger" : "bg-success"}`}>
           {status ? "Deactivated" : "Active"}

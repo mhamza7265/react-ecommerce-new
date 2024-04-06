@@ -13,6 +13,7 @@ function Categories() {
   const [newCategoryModalIsOpen, setNewCategoryModalIsOpen] = useState(false);
   const [editCategoryModalIsOpen, setEditCategoryModalIsOpen] = useState(false);
   const [categoryId, setCategoryId] = useState(null);
+  const [imageFile, setImageFile] = useState(null);
   const {
     register: registerNew,
     handleSubmit: handleNewCatSubmit,
@@ -63,6 +64,7 @@ function Categories() {
               if (res.status) {
                 setCategoriesList(res.categories);
                 setNewCategoryModalIsOpen(false);
+                setImageFile(null);
               }
             })
             .catch((err) => {
@@ -102,6 +104,7 @@ function Categories() {
               if (res.status) {
                 setCategoriesList(res.categories);
                 setNewCategoryModalIsOpen(false);
+                setImageFile(null);
               }
             })
             .catch((err) => {
@@ -147,6 +150,14 @@ function Categories() {
     } else {
       return;
     }
+  };
+
+  const handleFileChange = (e) => {
+    setImageFile(URL.createObjectURL(e.target.files[0]));
+    setCategoryId({
+      ...categoryId,
+      image: URL.createObjectURL(e.target.files[0]),
+    });
   };
 
   return (
@@ -213,6 +224,7 @@ function Categories() {
           onHide={() => {
             resetNew();
             setNewCategoryModalIsOpen(false);
+            setImageFile(null);
           }}
           style={{ zIndex: "9999", padding: 0 }}
         >
@@ -248,14 +260,24 @@ function Categories() {
                 <p className="text-danger">{errorsNew?.desc?.message}</p>
                 <div className="form-group">
                   <label className="form-label w-100">Image</label>
-                  <input
-                    {...registerNew("image", {
-                      required: "This field is required",
-                    })}
-                    className="form-control image-input"
-                    type="file"
-                    name="image"
-                  />
+                  <div className="d-flex align-items-end">
+                    <input
+                      {...registerNew("image", {
+                        required: "This field is required",
+                      })}
+                      className="form-control image-input"
+                      type="file"
+                      name="image"
+                      onChange={handleFileChange}
+                    />
+                    {imageFile && (
+                      <img
+                        className="prof-pic ms-3"
+                        style={{ borderRadius: "50%" }}
+                        src={imageFile}
+                      />
+                    )}
+                  </div>
                 </div>
                 <p className="text-danger">{errorsNew?.image?.message}</p>
                 <button
@@ -279,6 +301,7 @@ function Categories() {
           onHide={() => {
             resetEdit();
             setEditCategoryModalIsOpen(false);
+            setImageFile(null);
           }}
           style={{ zIndex: "9999", padding: 0 }}
         >
@@ -295,6 +318,10 @@ function Categories() {
                     className="form-control"
                     name="name"
                     type="text"
+                    value={categoryId?.name}
+                    onChange={(e) =>
+                      setCategoryId({ ...categoryId, name: e.target.value })
+                    }
                   />
                 </div>
                 <div className="form-group">
@@ -304,16 +331,33 @@ function Categories() {
                     className="form-control"
                     name="desc"
                     type="text"
+                    value={categoryId?.description}
+                    onChange={(e) =>
+                      setCategoryId({
+                        ...categoryId,
+                        description: e.target.value,
+                      })
+                    }
                   />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Image</label>
-                  <input
-                    {...registerEdit("image")}
-                    className="form-control image-input"
-                    type="file"
-                    name="image"
-                  />
+                  <div className="d-flex align-items-end">
+                    <input
+                      {...registerEdit("image")}
+                      className="form-control image-input"
+                      type="file"
+                      name="image"
+                      onChange={handleFileChange}
+                    />
+                    {categoryId?.image && (
+                      <img
+                        className="prof-pic ms-3"
+                        style={{ borderRadius: "50%" }}
+                        src={categoryId?.image}
+                      />
+                    )}
+                  </div>
                 </div>
                 <button
                   className="btn btn-sm btn-heading btn-block hover-up"

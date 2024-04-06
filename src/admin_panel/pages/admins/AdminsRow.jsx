@@ -1,4 +1,5 @@
 import BASE_URL from "../../../utility-functions/config";
+import profilePlaceholder from "../../../assets/imgs/profile_placeholder_img.jpg";
 
 function AdminsRow({
   serial,
@@ -17,7 +18,10 @@ function AdminsRow({
     <tr className="admin-row" data={id}>
       <td>{serial + 1}</td>
       <td>
-        <img className="prof-pic" src={`${BASE_URL + "/" + image}`} />
+        <img
+          className="prof-pic"
+          src={image ? `${BASE_URL + "/" + image}` : profilePlaceholder}
+        />
       </td>
       <td>{firstName}</td>
       <td>{lastName}</td>

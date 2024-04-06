@@ -13,12 +13,12 @@ function CategoryRow({
   deleteCategory,
 }) {
   const handleDeleteClick = () => {
-    setCategoryId({ id, name, description, image });
+    setCategoryId({ id, name, description, image: BASE_URL + "/" + image });
     deleteCategory();
   };
 
   const handleEditClick = () => {
-    setCategoryId({ id, name, description, image });
+    setCategoryId({ id, name, description, image: BASE_URL + "/" + image });
     setEditCategoryModalIsOpen(true);
   };
 

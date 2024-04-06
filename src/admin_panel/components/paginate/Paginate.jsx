@@ -98,7 +98,7 @@ function Paginate({ endPoint, state, setState, formType, query }) {
             data-testid="loader"
           />
           <p
-            className={`me-1 paginate cursor-pointer paginate-arrow ${
+            className={`paginate cursor-pointer paginate-arrow ${
               !state?.hasPrevPage && "disable"
             }`}
             data={"decrease"}
@@ -109,7 +109,7 @@ function Paginate({ endPoint, state, setState, formType, query }) {
           {state &&
             [...Array(state?.totalPages)].map((item, i) => (
               <p
-                className={`me-1 paginate cursor-pointer ${
+                className={`paginate cursor-pointer ${
                   state?.page == i + 1 && "active"
                 } ${paginateIsDisabled && "disable"}`}
                 onClick={handlePaginateClick}
@@ -120,7 +120,7 @@ function Paginate({ endPoint, state, setState, formType, query }) {
               </p>
             ))}
           <p
-            className={`me-1 paginate cursor-pointer paginate-arrow ${
+            className={`paginate cursor-pointer paginate-arrow ${
               !state?.hasNextPage && "disable"
             }`}
             data={"increase"}

@@ -1,5 +1,8 @@
+import { useState } from "react";
 import BASE_URL from "../../../utility-functions/config";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import Lightbox from "yet-another-react-lightbox";
+import "yet-another-react-lightbox/styles.css";
 
 function ProductsRow({
   id,
@@ -17,12 +20,27 @@ function ProductsRow({
   setEditProductModalIsOpen,
   setProductId,
 }) {
+  const [open, setOpen] = useState(false);
   const handleDeleteClick = () => {
     deleteProduct(id);
   };
 
   const handleEditClick = () => {
-    setProductId(id);
+    setProductId({
+      id,
+      sku,
+      name,
+      description,
+      category,
+      quantity,
+      price,
+      discount,
+      cost,
+      images: {
+        image1: BASE_URL + "/" + images[0],
+        image2: BASE_URL + "/" + images[1],
+      },
+    });
     setEditProductModalIsOpen(true);
   };
 
@@ -39,14 +57,17 @@ function ProductsRow({
       <td>{discount}%</td>
       <td>
         <LazyLoadImage
-          className="category-img"
-          src={BASE_URL + "/" + images[0]}
+          className="category-img cursor-pointer"
+          src={`${BASE_URL}/${images[0]}`}
+          onClick={() => setOpen(true)}
         />
-      </td>
-      <td>
-        <LazyLoadImage
-          className="category-img"
-          src={BASE_URL + "/" + images[1]}
+
+        <Lightbox
+          open={open}
+          close={() => setOpen(false)}
+          slides={images.map((image) => {
+            return { src: `${BASE_URL}/${image}` };
+          })}
         />
       </td>
       <td>
