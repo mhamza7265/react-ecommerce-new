@@ -62,6 +62,8 @@ import { messaging } from "./firebase/firebaseConfig";
 import { ToastContainer, toast } from "react-toastify";
 import Message from "./common/Message";
 import { addNotifications } from "./redux/reducers/notificatonsReducer";
+import Blank2 from "./admin_panel/pages/Blank2";
+import HomePage from "./admin_panel/pages/CMS/HomePage";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -405,7 +407,10 @@ function App() {
             <Route path="customers" element={<Customers />} />
             <Route path="admins" element={<Admins />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="stats" element={<Blank />} />
+            <Route path="cms">
+              <Route path="homepage" element={<HomePage />} />
+              <Route path="about" element={<Blank2 />} />
+            </Route>
           </Route>
         </Routes>
         <ScrollToTop />

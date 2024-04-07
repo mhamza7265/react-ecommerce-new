@@ -6,10 +6,12 @@ import { successToast } from "../../../utility-functions/apiManager";
 import { useDispatch } from "react-redux";
 import { addCurrentUser } from "../../../redux/reducers/currentUserReducer";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import { useState } from "react";
 
 const Sidebar = ({ setRegistrationModalIsOpen }) => {
   // const [activeIndex, setActiveIndex] = useState(0);
   // const location = useLocation();
+  const [displayLinks, setDisplayLinks] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -45,6 +47,18 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
     closeSidebar();
   };
 
+  const handleChildNavlinks = (e) => {
+    console.log("target", e.target);
+    if (e.target.classList.contains("cms-btn")) {
+      console.log("yes");
+      setDisplayLinks(true);
+    } else {
+      console.log("no");
+      setDisplayLinks(false);
+    }
+  };
+
+  console.log("links", displayLinks);
   return (
     <div className="sidebar">
       <div className="sidebar__logo">
@@ -53,7 +67,7 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
           <i className="bx bx-x"></i>
         </div>
       </div>
-      <div className="sidebar__menu">
+      <div className="sidebar__menu" onClick={handleChildNavlinks}>
         <NavLink
           to={"/admin"}
           className={`sidebar__menu__item`}
@@ -85,6 +99,54 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
           </div>
           <div className="sidebar__menu__item__txt">Register</div>
         </div>
+        <NavLink className={`sidebar__menu__item cms-btn`}>
+          <div className="sidebar__menu__item__icon cms-btn">
+            <i className="fa fa-dashboard cms-btn"></i>
+          </div>
+          <div className="sidebar__menu__item__txt cms-btn">CMS</div>
+        </NavLink>
+        <NavLink
+          to={"cms/homepage"}
+          className={`sub-menu ${
+            displayLinks
+              ? "sidebar__menu__item cms-btn "
+              : "sidebar__menu__item cms-btn d-none"
+          }`}
+          onClick={closeSidebar}
+        >
+          <div className="sidebar__menu__item__icon cms-btn">
+            <i className="fa fa-dashboard cms-btn"></i>
+          </div>
+          <div className="sidebar__menu__item__txt cms-btn">Home Page</div>
+        </NavLink>
+        <NavLink
+          to={"cms/about"}
+          className={`sub-menu ${
+            displayLinks
+              ? "sidebar__menu__item cms-btn"
+              : "sidebar__menu__item cms-btn d-none"
+          }`}
+          onClick={closeSidebar}
+        >
+          <div className="sidebar__menu__item__icon cms-btn">
+            <i className="fa fa-dashboard cms-btn"></i>
+          </div>
+          <div className="sidebar__menu__item__txt cms-btn">About Page</div>
+        </NavLink>
+        <NavLink
+          to={"cms/settings"}
+          className={`sub-menu ${
+            displayLinks
+              ? "sidebar__menu__item cms-btn"
+              : "sidebar__menu__item cms-btn d-none"
+          }`}
+          onClick={closeSidebar}
+        >
+          <div className="sidebar__menu__item__icon cms-btn">
+            <i className="fa fa-gear cms-btn"></i>
+          </div>
+          <div className="sidebar__menu__item__txt cms-btn">Site settings</div>
+        </NavLink>
         <div className="sidebar__menu__item" onClick={handleLogoutClick}>
           <div className="sidebar__menu__item__icon">
             <i className="fa-solid fa-right-from-bracket"></i>

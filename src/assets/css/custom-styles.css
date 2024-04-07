@@ -439,6 +439,16 @@ span[aria-label="Loading Spinner"] > span {
   background-color: #acb4b0;
 }
 
+.sidebar__menu {
+  height: 50%;
+  overflow-y: auto;
+  width: max-content;
+}
+
+.sidebar__menu__item.sub-menu {
+  margin-left: 50px;
+}
+
 @media only screen and (max-width: 1366px) {
   .main {
     width: 100% !important;
