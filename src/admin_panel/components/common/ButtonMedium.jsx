@@ -1,6 +1,10 @@
-function ButtonMedium({ name, type }) {
+function ButtonMedium({ name, type, onClick, className }) {
   return (
-    <button className="btn btn-md btn-success" type={type}>
+    <button
+      className={`btn btn-md btn-success ${className}`}
+      type={type}
+      onClick={onClick}
+    >
       {name}
     </button>
   );

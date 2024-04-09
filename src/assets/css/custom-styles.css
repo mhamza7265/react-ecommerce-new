@@ -449,6 +449,14 @@ span[aria-label="Loading Spinner"] > span {
   margin-left: 50px;
 }
 
+.cms-form-group input {
+  height: 40px !important;
+}
+
+.cms-form-group .form-control {
+  height: 40px;
+}
+
 @media only screen and (max-width: 1366px) {
   .main {
     width: 100% !important;

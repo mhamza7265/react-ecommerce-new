@@ -1,11 +1,25 @@
-import slider1 from "../../assets/imgs/slider/slider-1.webp";
-import slider2 from "../../assets/imgs/slider/slider-2.webp";
 import Slider from "react-slick";
 import Skeleton from "react-loading-skeleton";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import sendRequest from "../../utility-functions/apiManager";
+import BASE_URL from "../../utility-functions/config";
 
 function HomeSectionHero() {
   const products = useSelector((state) => state.products.products);
+  const [sliders, getSliders] = useState(null);
+
+  useEffect(() => {
+    sendRequest("get", "sliders")
+      .then((res) => {
+        if (res.status) {
+          getSliders(res.sliders);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
 
   var settings = {
     dots: true,
@@ -86,62 +100,47 @@ function HomeSectionHero() {
                 </div>
               ) : (
                 <Slider {...settings}>
-                  <div>
-                    <div
-                      className="single-hero-slider single-animation-wrap"
-                      style={{
-                        backgroundImage: `url(${slider1})`,
-                      }}
-                    >
-                      <div className="slider-contents">
-                        <h1 className="display-2 mb-40">
-                          Don’t miss amazing
-                          <br />
-                          grocery deals
-                        </h1>
-                        <p className="mb-65">
-                          Sign up for the daily newsletter
-                        </p>
-                        <form className="form-subcriber d-flex">
-                          <input
-                            type="email"
-                            placeholder="Your emaill address"
-                          />
-                          <button className="btn" type="submit">
-                            Subscribe
-                          </button>
-                        </form>
+                  {sliders &&
+                    sliders?.map((slider, i) => (
+                      <div key={i}>
+                        <div
+                          className="single-hero-slider single-animation-wrap"
+                          style={{
+                            backgroundImage: `url(${
+                              BASE_URL + "/" + slider.image
+                            })`,
+                          }}
+                        >
+                          <div className="slider-contents">
+                            <h1
+                              className="display-2 mb-40"
+                              style={{
+                                textAlign: slider.textAlign,
+                              }}
+                            >
+                              {slider.text1}
+                            </h1>
+                            <p
+                              className="mb-65"
+                              style={{
+                                textAlign: slider.textAlign,
+                              }}
+                            >
+                              {slider.text2}
+                            </p>
+                            <form className="form-subcriber d-flex">
+                              <input
+                                type="email"
+                                placeholder="Your emaill address"
+                              />
+                              <button className="btn" type="submit">
+                                Subscribe
+                              </button>
+                            </form>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                  <div>
-                    <div
-                      className="single-hero-slider single-animation-wrap"
-                      style={{
-                        backgroundImage: `url(${slider2})`,
-                      }}
-                    >
-                      <div className="slider-contents">
-                        <h1 className="display-2 mb-40">
-                          Fresh Vegetables
-                          <br />
-                          Big discount
-                        </h1>
-                        <p className="mb-65">
-                          Save up to 50% off on your first order
-                        </p>
-                        <form className="form-subcriber d-flex">
-                          <input
-                            type="email"
-                            placeholder="Your emaill address"
-                          />
-                          <button className="btn" type="submit">
-                            Subscribe
-                          </button>
-                        </form>
-                      </div>
-                    </div>
-                  </div>
+                    ))}
                 </Slider>
               )}
             </div>

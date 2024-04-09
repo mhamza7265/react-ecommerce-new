@@ -5,15 +5,15 @@ import ScrollAnimation from "react-animate-on-scroll";
 import BestSellSection from "./skeleton-components/BestsellSection";
 import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import sendRequest, { errorToast } from "../../utility-functions/apiManager";
-import { useNavigate } from "react-router";
+import sendRequest from "../../utility-functions/apiManager";
+import BASE_URL from "../../utility-functions/config";
 
 function HomeSectionBestsell({ setmodal }) {
   const bestsellProducts = useSelector(
     (state) => state.bestsellingProducts.products
   );
-  const navigate = useNavigate();
   const [wishlist, setWishlist] = useState(null);
+  const [bestsellImage, setBestsellImage] = useState(null);
 
   useEffect(() => {
     sendRequest("get", "wishlist")
@@ -22,14 +22,19 @@ function HomeSectionBestsell({ setmodal }) {
           setWishlist(res.wishlist);
         } else {
           console.log(res.error);
-          // if (res.type == "updatePassword") {
-          //   setTimeout(() => {
-          //     navigate("/updatePw");
-          //   }, 2000);
-          // }
         }
       })
       .catch((err) => console.log(err));
+
+    sendRequest("get", "bestselling")
+      .then((res) => {
+        if (res.status) {
+          setBestsellImage(res.bestselling[0]);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   var settings = {
@@ -74,50 +79,6 @@ function HomeSectionBestsell({ setmodal }) {
             animateOnce={true}
           >
             <h3 className="">Daily Best Sells</h3>
-            {/* <ul className="nav nav-tabs links" id="myTab-2" role="tablist">
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link active"
-                  id="nav-tab-one-1"
-                  data-bs-toggle="tab"
-                  data-bs-target="#tab-one-1"
-                  type="button"
-                  role="tab"
-                  aria-controls="tab-one"
-                  aria-selected="true"
-                >
-                  Featured
-                </button>
-              </li>
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link"
-                  id="nav-tab-two-1"
-                  data-bs-toggle="tab"
-                  data-bs-target="#tab-two-1"
-                  type="button"
-                  role="tab"
-                  aria-controls="tab-two"
-                  aria-selected="false"
-                >
-                  Popular
-                </button>
-              </li>
-              <li className="nav-item" role="presentation">
-                <button
-                  className="nav-link"
-                  id="nav-tab-three-1"
-                  data-bs-toggle="tab"
-                  data-bs-target="#tab-three-1"
-                  type="button"
-                  role="tab"
-                  aria-controls="tab-three"
-                  aria-selected="false"
-                >
-                  New added
-                </button>
-              </li>
-            </ul> */}
           </ScrollAnimation>
           <div className="row">
             <ScrollAnimation
@@ -125,12 +86,19 @@ function HomeSectionBestsell({ setmodal }) {
               className="col-lg-3 d-none d-lg-flex"
               animateOnce={true}
             >
-              <div className="banner-img style-2">
+              <div
+                className="banner-img style-2"
+                style={{
+                  background: `url(${BASE_URL}/${bestsellImage?.image})`,
+                }}
+              >
                 <div className="banner-text">
-                  <h2 className="mb-100">Bring nature into your home</h2>
-                  {/* <a className="btn btn-xs">
-                    Shop Now <i className="fi-rs-arrow-small-right"></i>
-                  </a> */}
+                  <h2
+                    className="mb-100"
+                    style={{ textWrap: "wrap", width: "200px" }}
+                  >
+                    {bestsellImage?.text1}
+                  </h2>
                 </div>
               </div>
             </ScrollAnimation>

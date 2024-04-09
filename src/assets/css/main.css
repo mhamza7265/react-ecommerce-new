@@ -2020,7 +2020,8 @@ input.qty-val {
 .hero-slider-1 .slider-contents {
   position: relative;
   top: 50%;
-  left: 6%;
+  margin-left: 50px;
+  margin-right: 50px;
   -webkit-transform: translateY(-50%);
   transform: translateY(-50%);
 }
