@@ -116,7 +116,7 @@ function HomePage() {
     }
   };
 
-  const onEditSubmit = (data) => {};
+  const onEditSubmit = () => {};
 
   //banner
   const handleBannerEdit = () => {};
@@ -238,6 +238,7 @@ function HomePage() {
             data={sliders}
             handleDeleteClick={handleSliderDelete}
             handleEditClick={handleSliderEdit}
+            single={false}
           />
           <CMSForm
             handleSubmit={handleSliderSubmit}
@@ -245,6 +246,8 @@ function HomePage() {
             reset={resetSliderNew}
             error={errorsSliderNew}
             register={registerSliderNew}
+            data={sliders}
+            single={false}
           />
         </section>
         {/*Banner*/}
@@ -255,6 +258,7 @@ function HomePage() {
             data={banners}
             handleDeleteClick={handleBannerDelete}
             handleEditClick={handleBannerEdit}
+            single={true}
           />
           {banners?.length < 3 && (
             <CMSForm
@@ -263,6 +267,7 @@ function HomePage() {
               reset={resetBannerNew}
               error={errorsBannerNew}
               register={registerBannerNew}
+              single={true}
             />
           )}
         </section>
@@ -277,6 +282,7 @@ function HomePage() {
             data={bestselling}
             handleDeleteClick={handleBestsellingDelete}
             handleEditClick={handleBestsellingEdit}
+            single={true}
           />
           {bestselling?.length < 1 && (
             <CMSForm
@@ -285,6 +291,7 @@ function HomePage() {
               reset={resetBestsellNew}
               error={errorsBestsellNew}
               register={registerBestsellNew}
+              single={true}
             />
           )}
         </section>

@@ -1,22 +1,25 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ButtonMedium from "./ButtonMedium";
 import FileTypeInput from "./FileTypeInput";
 import Form from "./Form";
 import Input from "./Input";
 import Select from "./Select";
 
-function CMSForm({ handleSubmit, onSubmit, reset, error, register }) {
+function CMSForm({
+  handleSubmit,
+  onSubmit,
+  reset,
+  error,
+  register,
+  data,
+  single,
+}) {
   const [displayFields, setDisplayFields] = useState(false);
-  const handleSumbitClick = () => {
-    if (!Object.keys(error).length > 0) {
-      setTimeout(() => {
-        setDisplayFields(false);
-        reset();
-      }, 1000);
-    } else {
-      setDisplayFields(true);
-    }
-  };
+
+  useEffect(() => {
+    setDisplayFields(false);
+    reset();
+  }, [data]);
 
   return (
     <div
@@ -44,13 +47,15 @@ function CMSForm({ handleSubmit, onSubmit, reset, error, register }) {
               register={register}
               error={error}
             />
-            <Input
-              label="Text Two"
-              name="textTwo"
-              type="text"
-              register={register}
-              error={error}
-            />
+            {!single && (
+              <Input
+                label="Text Two"
+                name="textTwo"
+                type="text"
+                register={register}
+                error={error}
+              />
+            )}
           </div>
           <Select
             name="textAlign"
@@ -63,7 +68,7 @@ function CMSForm({ handleSubmit, onSubmit, reset, error, register }) {
           <ButtonMedium
             name="Submit"
             type="submit"
-            onClick={handleSumbitClick}
+            // onClick={handleSumbitClick}
           />
         </Form>
       )}

@@ -1,6 +1,6 @@
 import TableRow from "./TableRow";
 
-function CMSTable({ data, handleEditClick, handleDeleteClick }) {
+function CMSTable({ data, handleEditClick, handleDeleteClick, single }) {
   return (
     <table
       style={{
@@ -8,13 +8,14 @@ function CMSTable({ data, handleEditClick, handleDeleteClick }) {
         width: "90%",
         margin: "20px auto 0 auto",
       }}
+      className="cms-table"
     >
       <thead>
         <tr>
           <th>Sr. No#</th>
           <th>Image</th>
           <th>Text One</th>
-          <th>Text Two</th>
+          {!single && <th>Text Two</th>}
           <th>Text Align</th>
           <th>Action</th>
         </tr>
@@ -27,8 +28,11 @@ function CMSTable({ data, handleEditClick, handleDeleteClick }) {
             srNum={i + 1}
             image={data.image}
             text1={data.text1}
+            text1Sub={data.text1Sub}
             text2={data.text2}
+            text2Sub={data.text2Sub}
             align={data.textAlign}
+            single={single}
             handleEdit={handleEditClick}
             handleDelete={handleDeleteClick}
           />

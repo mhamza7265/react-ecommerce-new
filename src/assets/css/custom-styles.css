@@ -457,6 +457,24 @@ span[aria-label="Loading Spinner"] > span {
   height: 40px;
 }
 
+.cms-table thead th {
+  text-align: center;
+}
+
+.cms-table tbody td {
+  text-align: center;
+}
+
+.cms-img {
+  width: max-content;
+  margin: auto;
+}
+
+.cms-action-btns {
+  width: max-content;
+  margin: auto;
+}
+
 @media only screen and (max-width: 1366px) {
   .main {
     width: 100% !important;
