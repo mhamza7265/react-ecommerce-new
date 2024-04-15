@@ -10,10 +10,10 @@ function HomeSectionHero() {
   const [sliders, getSliders] = useState(null);
 
   useEffect(() => {
-    sendRequest("get", "sliders")
+    sendRequest("get", "getHomePage/sliders")
       .then((res) => {
         if (res.status) {
-          getSliders(res.sliders);
+          getSliders(res.homePage);
         }
       })
       .catch((err) => {

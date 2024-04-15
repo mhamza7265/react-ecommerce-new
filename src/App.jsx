@@ -62,8 +62,12 @@ import { messaging } from "./firebase/firebaseConfig";
 import { ToastContainer, toast } from "react-toastify";
 import Message from "./common/Message";
 import { addNotifications } from "./redux/reducers/notificatonsReducer";
-import Blank2 from "./admin_panel/pages/Blank2";
+import Blank2 from "./admin_panel/pages/CMSPage";
 import HomePage from "./admin_panel/pages/CMS/HomePage";
+import CMSPage from "./admin_panel/pages/CMSPage";
+import CMSIndex from "./admin_panel/pages/CMS/CMSIndex";
+import SiteSetting from "./admin_panel/pages/CMS/SiteSetting";
+import AboutPage from "./admin_panel/pages/CMS/AboutPage";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -86,6 +90,16 @@ function App() {
       /*...*/
     },
   };
+  useEffect(() => {
+    if (!localStorage.getItem("settings")) {
+      sendRequest("get", "settings").then((res) => {
+        const obj = { title: res.setting.title, image: res.setting.image };
+        localStorage.setItem("settings", JSON.stringify(obj));
+      });
+    } else {
+      null;
+    }
+  }, []);
 
   useEffect(() => {
     sendRequest("get", "product")
@@ -95,9 +109,7 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
 
-  useEffect(() => {
     sendRequest("get", "products/listing")
       .then((res) => {
         dispatch(addProductByPage(res.products.docs));
@@ -105,9 +117,7 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
 
-  useEffect(() => {
     sendRequest("get", "products/bestsell")
       .then((res) => {
         dispatch(addBestsellProduct(res.products));
@@ -115,9 +125,7 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
 
-  useEffect(() => {
     sendRequest("get", "cart/qty")
       .then((res) => {
         dispatch(updateCartQuantity(res.quantity));
@@ -125,9 +133,7 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
 
-  useEffect(() => {
     sendRequest("get", "cart")
       .then((res) => {
         if (res.status) {
@@ -137,9 +143,7 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
 
-  useEffect(() => {
     sendRequest("get", "wishlist/qty")
       .then((res) => {
         dispatch(updateWishlistQuantity(res.wishlistQuantity));
@@ -147,9 +151,7 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
 
-  useEffect(() => {
     sendRequest("get", "orders")
       .then((res) => {
         if (res.status) dispatch(updateOrder(res.orders));
@@ -157,25 +159,13 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
 
-  useEffect(() => {
     sendRequest("get", "category")
       .then((res) => {
         dispatch(addCategory(res.categories));
       })
       .catch((err) => console.log(err));
-  }, []);
 
-  useEffect(() => {
-    sendRequest("get", "wishlist")
-      .then((res) => {
-        dispatch(addWishlist(res.wishlist));
-      })
-      .catch((err) => console.log(err));
-  }, [updateWishlist]);
-
-  useEffect(() => {
     sendRequest("get", "user")
       .then((res) => {
         if (res.user) {
@@ -187,16 +177,21 @@ function App() {
       .catch((err) => {
         console.log(err);
       });
-  }, []);
 
-  useEffect(() => {
     sendRequest("get", "notifications").then((res) => {
-      console.log("notificationss", res.notifications);
       if (res.status) {
         dispatch(addNotifications(res.notifications));
       }
     });
   }, []);
+
+  useEffect(() => {
+    sendRequest("get", "wishlist")
+      .then((res) => {
+        dispatch(addWishlist(res.wishlist));
+      })
+      .catch((err) => console.log(err));
+  }, [updateWishlist]);
 
   const handleClick = (e) => {
     const targetElement = e.target.getAttribute("class");
@@ -407,9 +402,11 @@ function App() {
             <Route path="customers" element={<Customers />} />
             <Route path="admins" element={<Admins />} />
             <Route path="profile" element={<Profile />} />
-            <Route path="cms">
+            <Route path="cms" element={<CMSPage />}>
+              <Route index element={<CMSIndex />} />
               <Route path="homepage" element={<HomePage />} />
-              <Route path="about" element={<Blank2 />} />
+              <Route path="about" element={<AboutPage />} />
+              <Route path="settings" element={<SiteSetting />} />
             </Route>
           </Route>
         </Routes>

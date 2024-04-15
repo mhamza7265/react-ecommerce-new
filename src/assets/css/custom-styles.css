@@ -2,7 +2,7 @@
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 10;
+  z-index: 999;
   transition: all 0.3s ease 0s;
   box-shadow: 0 8px 20px 0 rgba(0, 0, 0, 0.05);
   animation: topdownheader 700ms ease-in-out 0s normal none 1;
@@ -449,12 +449,13 @@ span[aria-label="Loading Spinner"] > span {
   margin-left: 50px;
 }
 
-.cms-form-group input {
+.cms-form-group .form-control:not([type="file"]) {
   height: 40px !important;
 }
 
-.cms-form-group .form-control {
-  height: 40px;
+.input .cms-form-group textarea.form-control {
+  height: 200px !important;
+  width: 400px;
 }
 
 .cms-table thead th {
@@ -470,9 +471,21 @@ span[aria-label="Loading Spinner"] > span {
   margin: auto;
 }
 
+.half-section {
+  padding: 45px 0;
+}
+
+.half-section:not(:last-child) {
+  border-bottom: 1px solid #000;
+}
+
 .cms-action-btns {
   width: max-content;
   margin: auto;
+}
+
+.cms-form-group .form-control {
+  background: #9dc7b3 !important;
 }
 
 @media only screen and (max-width: 1366px) {

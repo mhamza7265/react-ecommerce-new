@@ -26,10 +26,10 @@ function HomeSectionBestsell({ setmodal }) {
       })
       .catch((err) => console.log(err));
 
-    sendRequest("get", "bestselling")
+    sendRequest("get", "getHomePage/bestSelling")
       .then((res) => {
         if (res.status) {
-          setBestsellImage(res.bestselling[0]);
+          setBestsellImage(res.homePage[0]);
         }
       })
       .catch((err) => {

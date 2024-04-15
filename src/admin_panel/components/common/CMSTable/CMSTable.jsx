@@ -1,6 +1,13 @@
 import TableRow from "./TableRow";
 
-function CMSTable({ data, handleEditClick, handleDeleteClick, single }) {
+function CMSTable({
+  data,
+  section,
+  handleEditClick,
+  handleDeleteClick,
+  single,
+  editValues,
+}) {
   return (
     <table
       style={{
@@ -35,6 +42,8 @@ function CMSTable({ data, handleEditClick, handleDeleteClick, single }) {
             single={single}
             handleEdit={handleEditClick}
             handleDelete={handleDeleteClick}
+            section={section}
+            editValues={editValues}
           />
         ))}
       </tbody>

@@ -7,12 +7,17 @@ import sendRequest, {
 } from "../../../utility-functions/apiManager";
 import { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
+import CMSEditForm from "../../components/common/CMSEditForm";
 
 function HomePage() {
   const [sliders, setSliders] = useState(null);
   const [banners, setBanners] = useState(null);
   const [bestselling, setBestselling] = useState(null);
   const [editModalIsOpen, setEditModalIsOpen] = useState(false);
+  const [sectionType, setSectionType] = useState(null);
+  const [single, setSingle] = useState(false);
+  const [docId, setDocId] = useState(null);
+  const [editValues, setEditValues] = useState(null);
 
   const {
     register: registerSliderNew,
@@ -22,10 +27,10 @@ function HomePage() {
   } = useForm();
 
   const {
-    register: registerSliderEdit,
-    reset: resetSliderEdit,
-    formState: { errors: errorsSliderEdit },
-    handleSubmit: handleEditSliderSubmit,
+    register: registerEdit,
+    reset: resetEdit,
+    formState: { errors: errorsEdit },
+    handleSubmit: handleEditSubmit,
   } = useForm();
 
   const {
@@ -43,39 +48,55 @@ function HomePage() {
   } = useForm();
 
   useEffect(() => {
-    sendRequest("get", "sliders").then((res) => {
-      console.log("sliders", res);
-      setSliders(res.sliders);
+    sendRequest("get", "getHomePage/sliders").then((res) => {
+      setSliders(res.homePage);
     });
 
-    sendRequest("get", "banners").then((res) => {
-      console.log("banners", res);
-      setBanners(res.banners);
+    sendRequest("get", "getHomePage/banners").then((res) => {
+      setBanners(res.homePage);
     });
 
-    sendRequest("get", "bestselling").then((res) => {
-      console.log("bestsell", res);
-      setBestselling(res.bestselling);
+    sendRequest("get", "getHomePage/bestSelling").then((res) => {
+      setBestselling(res.homePage);
     });
   }, []);
 
-  const onSliderSubmit = (data) => {
+  const onSubmit = (data, e) => {
     console.log("data", data);
+    const target = e.target.getAttribute("data");
     const formData = new FormData();
     formData.append("text1", data.textOne);
     formData.append("text2", data.textTwo);
     formData.append("textAlign", data.textAlign);
     formData.append("image", data.file[0]);
 
-    sendRequest("post", "addslider", formData, "formData", "admin")
+    sendRequest("post", `addHomePage/${target}`, formData, "formData", "admin")
       .then((res) => {
         console.log(res);
         if (res.status) {
-          successToast("Slider added");
-          sendRequest("get", "sliders")
+          successToast(
+            `${
+              target != "bestSelling"
+                ? target.replace(/.$/, "").toLowerCase()
+                : target.toLowerCase()
+            } added`
+          );
+          sendRequest("get", `getHomePage/${target}`)
             .then((res) => {
-              console.log("slider", res);
-              setSliders(res.sliders);
+              switch (target) {
+                case "sliders": {
+                  setSliders(res.homePage);
+                  break;
+                }
+                case "banners": {
+                  setBanners(res.homePage);
+                  break;
+                }
+                case "bestSelling": {
+                  setBestselling(res.homePage);
+                  break;
+                }
+              }
             })
             .catch((err) => console.log(err));
         }
@@ -85,24 +106,60 @@ function HomePage() {
       });
   };
 
-  const handleSliderEdit = (e, data) => {
+  const handleEdit = (e) => {
     const id = e.target.closest(".table-row").getAttribute("data");
-    console.log("id", id);
-    console.log("data", data);
+    const target = e.target.closest(".table-row").getAttribute("data-section");
+    switch (target) {
+      case "sliders": {
+        setSingle(false);
+        break;
+      }
+      case "banners": {
+        setSingle(true);
+        break;
+      }
+      case "bestSelling": {
+        setSingle(true);
+        break;
+      }
+    }
+    setSectionType(target);
+    setDocId(id);
+    setEditModalIsOpen(true);
   };
 
-  const handleSliderDelete = (e) => {
+  const handleDelete = (e) => {
     const id = e.target.closest(".table-row").getAttribute("data");
+    const target = e.target.closest(".table-row").getAttribute("data-section");
     if (confirm("Do you want to delete this?")) {
-      sendRequest("delete", "slider", { id }, undefined, "admin")
+      sendRequest(
+        "delete",
+        `deleteHomePage/${target}`,
+        { id },
+        undefined,
+        "admin"
+      )
         .then((res) => {
           console.log(res);
           if (res.status) {
             successToast(res.deleted);
-            sendRequest("get", "sliders")
+            sendRequest("get", `getHomePage/${target}`)
               .then((res) => {
                 console.log("sliders", res);
-                setSliders(res.sliders);
+                switch (target) {
+                  case "sliders": {
+                    setSliders(res.homePage);
+                    break;
+                  }
+                  case "banners": {
+                    setBanners(res.homePage);
+                    break;
+                  }
+                  case "bestSelling": {
+                    setBestselling(res.homePage);
+                    break;
+                  }
+                }
               })
               .catch((err) => console.log(err));
           }
@@ -116,182 +173,130 @@ function HomePage() {
     }
   };
 
-  const onEditSubmit = () => {};
-
-  //banner
-  const handleBannerEdit = () => {};
-
-  const handleBannerDelete = (e) => {
-    const id = e.target.closest(".table-row").getAttribute("data");
-    if (confirm("Do you want to delete this?")) {
-      sendRequest("delete", "banner", { id }, undefined, "admin")
-        .then((res) => {
-          console.log(res);
-          if (res.status) {
-            successToast(res.deleted);
-            sendRequest("get", "banners")
-              .then((res) => {
-                console.log("banners", res);
-                setBanners(res.banners);
-              })
-              .catch((err) => console.log(err));
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-          errorToast(err);
-        });
-    } else {
-      null;
-    }
-  };
-
-  const onBannerSubmit = (data) => {
+  const onEditSubmit = (data) => {
     console.log("data", data);
     const formData = new FormData();
     formData.append("text1", data.textOne);
     formData.append("text2", data.textTwo);
     formData.append("textAlign", data.textAlign);
     formData.append("image", data.file[0]);
-
-    sendRequest("post", "addBanner", formData, "formData", "admin")
-      .then((res) => {
-        console.log(res);
+    formData.append("id", docId);
+    sendRequest(
+      "put",
+      `editHomePage/${sectionType}`,
+      formData,
+      "formData",
+      "admin"
+    ).then((res) => {
+      setEditModalIsOpen(false);
+      resetEdit();
+      if (res.status) {
+        successToast(
+          `${
+            sectionType != "bestSelling"
+              ? sectionType.replace(/.$/, "").toLowerCase()
+              : sectionType.toLowerCase()
+          } updated!`
+        );
+      }
+      sendRequest("get", `getHomePage/${sectionType}`).then((res) => {
         if (res.status) {
-          successToast("Banner added");
-          sendRequest("get", "banners")
-            .then((res) => {
-              console.log("banners", res);
-              setBanners(res.banners);
-            })
-            .catch((err) => console.log(err));
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  //bestsell
-  const handleBestsellingEdit = () => {};
-
-  const handleBestsellingDelete = (e) => {
-    const id = e.target.closest(".table-row").getAttribute("data");
-    if (confirm("Do you want to delete this?")) {
-      sendRequest("delete", "bestselling", { id }, undefined, "admin")
-        .then((res) => {
-          console.log(res);
-          if (res.status) {
-            successToast(res.deleted);
-            sendRequest("get", "bestselling")
-              .then((res) => {
-                console.log("bestselling", res);
-                setBestselling(res.bestselling);
-              })
-              .catch((err) => console.log(err));
+          switch (sectionType) {
+            case "sliders": {
+              setSliders(res.homePage);
+              break;
+            }
+            case "banners": {
+              setBanners(res.homePage);
+              break;
+            }
+            case "bestSelling": {
+              setBestselling(res.homePage);
+              break;
+            }
           }
-        })
-        .catch((err) => {
-          console.log(err);
-          errorToast(err);
-        });
-    } else {
-      null;
-    }
-  };
-
-  const onBestsellSubmit = (data) => {
-    console.log("data", data);
-    const formData = new FormData();
-    formData.append("text1", data.textOne);
-    formData.append("text2", data.textTwo);
-    formData.append("textAlign", data.textAlign);
-    formData.append("image", data.file[0]);
-
-    sendRequest("post", "addBestselling", formData, "formData", "admin")
-      .then((res) => {
-        console.log(res);
-        if (res.status) {
-          successToast("Image added");
-          sendRequest("get", "bestselling")
-            .then((res) => {
-              console.log("bestselling", res);
-              setBestselling(res.bestselling);
-            })
-            .catch((err) => console.log(err));
         }
-      })
-      .catch((err) => {
-        console.log(err);
       });
+    });
   };
 
   return (
     <>
       <div className="container">
-        <h3 className="mb-4 text-center">Home Page Setting</h3>
+        <h3 className="mb-4 text-center">Home Page Content</h3>
         {/*Sliders*/}
         <section className="half-section">
           <h5 style={{ textDecoration: "underline" }}>Sliders:</h5>
 
           <CMSTable
             data={sliders}
-            handleDeleteClick={handleSliderDelete}
-            handleEditClick={handleSliderEdit}
+            section={"sliders"}
+            handleDeleteClick={handleDelete}
+            handleEditClick={handleEdit}
             single={false}
+            editValues={setEditValues}
           />
           <CMSForm
             handleSubmit={handleSliderSubmit}
-            onSubmit={onSliderSubmit}
+            onSubmit={onSubmit}
             reset={resetSliderNew}
             error={errorsSliderNew}
             register={registerSliderNew}
             data={sliders}
             single={false}
+            section={"sliders"}
+            handleClick={setSectionType}
           />
         </section>
         {/*Banner*/}
         <section className="half-section">
-          <h5 style={{ textDecoration: "underline" }}>Banner:</h5>
+          <h5 style={{ textDecoration: "underline" }}>Banners:</h5>
 
           <CMSTable
             data={banners}
-            handleDeleteClick={handleBannerDelete}
-            handleEditClick={handleBannerEdit}
+            section={"banners"}
+            handleDeleteClick={handleDelete}
+            handleEditClick={handleEdit}
             single={true}
+            editValues={setEditValues}
           />
           {banners?.length < 3 && (
             <CMSForm
               handleSubmit={handleBannerSubmit}
-              onSubmit={onBannerSubmit}
+              onSubmit={onSubmit}
               reset={resetBannerNew}
               error={errorsBannerNew}
               register={registerBannerNew}
               single={true}
+              data={banners}
+              section={"banners"}
+              handleClick={setSectionType}
             />
           )}
         </section>
         {/*Best selling*/}
-        <section
-          className="half-section"
-          style={{ marginTop: "40px", marginBottom: "40px" }}
-        >
+        <section className="half-section" style={{ marginBottom: "40px" }}>
           <h5 style={{ textDecoration: "underline" }}>Best Selling:</h5>
 
           <CMSTable
             data={bestselling}
-            handleDeleteClick={handleBestsellingDelete}
-            handleEditClick={handleBestsellingEdit}
+            section={"bestSelling"}
+            handleDeleteClick={handleDelete}
+            handleEditClick={handleEdit}
             single={true}
+            editValues={setEditValues}
           />
           {bestselling?.length < 1 && (
             <CMSForm
               handleSubmit={handleBestsellSubmit}
-              onSubmit={onBestsellSubmit}
+              onSubmit={onSubmit}
               reset={resetBestsellNew}
               error={errorsBestsellNew}
               register={registerBestsellNew}
               single={true}
+              data={bestselling}
+              section={"bestSelling"}
+              handleClick={setSectionType}
             />
           )}
         </section>
@@ -305,24 +310,28 @@ function HomePage() {
           centered
           show={editModalIsOpen}
           onHide={() => {
+            resetEdit();
             setEditModalIsOpen(false);
           }}
           style={{ zIndex: "9999", padding: 0 }}
         >
           <Modal.Header style={{ border: "none" }} closeButton>
-            <h5>Edit Slider</h5>
+            <h5>Edit</h5>
           </Modal.Header>
           <Modal.Body>
             <div className="container">
               <div className="container">
                 {/*Sliders*/}
                 <section className="half-section">
-                  <CMSForm
-                    handleSubmit={handleEditSliderSubmit}
+                  <CMSEditForm
+                    handleSubmit={handleEditSubmit}
                     onSubmit={onEditSubmit}
-                    reset={resetSliderEdit}
-                    error={errorsSliderEdit}
-                    register={registerSliderEdit}
+                    reset={resetEdit}
+                    error={errorsEdit}
+                    register={registerEdit}
+                    section={sectionType}
+                    single={single}
+                    values={editValues}
                   />
                 </section>
               </div>

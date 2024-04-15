@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 import { stopSpinner, startSpinner } from "../../redux/reducers/spinnerReducer";
 import { updateCart } from "../../redux/reducers/cartReducer";
 import { updateCartQuantity } from "../../redux/reducers/cartQuantityReducer";
+import { useEffect, useState } from "react";
+import BASE_URL from "../../utility-functions/config";
 
 function NavbarHeaderMid({
   setAutocomplete,
@@ -33,6 +35,7 @@ function NavbarHeaderMid({
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const currentCart = useSelector((state) => state.cart.cart);
+  const [settings, setSettings] = useState(null);
 
   const handleWishlistNavClick = () => {
     const currentUser = localStorage.getItem("current_user");
@@ -46,6 +49,11 @@ function NavbarHeaderMid({
       }, 3000);
     }
   };
+
+  useEffect(() => {
+    const settings = localStorage.getItem("settings");
+    setSettings(JSON.parse(settings));
+  }, []);
 
   const handleCartNavClick = () => {
     const currentUser = localStorage.getItem("current_user");
@@ -142,7 +150,10 @@ function NavbarHeaderMid({
               <>
                 <div className="logo logo-width-1">
                   <Link to="/" href={void 0}>
-                    <LazyLoadImage src={logo} alt="logo" />
+                    <LazyLoadImage
+                      src={`${BASE_URL}/${settings?.image}`}
+                      alt="logo"
+                    />
                   </Link>
                 </div>
                 <div className="header-right">

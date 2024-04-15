@@ -1,14 +1,12 @@
-function Form({ children, handleSubmit, onSubmit }) {
+function Form({ children, handleSubmit, onSubmit, section, style }) {
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
       style={{
-        width: "90%",
-        marginLeft: "auto",
-        marginRight: "auto",
-        marginTop: "20px",
-        marginBottom: "20px",
+        width: style?.width ?? "90%",
+        margin: "20px auto 40px auto",
       }}
+      data={section}
     >
       {children}
     </form>

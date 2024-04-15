@@ -12,10 +12,10 @@ function HomeSectionBanner() {
   const [banners, setBanners] = useState(null);
 
   useEffect(() => {
-    sendRequest("get", "banners")
+    sendRequest("get", "getHomePage/banners")
       .then((res) => {
         if (res.status) {
-          setBanners(res.banners);
+          setBanners(res.homePage);
         }
       })
       .catch((err) => {
@@ -43,7 +43,11 @@ function HomeSectionBanner() {
                       <LazyLoadImage
                         src={BASE_URL + "/" + banner.image}
                         alt=""
-                        style={{ height: "250px", objectFit: "cover" }}
+                        style={{
+                          height: "250px",
+                          width: "100%",
+                          objectFit: "cover",
+                        }}
                       />
                     )}
                     <div className="banner-text">

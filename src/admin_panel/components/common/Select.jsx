@@ -1,4 +1,15 @@
-function Select({ name, register, label, error, options, onChange }) {
+import { useState } from "react";
+
+function Select({
+  name,
+  register,
+  label,
+  error,
+  options,
+  onChange,
+  value = "",
+}) {
+  const [selectChange, setSelectChange] = useState(value);
   return (
     <div className="form-group cms-form-group" style={{ width: "48%" }}>
       <label className="form-label">{label}</label>
@@ -6,7 +17,10 @@ function Select({ name, register, label, error, options, onChange }) {
         className="form-control"
         name={name}
         {...register(name, { required: "This field is required!" })}
-        onChange={onChange}
+        onChange={(e) => {
+          setSelectChange(e.target.value);
+        }}
+        value={selectChange}
       >
         <option value="">Select an option</option>
         {options?.map((option, i) => (

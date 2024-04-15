@@ -1,7 +1,3 @@
-import about from "../../assets/imgs/page/about-1.webp";
-import about2 from "../../assets/imgs/page/about-2.webp";
-import about3 from "../../assets/imgs/page/about-3.webp";
-import about4 from "../../assets/imgs/page/about-4.webp";
 import about5 from "../../assets/imgs/page/about-5.webp";
 import about6 from "../../assets/imgs/page/about-6.webp";
 import about8 from "../../assets/imgs/page/about-8.webp";
@@ -21,15 +17,25 @@ import CountUp from "react-countup";
 import ReactVisibilitySensor from "react-visibility-sensor";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
+import sendRequest from "../../utility-functions/apiManager";
+import BASE_URL from "../../utility-functions/config";
 
 function About() {
   const [loading, setLoading] = useState(true);
   const [viewPortEntered, setViewPortEntered] = useState(false);
+  const [sectionOne, setSectionOne] = useState(null);
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
     }, 5000);
+
+    sendRequest("get", "getSetionOne").then((res) => {
+      if (res.status) {
+        setSectionOne(res.sectionOne[0]);
+        console.log("res", res.sectionOne[0]);
+      }
+    });
   }, []);
 
   var settings = {
@@ -98,7 +104,7 @@ function About() {
                     />
                   ) : (
                     <LazyLoadImage
-                      src={about}
+                      src={`${BASE_URL}/${sectionOne?.image}`}
                       alt=""
                       className="border-radius-15 mb-md-3 mb-lg-0 mb-sm-4"
                     />
@@ -116,25 +122,8 @@ function About() {
                       </div>
                     ) : (
                       <>
-                        <h2 className="mb-30">Welcome to Nest</h2>
-                        <p className="mb-25">
-                          Lorem ipsum dolor sit amet, consectetur adipiscing
-                          elit, sed do eiusmod tempor incididunt ut labore et
-                          dolore magna aliqua. Ut enim ad minim veniam, quis
-                          nostrud exercitation ullamco laboris nisi ut aliquip
-                          ex ea commodo consequat. Duis aute irure dolor in
-                          reprehenderit in voluptate id est laborum.
-                        </p>
-                        <p className="mb-50">
-                          Ius ferri velit sanctus cu, sed at soleat accusata.
-                          Dictas prompta et Ut placerat legendos interpre.Donec
-                          vitae sapien ut libero venenatis faucibus. Nullam quis
-                          ante Etiam sit amet orci eget. Quis commodo odio
-                          aenean sed adipiscing. Turpis massa tincidunt dui ut
-                          ornare lectus. Auctor elit sed vulputate mi sit amet.
-                          Commodo consequat. Duis aute irure dolor in
-                          reprehenderit in voluptate id est laborum.
-                        </p>
+                        <h2 className="mb-30">{sectionOne?.title}</h2>
+                        <p className="mb-25">{sectionOne?.description}</p>
                       </>
                     )}
                     <div className="carausel-3-columns-cover position-relative">
@@ -144,34 +133,18 @@ function About() {
                         id="carausel-3-columns"
                       >
                         <Slider {...settings}>
-                          <div className="img-card">
-                            {loading ? (
-                              <Skeleton style={{ height: "195px" }} />
-                            ) : (
-                              <LazyLoadImage src={about2} alt="" />
-                            )}
-                          </div>
-                          <div className=" img-card">
-                            {loading ? (
-                              <Skeleton style={{ height: "195px" }} />
-                            ) : (
-                              <LazyLoadImage src={about3} alt="" />
-                            )}
-                          </div>
-                          <div className=" img-card">
-                            {loading ? (
-                              <Skeleton style={{ height: "195px" }} />
-                            ) : (
-                              <LazyLoadImage src={about4} alt="" />
-                            )}
-                          </div>
-                          <div className=" img-card">
-                            {loading ? (
-                              <Skeleton style={{ height: "195px" }} />
-                            ) : (
-                              <LazyLoadImage src={about2} alt="" />
-                            )}
-                          </div>
+                          {sectionOne?.carouselImages.map((image, i) => (
+                            <div className="img-card" key={i}>
+                              {loading ? (
+                                <Skeleton style={{ height: "195px" }} />
+                              ) : (
+                                <LazyLoadImage
+                                  src={`${BASE_URL}/${image}`}
+                                  alt=""
+                                />
+                              )}
+                            </div>
+                          ))}
                         </Slider>
                       </div>
                     </div>

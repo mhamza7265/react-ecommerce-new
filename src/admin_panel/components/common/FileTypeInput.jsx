@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Cropper from "react-easy-crop";
 
-function FileTypeInput({ register, name, multiple }) {
+function FileTypeInput({ register, name, label, multiple }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [file, setFile] = useState(null);
@@ -16,13 +16,14 @@ function FileTypeInput({ register, name, multiple }) {
   };
 
   return (
-    <div className="form-group">
-      <label className="form-label">Image</label>
+    <div className="form-group cms-form-group">
+      <label className="form-label">{label}</label>
       <div className="d-flex align-items-end">
         <input
           {...register(name)}
           className="form-control image-input"
           type="file"
+          accept="image/*"
           name={name}
           multiple={multiple}
           onChange={handleFileChange}

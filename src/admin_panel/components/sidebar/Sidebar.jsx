@@ -6,7 +6,8 @@ import { successToast } from "../../../utility-functions/apiManager";
 import { useDispatch } from "react-redux";
 import { addCurrentUser } from "../../../redux/reducers/currentUserReducer";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useEffect } from "react";
 
 const Sidebar = ({ setRegistrationModalIsOpen }) => {
   // const [activeIndex, setActiveIndex] = useState(0);
@@ -14,6 +15,7 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
   const [displayLinks, setDisplayLinks] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const CMSMainBtn = useRef();
 
   // useEffect(() => {
   //   const curPath = window.location.pathname.split("/")[1];
@@ -58,7 +60,12 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
     }
   };
 
-  console.log("links", displayLinks);
+  useEffect(() => {
+    if (CMSMainBtn.current.classList.contains("active")) {
+      setDisplayLinks(true);
+    }
+  }, []);
+
   return (
     <div className="sidebar">
       <div className="sidebar__logo">
@@ -99,9 +106,13 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
           </div>
           <div className="sidebar__menu__item__txt">Register</div>
         </div>
-        <NavLink className={`sidebar__menu__item cms-btn`}>
+        <NavLink
+          to={"cms"}
+          className={`sidebar__menu__item cms-btn cms-main-btn`}
+          ref={CMSMainBtn}
+        >
           <div className="sidebar__menu__item__icon cms-btn">
-            <i className="fa fa-dashboard cms-btn"></i>
+            <i className="fa fa-wrench cms-btn"></i>
           </div>
           <div className="sidebar__menu__item__txt cms-btn">CMS</div>
         </NavLink>
@@ -115,7 +126,7 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
           onClick={closeSidebar}
         >
           <div className="sidebar__menu__item__icon cms-btn">
-            <i className="fa fa-dashboard cms-btn"></i>
+            <i className="fa fa-dot-circle-o cms-btn"></i>
           </div>
           <div className="sidebar__menu__item__txt cms-btn">Home Page</div>
         </NavLink>
@@ -129,7 +140,7 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
           onClick={closeSidebar}
         >
           <div className="sidebar__menu__item__icon cms-btn">
-            <i className="fa fa-dashboard cms-btn"></i>
+            <i className="fa fa-dot-circle-o cms-btn"></i>
           </div>
           <div className="sidebar__menu__item__txt cms-btn">About Page</div>
         </NavLink>
@@ -143,7 +154,7 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
           onClick={closeSidebar}
         >
           <div className="sidebar__menu__item__icon cms-btn">
-            <i className="fa fa-gear cms-btn"></i>
+            <i className="fa fa-dot-circle-o cms-btn"></i>
           </div>
           <div className="sidebar__menu__item__txt cms-btn">Site settings</div>
         </NavLink>

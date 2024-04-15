@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import ButtonMedium from "./ButtonMedium";
-import FileTypeInput from "./FileTypeInput";
 import Form from "./Form";
+import FileTypeInput from "./FileTypeInput";
 import Input from "./Input";
-import Select from "./Select";
+import Textarea from "./Textarea";
 
-function CMSForm({
+function AboutForm1({
   handleSubmit,
   onSubmit,
   reset,
@@ -55,37 +55,39 @@ function CMSForm({
       </div>
       {displayFields && (
         <Form handleSubmit={handleSubmit} onSubmit={onSubmit} section={section}>
-          <FileTypeInput
-            register={register}
-            label={"Image"}
-            name="file"
-            multiple={false}
-          />
-          <div className="d-flex justify-content-between">
+          <div className="d-flex align-items-center">
+            <FileTypeInput
+              register={register}
+              name="image"
+              multiple={false}
+              label={"Image"}
+            />
+            <FileTypeInput
+              register={register}
+              name="carouselImages"
+              multiple={true}
+              label={"Carousel Images"}
+            />
+          </div>
+          <div className="input">
             <Input
-              label="Text One"
-              name="textOne"
+              label="Title"
+              name="title"
               type="text"
               register={register}
               error={error}
+              required={false}
             />
             {!single && (
-              <Input
-                label="Text Two"
-                name="textTwo"
+              <Textarea
+                label="Description"
+                name="description"
                 type="text"
                 register={register}
                 error={error}
               />
             )}
           </div>
-          <Select
-            name="textAlign"
-            register={register}
-            label="Select Text Alignment"
-            options={["Left", "Center", "Right"]}
-            error={error}
-          />
 
           <ButtonMedium
             name="Submit"
@@ -99,4 +101,4 @@ function CMSForm({
   );
 }
 
-export default CMSForm;
+export default AboutForm1;
