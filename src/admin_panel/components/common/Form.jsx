@@ -6,6 +6,7 @@ function Form({ children, handleSubmit, onSubmit, section, style }) {
         width: style?.width ?? "90%",
         margin: "20px auto 40px auto",
       }}
+      className="form"
       data={section}
     >
       {children}

@@ -453,9 +453,9 @@ span[aria-label="Loading Spinner"] > span {
   height: 40px !important;
 }
 
-.input .cms-form-group textarea.form-control {
+.form-group.cms-form-group textarea.form-control {
   height: 200px !important;
-  width: 400px;
+  width: 100%;
 }
 
 .cms-table thead th {

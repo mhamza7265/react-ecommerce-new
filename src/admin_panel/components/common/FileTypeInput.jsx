@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Cropper from "react-easy-crop";
 
-function FileTypeInput({ register, name, label, multiple }) {
+function FileTypeInput({ register, name, label, multiple, error, required }) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [file, setFile] = useState(null);
@@ -20,7 +20,10 @@ function FileTypeInput({ register, name, label, multiple }) {
       <label className="form-label">{label}</label>
       <div className="d-flex align-items-end">
         <input
-          {...register(name)}
+          {...register(
+            name,
+            required && { required: "This field is required" }
+          )}
           className="form-control image-input"
           type="file"
           accept="image/*"
@@ -42,10 +45,11 @@ function FileTypeInput({ register, name, label, multiple }) {
           />
         )}
       </div>
-      {/* <p className="text-danger">{errorsNew?.image1?.message}</p>
+      {/* 
       {imageLengthError && (
         <p className="text-danger">Please select two images</p>
       )} */}
+      {error && <p className="text-danger">{error[name]?.message}</p>}
     </div>
   );
 }

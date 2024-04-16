@@ -12,11 +12,14 @@ function CMSEditForm({
   error,
   single,
   handleClick,
+  noImage,
   values,
 }) {
   return (
     <Form handleSubmit={handleSubmit} onSubmit={onSubmit} section={section}>
-      <FileTypeInput register={register} name="file" multiple={false} />
+      {!noImage && (
+        <FileTypeInput register={register} name="file" multiple={false} />
+      )}
       <div className="d-flex justify-content-between">
         <Input
           label="Text One"
@@ -26,6 +29,7 @@ function CMSEditForm({
           error={error}
           value={values.text1}
         />
+
         {!single && (
           <Input
             label="Text Two"

@@ -2,8 +2,9 @@ import icon2 from "../../../assets/imgs/theme/icons/icon-2.svg";
 import Skeleton from "react-loading-skeleton";
 import { useState, useEffect } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
+import BASE_URL from "../../../utility-functions/config";
 
-function AboutCard() {
+function AboutCard({ image, title, description }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,13 +28,10 @@ function AboutCard() {
             </div>
           ) : (
             <>
-              <LazyLoadImage src={icon2} alt="" />
-              <h4>Wide Assortment</h4>
-              <p>
-                There are many variations of passages of Lorem Ipsum available,
-                but the majority have suffered alteration in some form
-              </p>
-              <a href={void 0}>Read more</a>
+              <LazyLoadImage src={BASE_URL + "/" + image} alt="" />
+              <h4>{title}</h4>
+              <p>{description}</p>
+              {/* <a href={void 0}>Read more</a> */}
             </>
           )}
         </div>

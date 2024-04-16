@@ -145,6 +145,20 @@ const Sidebar = ({ setRegistrationModalIsOpen }) => {
           <div className="sidebar__menu__item__txt cms-btn">About Page</div>
         </NavLink>
         <NavLink
+          to={"cms/contact"}
+          className={`sub-menu ${
+            displayLinks
+              ? "sidebar__menu__item cms-btn"
+              : "sidebar__menu__item cms-btn d-none"
+          }`}
+          onClick={closeSidebar}
+        >
+          <div className="sidebar__menu__item__icon cms-btn">
+            <i className="fa fa-dot-circle-o cms-btn"></i>
+          </div>
+          <div className="sidebar__menu__item__txt cms-btn">Contact Page</div>
+        </NavLink>
+        <NavLink
           to={"cms/settings"}
           className={`sub-menu ${
             displayLinks

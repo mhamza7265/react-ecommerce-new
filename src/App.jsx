@@ -68,6 +68,7 @@ import CMSPage from "./admin_panel/pages/CMSPage";
 import CMSIndex from "./admin_panel/pages/CMS/CMSIndex";
 import SiteSetting from "./admin_panel/pages/CMS/SiteSetting";
 import AboutPage from "./admin_panel/pages/CMS/AboutPage";
+import ContactPage from "./admin_panel/pages/CMS/contactPage";
 
 const stripePromise = loadStripe(
   "pk_test_51OgnngCZAiYypOnUtpzuyqpnUAilEOQyEk9M8aXZ1zl2sfQV7iWNsbdfvEDhlHbe1iF3lkGosYA6TYFExeYElaM3005kpwWTxc"
@@ -406,6 +407,7 @@ function App() {
               <Route index element={<CMSIndex />} />
               <Route path="homepage" element={<HomePage />} />
               <Route path="about" element={<AboutPage />} />
+              <Route path="contact" element={<ContactPage />} />
               <Route path="settings" element={<SiteSetting />} />
             </Route>
           </Route>

@@ -235,6 +235,7 @@ function HomePage() {
             handleEditClick={handleEdit}
             single={false}
             editValues={setEditValues}
+            action={true}
           />
           <CMSForm
             handleSubmit={handleSliderSubmit}
@@ -259,6 +260,7 @@ function HomePage() {
             handleEditClick={handleEdit}
             single={true}
             editValues={setEditValues}
+            action={true}
           />
           {banners?.length < 3 && (
             <CMSForm
@@ -285,6 +287,7 @@ function HomePage() {
             handleEditClick={handleEdit}
             single={true}
             editValues={setEditValues}
+            action={true}
           />
           {bestselling?.length < 1 && (
             <CMSForm

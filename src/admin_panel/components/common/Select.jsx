@@ -8,15 +8,19 @@ function Select({
   options,
   onChange,
   value = "",
+  required,
 }) {
   const [selectChange, setSelectChange] = useState(value);
   return (
-    <div className="form-group cms-form-group" style={{ width: "48%" }}>
+    <div
+      className="form-group cms-form-group cms-form-group-select"
+      style={{ width: "48%" }}
+    >
       <label className="form-label">{label}</label>
       <select
         className="form-control"
         name={name}
-        {...register(name, { required: "This field is required!" })}
+        {...register(name, required && { required: "This field is required!" })}
         onChange={(e) => {
           setSelectChange(e.target.value);
         }}
@@ -29,7 +33,7 @@ function Select({
           </option>
         ))}
       </select>
-      <p className="text-danger">{error[name]?.message}</p>
+      {error && <p className="text-danger">{error[name]?.message}</p>}
     </div>
   );
 }

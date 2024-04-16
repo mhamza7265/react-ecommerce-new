@@ -1,10 +1,30 @@
+import { useEffect, useState } from "react";
 import contact2img from "../../assets/imgs/page/contact-2.webp";
 import Footer from "../footer/footer";
 import Navbar from "../navbar/Navbar";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Link } from "react-router-dom";
+import sendRequest from "../../utility-functions/apiManager";
 
 function Contact() {
+  const [sectionOne, setSectionOne] = useState(null);
+  const [sectionTwo, setSectionTwo] = useState(null);
+
+  useEffect(() => {
+    sendRequest("get", "getContactSection/one").then((res) => {
+      if (res.status) {
+        setSectionOne(res.section);
+        console.log("section", res.section);
+      }
+    });
+
+    sendRequest("get", "getContactSection/two").then((res) => {
+      if (res.status) {
+        setSectionTwo(res.section);
+        console.log("section", res.section);
+      }
+    });
+  }, []);
   return (
     <div>
       <Navbar />
@@ -22,57 +42,19 @@ function Contact() {
         <div className="container">
           <div className="row">
             <div className="col-xl-10 col-lg-12 m-auto">
-              <section className="row align-items-end mb-50">
+              <section className="row align-items-start mb-50">
                 <div className="col-lg-4 mb-lg-0 mb-md-5 mb-sm-5">
                   <h4 className="mb-20 text-brand">How can help you ?</h4>
                   <h1 className="mb-30">Let us know how we can help you</h1>
-                  <p className="mb-20">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
-                    elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus
-                    leo.
-                  </p>
-                  <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut
-                    elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus
-                    leo.
-                  </p>
                 </div>
                 <div className="col-lg-8">
                   <div className="row">
-                    <div className="col-lg-6 mb-4">
-                      <h5 className="mb-20">01. Visit Feedback</h5>
-                      <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Ut elit tellus, luctus nec ullamcorper mattis, pulvinar
-                        dapibus leo.
-                      </p>
-                    </div>
-                    <div className="col-lg-6 mb-4">
-                      <h5 className="mb-20">02. Employer Services</h5>
-                      <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Ut elit tellus, luctus nec ullamcorper mattis, pulvinar
-                        dapibus leo.
-                      </p>
-                    </div>
-                    <div className="col-lg-6 mb-lg-0 mb-4">
-                      <h5 className="mb-20 text-brand">
-                        03. Billing Inquiries
-                      </h5>
-                      <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Ut elit tellus, luctus nec ullamcorper mattis, pulvinar
-                        dapibus leo.
-                      </p>
-                    </div>
-                    <div className="col-lg-6">
-                      <h5 className="mb-20">04.General Inquiries</h5>
-                      <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                        Ut elit tellus, luctus nec ullamcorper mattis, pulvinar
-                        dapibus leo.
-                      </p>
-                    </div>
+                    {sectionOne?.map((item, i) => (
+                      <div className="col-lg-6 mb-4" key={i}>
+                        <h5 className="mb-20">{item.text1}</h5>
+                        <p>{item.text2}</p>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </section>
@@ -100,48 +82,21 @@ function Contact() {
             <div className="col-xl-10 col-lg-12 m-auto">
               <section className="mb-50">
                 <div className="row mb-60">
-                  <div className="col-md-4 mb-4 mb-md-0">
-                    <h4 className="mb-15 text-brand">Office</h4>
-                    205 North Michigan Avenue, Suite 810
-                    <br />
-                    Chicago, 60601, USA
-                    <br />
-                    <abbr title="Phone">Phone:</abbr> (123) 456-7890
-                    <br />
-                    <abbr title="Email">Email: </abbr>contact@Evara.com
-                    <br />
-                    <a className="btn btn-sm font-weight-bold text-white mt-20 border-radius-5 btn-shadow-brand hover-up">
-                      <i className="fi-rs-marker mr-5"></i>View map
-                    </a>
-                  </div>
-                  <div className="col-md-4 mb-4 mb-md-0">
-                    <h4 className="mb-15 text-brand">Studio</h4>
-                    205 North Michigan Avenue, Suite 810
-                    <br />
-                    Chicago, 60601, USA
-                    <br />
-                    <abbr title="Phone">Phone:</abbr> (123) 456-7890
-                    <br />
-                    <abbr title="Email">Email: </abbr>contact@Evara.com
-                    <br />
-                    <a className="btn btn-sm font-weight-bold text-white mt-20 border-radius-5 btn-shadow-brand hover-up">
-                      <i className="fi-rs-marker mr-5"></i>View map
-                    </a>
-                  </div>
-                  <div className="col-md-4">
-                    <h4 className="mb-15 text-brand">Shop</h4>
-                    205 North Michigan Avenue, Suite 810
-                    <br />
-                    Chicago, 60601, USA
-                    <br />
-                    <abbr title="Phone">Phone:</abbr> (123) 456-7890
-                    <br />
-                    <abbr title="Email">Email: </abbr>contact@Evara.com
-                    <br />
-                    <a className="btn btn-sm font-weight-bold text-white mt-20 border-radius-5 btn-shadow-brand hover-up">
-                      <i className="fi-rs-marker mr-5"></i>View map
-                    </a>
-                  </div>
+                  {sectionTwo?.map((item, i) => (
+                    <div className="col-md-4 mb-4 mb-md-0" key={i}>
+                      <h4 className="mb-15 text-brand">{item.location}</h4>
+                      {item.address}
+                      <br />
+                      <abbr title="Phone">Phone:</abbr> {item.contact}
+                      <br />
+                      <abbr title="Email">Email: </abbr>
+                      {item.email}
+                      <br />
+                      <a className="btn btn-sm font-weight-bold text-white mt-20 border-radius-5 btn-shadow-brand hover-up">
+                        <i className="fi-rs-marker mr-5"></i>View map
+                      </a>
+                    </div>
+                  ))}
                 </div>
                 <div className="row">
                   <div className="col-xl-8">

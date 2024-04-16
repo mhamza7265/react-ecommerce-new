@@ -24,16 +24,33 @@ function About() {
   const [loading, setLoading] = useState(true);
   const [viewPortEntered, setViewPortEntered] = useState(false);
   const [sectionOne, setSectionOne] = useState(null);
+  const [sectionTwo, setSectionTwo] = useState(null);
+  const [sectionThree, setSectionThree] = useState(null);
+  const [sectionFour, setSectionFour] = useState(null);
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
     }, 5000);
 
-    sendRequest("get", "getSetionOne").then((res) => {
+    sendRequest("get", "getSection/one").then((res) => {
       if (res.status) {
-        setSectionOne(res.sectionOne[0]);
-        console.log("res", res.sectionOne[0]);
+        setSectionOne(res.section[0]);
+      }
+    });
+    sendRequest("get", "getSection/two").then((res) => {
+      if (res.status) {
+        setSectionTwo(res.section);
+      }
+    });
+    sendRequest("get", "getSection/three").then((res) => {
+      if (res.status) {
+        setSectionThree(res.section[0]);
+      }
+    });
+    sendRequest("get", "getSection/four").then((res) => {
+      if (res.status) {
+        setSectionFour(res.section);
       }
     });
   }, []);
@@ -164,8 +181,13 @@ function About() {
                   <h2 className="title style-3 mb-40">What We Provide?</h2>
                 )}
                 <div className="row">
-                  {aboutCardData.map((_, i) => (
-                    <AboutCard key={i} />
+                  {sectionTwo?.map((item, i) => (
+                    <AboutCard
+                      image={item?.image}
+                      title={item?.text1}
+                      description={item?.text2}
+                      key={i}
+                    />
                   ))}
                 </div>
               </section>
@@ -178,7 +200,7 @@ function About() {
                       />
                     ) : (
                       <LazyLoadImage
-                        src={about5}
+                        src={BASE_URL + "/" + sectionThree?.image}
                         alt=""
                         className="mb-md-3 mb-lg-0 mb-sm-4"
                       />
@@ -198,86 +220,38 @@ function About() {
                       </div>
                     ) : (
                       <>
-                        <h4 className="mb-20 text-muted">Our performance</h4>
+                        <h4 className="mb-20 text-muted">
+                          {sectionThree?.text3}
+                        </h4>
                         <h1 className="heading-1 mb-40">
-                          Your Partner for e-commerce grocery solution
+                          {sectionThree?.text1}
                         </h1>
-                        <p className="mb-30">
-                          Ed ut perspiciatis unde omnis iste natus error sit
-                          voluptatem accusantium doloremque laudantium, totam
-                          rem aperiam, eaque ipsa quae ab illo inventore
-                          veritatis et quasi architecto
-                        </p>
-                        <p>
-                          Pitatis et quasi architecto beatae vitae dicta sunt
-                          explicabo. Nemo enim ipsam voluptatem quia voluptas
-                          sit aspernatur aut odit aut fugit, sed quia
-                        </p>
+                        <p className="mb-30">{sectionThree?.text2}</p>
                       </>
                     )}
                   </div>
                 </div>
                 <div className="row">
-                  <div className="col-lg-4 pr-30 mb-md-5 mb-lg-0 mb-sm-5">
-                    {loading ? (
-                      <div>
-                        <Skeleton
-                          style={{ height: "25px", marginBottom: "30px" }}
-                        />
-                        <Skeleton count={4} />
-                      </div>
-                    ) : (
-                      <>
-                        <h3 className="mb-30">Who we are</h3>
-                        <p>
-                          Volutpat diam ut venenatis tellus in metus. Nec dui
-                          nunc mattis enim ut tellus eros donec ac odio orci
-                          ultrices in. ellus eros donec ac odio orci ultrices
-                          in.
-                        </p>
-                      </>
-                    )}
-                  </div>
-                  <div className="col-lg-4 pr-30 mb-md-5 mb-lg-0 mb-sm-5">
-                    {loading ? (
-                      <div>
-                        <Skeleton
-                          style={{ height: "25px", marginBottom: "30px" }}
-                        />
-                        <Skeleton count={4} />
-                      </div>
-                    ) : (
-                      <>
-                        <h3 className="mb-30">Our history</h3>
-                        <p>
-                          Volutpat diam ut venenatis tellus in metus. Nec dui
-                          nunc mattis enim ut tellus eros donec ac odio orci
-                          ultrices in. ellus eros donec ac odio orci ultrices
-                          in.
-                        </p>
-                      </>
-                    )}
-                  </div>
-                  <div className="col-lg-4">
-                    {loading ? (
-                      <div>
-                        <Skeleton
-                          style={{ height: "25px", marginBottom: "30px" }}
-                        />
-                        <Skeleton count={4} />
-                      </div>
-                    ) : (
-                      <>
-                        <h3 className="mb-30">Our mission</h3>
-                        <p>
-                          Volutpat diam ut venenatis tellus in metus. Nec dui
-                          nunc mattis enim ut tellus eros donec ac odio orci
-                          ultrices in. ellus eros donec ac odio orci ultrices
-                          in.
-                        </p>
-                      </>
-                    )}
-                  </div>
+                  {sectionFour?.map((item, i) => (
+                    <div
+                      className="col-lg-4 pr-30 mb-md-5 mb-lg-0 mb-sm-5"
+                      key={i}
+                    >
+                      {loading ? (
+                        <div>
+                          <Skeleton
+                            style={{ height: "25px", marginBottom: "30px" }}
+                          />
+                          <Skeleton count={4} />
+                        </div>
+                      ) : (
+                        <>
+                          <h3 className="mb-30">{item.text1}</h3>
+                          <p>{item.text2}</p>
+                        </>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </section>
             </div>
@@ -406,7 +380,7 @@ function About() {
             </div>
           )}
         </section>
-        <div className="container">
+        {/* <div className="container">
           <div className="row">
             <div className="col-xl-10 col-lg-12 m-auto">
               <section className="mb-50">
@@ -537,7 +511,7 @@ function About() {
               </section>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
       <Footer />
     </div>

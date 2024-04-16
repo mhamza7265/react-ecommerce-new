@@ -1,6 +1,6 @@
-import TableRow from "./TableRow";
+import TableRow3 from "./TableRow3";
 
-function CMSTable({
+function CMSTable3({
   data,
   section,
   handleEditClick,
@@ -22,28 +22,24 @@ function CMSTable({
       <thead>
         <tr>
           <th>Sr. No#</th>
-          <th>Image</th>
-          <th>Text One</th>
-          {!single && <th>Text Two</th>}
-          {three && <th>Text Three</th>}
-          <th>Text Align</th>
+          <th>Address</th>
+          <th>Email</th>
+          <th>Contact No#</th>
+          <th>Location</th>
           {action && <th>Action</th>}
         </tr>
       </thead>
       <tbody>
         {data?.map((data, i) => (
-          <TableRow
+          <TableRow3
             key={i}
             id={data._id}
             srNum={i + 1}
             image={data.image}
-            text1={data.text1}
-            text1Sub={data.text1Sub}
-            text2={data.text2}
-            text2Sub={data.text2Sub}
-            text3={data.text3}
-            text3Sub={data.text3Sub}
-            align={data.textAlign}
+            address={data.address}
+            email={data.email}
+            contact={data.contact}
+            location={data.location}
             single={single}
             handleEdit={handleEditClick}
             handleDelete={handleDeleteClick}
@@ -58,4 +54,4 @@ function CMSTable({
   );
 }
 
-export default CMSTable;
+export default CMSTable3;

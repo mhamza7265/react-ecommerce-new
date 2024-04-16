@@ -1,12 +1,9 @@
 import { useState } from "react";
-import BASE_URL from "../../../../utility-functions/config";
 import { OverlayTrigger } from "react-bootstrap";
 import { Tooltip } from "react-bootstrap";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import Lightbox from "yet-another-react-lightbox";
 import "yet-another-react-lightbox/styles.css";
 
-function TableRow({
+function TableRow2({
   srNum,
   id,
   image,
@@ -25,7 +22,6 @@ function TableRow({
   three,
   action,
 }) {
-  const [open, setOpen] = useState(false);
   const handleEditClick = (e) => {
     editValues({ text1, text2, id, image, text1Sub, text2Sub, align });
     handleEdit(e, { image, text1, text2, align });
@@ -33,27 +29,6 @@ function TableRow({
   return (
     <tr className="table-row" data={id} data-section={section}>
       <td>{srNum}</td>
-      <td>
-        <div className="cms-img">
-          <LazyLoadImage
-            src={BASE_URL + "/" + image}
-            style={{
-              height: "100px",
-              width: "180px",
-              border: "1px solid #000",
-              borderRadius: "10px",
-              objectFit: "cover",
-              cursor: "pointer",
-            }}
-            onClick={() => setOpen(true)}
-          />
-          <Lightbox
-            open={open}
-            close={() => setOpen(false)}
-            slides={[{ src: BASE_URL + "/" + image }]}
-          />
-        </div>
-      </td>
       <td>
         <span>{text1Sub}</span>
         {text1Sub && (
@@ -80,20 +55,6 @@ function TableRow({
           )}
         </td>
       )}
-      {three && (
-        <td>
-          <span>{text3Sub}</span>
-          {text3Sub && (
-            <OverlayTrigger
-              placement="right"
-              delay={{ show: 250, hide: 400 }}
-              overlay={<Tooltip>{text3}</Tooltip>}
-            >
-              <i className="fa fa-question-circle ms-2"></i>
-            </OverlayTrigger>
-          )}
-        </td>
-      )}
       <td>{align}</td>
       {action && (
         <td>
@@ -114,4 +75,4 @@ function TableRow({
   );
 }
 
-export default TableRow;
+export default TableRow2;

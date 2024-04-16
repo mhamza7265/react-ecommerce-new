@@ -1,6 +1,6 @@
-import TableRow from "./TableRow";
+import TableRow2 from "./TableRow2";
 
-function CMSTable({
+function CMSTable2({
   data,
   section,
   handleEditClick,
@@ -22,17 +22,15 @@ function CMSTable({
       <thead>
         <tr>
           <th>Sr. No#</th>
-          <th>Image</th>
           <th>Text One</th>
           {!single && <th>Text Two</th>}
-          {three && <th>Text Three</th>}
           <th>Text Align</th>
           {action && <th>Action</th>}
         </tr>
       </thead>
       <tbody>
         {data?.map((data, i) => (
-          <TableRow
+          <TableRow2
             key={i}
             id={data._id}
             srNum={i + 1}
@@ -58,4 +56,4 @@ function CMSTable({
   );
 }
 
-export default CMSTable;
+export default CMSTable2;
